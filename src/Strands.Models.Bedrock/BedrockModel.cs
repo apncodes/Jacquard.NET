@@ -35,7 +35,7 @@ public sealed class BedrockModel : Strands.Core.IModel
     /// </param>
     public BedrockModel(
         string region = "us-east-1",
-        string modelId = "us.anthropic.claude-sonnet-4-20250514-v1:0",
+        string modelId = "us.anthropic.claude-haiku-4-5-20251001-v1:0",
         AmazonBedrockRuntimeConfig? config = null,
         IAmazonBedrockRuntime? clientOverride = null)
     {
