@@ -67,3 +67,34 @@ curl http://localhost:8080/health
 ## Additive and optional
 
 This package adds zero changes to `Strands.Core`, `Strands.Models.Bedrock`, or any other package. An agent built with `Strands.Core` compiles and runs identically with or without `Strands.AgentCore` installed.
+
+## AgentCore Gateway
+
+Connect your agent to tools hosted on an Amazon Bedrock AgentCore Gateway — a managed MCP endpoint that proxies external APIs and services with built-in auth.
+
+```csharp
+// Direct usage
+await using var gateway = await AgentCoreGatewayToolProvider.CreateAsync(
+    gatewayUrl: new Uri("https://...gateway-url.../mcp"),
+    auth: new AgentCoreGatewayAuth.Iam(region: "us-east-1"));
+
+var tools = await gateway.ListToolsAsync();
+var agent = new Agent(model, tools: tools);
+```
+
+Three auth modes match your gateway's inbound authorization setting:
+
+```csharp
+new AgentCoreGatewayAuth.Iam(region: "us-east-1")      // IAM SigV4
+new AgentCoreGatewayAuth.Bearer(accessToken: token)     // JWT / OIDC
+new AgentCoreGatewayAuth.None()                         // network-isolated
+```
+
+With DI, `AddAgentCoreGatewayTools()` registers all gateway tools directly into the container:
+
+```csharp
+builder.Services
+    .AddBedrockModel("us-east-1")
+    .AddAgentCoreGatewayTools(gatewayUrl, auth: new AgentCoreGatewayAuth.Iam("us-east-1"))
+    .AddStrandsAgent();
+```

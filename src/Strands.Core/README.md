@@ -5,20 +5,32 @@ The [Strands Agents](https://strandsagents.com) framework for .NET — model-dri
 ```bash
 dotnet add package Strands.Core
 dotnet add package Strands.Models.Bedrock
+dotnet add package Strands.SourceGenerator
 ```
+
+Decorate any method with `[Tool]` — the source generator emits a compile-time `ITool` wrapper at build time:
 
 ```csharp
 using Strands.Core;
+using Strands.Core.Tools;
 using Strands.Models.Bedrock;
 
+// Define a tool
+public class WeatherTools
+{
+    [Tool("get_weather", "Returns the current weather for a city")]
+    public string GetWeather(string city) => $"Sunny, 22°C in {city}";
+}
+
+// Wire up the agent — WeatherTools_GetWeather_Tool is generated at compile time
 var agent = new Agent(
     model: new BedrockModel("us-east-1"),
     systemPrompt: "You are a helpful assistant.",
-    tools: [new CalculatorTool_Calculate_Tool(new CalculatorTool())]
+    tools: [new WeatherTools_GetWeather_Tool(new WeatherTools())]
 );
 
 // Single invocation
-var result = await agent.InvokeAsync("What is 42 multiplied by 1764?");
+var result = await agent.InvokeAsync("What's the weather in London?");
 Console.WriteLine(result.Message);
 
 // Streaming
