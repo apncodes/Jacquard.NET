@@ -16,10 +16,10 @@ namespace Strands.Tools.Mcp;
 /// </remarks>
 public sealed class McpToolProvider : IAsyncDisposable
 {
-    private readonly IMcpClient _client;
+    private readonly McpClient _client;
     private IReadOnlyList<ITool>? _cachedTools;
 
-    private McpToolProvider(IMcpClient client)
+    private McpToolProvider(McpClient client)
     {
         _client = client;
     }
@@ -46,7 +46,7 @@ public sealed class McpToolProvider : IAsyncDisposable
             Arguments = args
         });
 
-        var client = await McpClientFactory.CreateAsync(transport, cancellationToken: ct)
+        var client = await McpClient.CreateAsync(transport, cancellationToken: ct)
             .ConfigureAwait(false);
 
         return new McpToolProvider(client);
@@ -65,12 +65,12 @@ public sealed class McpToolProvider : IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(endpoint);
 
-        var transport = new SseClientTransport(new SseClientTransportOptions
+        var transport = new HttpClientTransport(new HttpClientTransportOptions
         {
             Endpoint = endpoint
         });
 
-        var client = await McpClientFactory.CreateAsync(transport, cancellationToken: ct)
+        var client = await McpClient.CreateAsync(transport, cancellationToken: ct)
             .ConfigureAwait(false);
 
         return new McpToolProvider(client);
@@ -100,8 +100,8 @@ public sealed class McpToolProvider : IAsyncDisposable
         ArgumentNullException.ThrowIfNull(httpClient);
         ArgumentNullException.ThrowIfNull(endpoint);
 
-        var transport = new SseClientTransport(
-            new SseClientTransportOptions
+        var transport = new HttpClientTransport(
+            new HttpClientTransportOptions
             {
                 Endpoint = endpoint,
                 TransportMode = HttpTransportMode.StreamableHttp
@@ -110,7 +110,7 @@ public sealed class McpToolProvider : IAsyncDisposable
             loggerFactory: null,
             ownsHttpClient: true);
 
-        var client = await McpClientFactory.CreateAsync(transport, cancellationToken: ct)
+        var client = await McpClient.CreateAsync(transport, cancellationToken: ct)
             .ConfigureAwait(false);
 
         return new McpToolProvider(client);
@@ -127,9 +127,7 @@ public sealed class McpToolProvider : IAsyncDisposable
         if (_cachedTools is not null)
             return _cachedTools;
 
-        var mcpTools = await _client.ListToolsAsync(
-            serializerOptions: null,
-            cancellationToken: ct).ConfigureAwait(false);
+        var mcpTools = await _client.ListToolsAsync(cancellationToken: ct).ConfigureAwait(false);
 
         _cachedTools = mcpTools
             .Select(t => (ITool)new McpToolWrapper(_client, t))

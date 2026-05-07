@@ -1,4 +1,5 @@
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 using Strands.Core;
 using System.Text.Json;
 
@@ -10,14 +11,14 @@ namespace Strands.Tools.Mcp;
 /// </summary>
 internal sealed class McpToolWrapper : ITool
 {
-    private readonly IMcpClient? _client;
+    private readonly McpClient? _client;
     private readonly McpClientTool? _mcpTool;
     private readonly string _toolName;
     // Injected by the test-only constructor to replace the extension-method call.
     private readonly Func<string, IReadOnlyDictionary<string, object?>, CancellationToken,
-        Task<ModelContextProtocol.Protocol.CallToolResponse>>? _callOverride;
+        Task<CallToolResult>>? _callOverride;
 
-    internal McpToolWrapper(IMcpClient client, McpClientTool mcpTool)
+    internal McpToolWrapper(McpClient client, McpClientTool mcpTool)
     {
         _client = client;
         _mcpTool = mcpTool;
@@ -39,7 +40,7 @@ internal sealed class McpToolWrapper : ITool
         string description,
         JsonElement schema,
         Func<string, IReadOnlyDictionary<string, object?>, CancellationToken,
-            Task<ModelContextProtocol.Protocol.CallToolResponse>> callOverride)
+            Task<CallToolResult>> callOverride)
     {
         _client = null;
         _mcpTool = null;
@@ -57,7 +58,7 @@ internal sealed class McpToolWrapper : ITool
         // Convert the JsonElement input to the IReadOnlyDictionary<string, object?> the MCP SDK expects.
         var arguments = JsonElementToDictionary(input);
 
-        ModelContextProtocol.Protocol.CallToolResponse response;
+        CallToolResult response;
         try
         {
             response = _callOverride is not null
@@ -65,8 +66,6 @@ internal sealed class McpToolWrapper : ITool
                 : await _client!.CallToolAsync(
                     _toolName,
                     arguments,
-                    progress: null,
-                    serializerOptions: null,
                     cancellationToken: ct).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -77,7 +76,7 @@ internal sealed class McpToolWrapper : ITool
         // Concatenate all text content blocks from the response.
         var text = string.Concat(
             response.Content?
-                .Where(c => c.Text is not null)
+                .OfType<TextContentBlock>()
                 .Select(c => c.Text) ?? []);
 
         return response.IsError == true

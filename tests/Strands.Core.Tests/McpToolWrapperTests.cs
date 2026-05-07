@@ -12,7 +12,7 @@ public class McpToolWrapperTests
     private static Strands.Tools.Mcp.McpToolWrapper MakeWrapper(
         string name,
         string description,
-        Func<Task<CallToolResponse>> respond)
+        Func<Task<CallToolResult>> respond)
     {
         var schema = JsonDocument.Parse("""{"type":"object"}""").RootElement.Clone();
         return new Strands.Tools.Mcp.McpToolWrapper(
@@ -22,15 +22,15 @@ public class McpToolWrapperTests
             (_, _, _) => respond());
     }
 
-    private static CallToolResponse OkResponse(string text) => new()
+    private static CallToolResult OkResponse(string text) => new()
     {
-        Content = [new Content { Type = "text", Text = text }],
+        Content = [new TextContentBlock { Text = text }],
         IsError = false
     };
 
-    private static CallToolResponse ErrResponse(string text) => new()
+    private static CallToolResult ErrResponse(string text) => new()
     {
-        Content = [new Content { Type = "text", Text = text }],
+        Content = [new TextContentBlock { Text = text }],
         IsError = true
     };
 

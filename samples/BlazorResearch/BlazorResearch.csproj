@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Strands.Core" Version="0.1.0-preview.2" />
-    <PackageReference Include="Strands.Models.Bedrock" Version="0.1.0-preview.2" />
-    <PackageReference Include="Strands.MultiAgent" Version="0.1.0-preview.2" />
-    <PackageReference Include="Strands.SourceGenerator" Version="0.1.0-preview.2" />
+    <PackageReference Include="Strands.Core" Version="0.1.1" />
+    <PackageReference Include="Strands.Models.Bedrock" Version="0.1.1" />
+    <PackageReference Include="Strands.MultiAgent" Version="0.1.1" />
+    <PackageReference Include="Strands.SourceGenerator" Version="0.1.1" />
   </ItemGroup>
 
 </Project>

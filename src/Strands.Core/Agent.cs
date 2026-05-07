@@ -102,7 +102,12 @@ public sealed class Agent : IAgent
     public async Task<T> GetStructuredOutputAsync<T>(string prompt, CancellationToken ct = default)
     {
         var schema = JsonSchemaBuilder.GetSchema<T>();
-        var schemaInstruction = $"Respond ONLY with valid JSON matching this schema: {schema}";
+        var schemaInstruction =
+            "Respond with ONLY a raw JSON object that matches this schema exactly.\n" +
+            "Do NOT wrap the JSON in markdown code fences or backticks.\n" +
+            "Do NOT include any explanation, commentary, or text outside the JSON.\n" +
+            "Your entire response must start with { and end with }.\n" +
+            $"Schema: {schema}";
 
         // Build an augmented system prompt so the schema instruction doesn't pollute
         // the conversation history of this agent instance.
@@ -126,18 +131,30 @@ public sealed class Agent : IAgent
             // knows what went wrong and can self-correct.
             var systemPrompt = (attempt == 0 || rawResponse is null)
                 ? baseSystemPrompt
-                : $"{baseSystemPrompt}\n\nYour previous response was not valid JSON. " +
-                  $"Error: {lastJsonException?.Message}\nInvalid response: {rawResponse}\n" +
-                  $"Try again — respond ONLY with valid JSON matching the schema above.";
+                : $"{baseSystemPrompt}\n\nYour previous response was invalid. " +
+                  $"Error: {lastJsonException?.Message}\n" +
+                  $"You must respond with ONLY a raw JSON object — no markdown, no code fences, no backticks, no explanation. " +
+                  $"Start your response with {{ and end with }}.";
 
             // Run in an isolated message list so retries don't pollute conversation history.
             var messages = new List<Message> { Message.User(prompt) };
             var (result, _) = await _eventLoop.RunAsync(messages, systemPrompt, ct).ConfigureAwait(false);
             rawResponse = result.Message;
 
+            // Strip markdown code fences if the model wraps JSON in ```json ... ``` or ``` ... ```
+            var jsonText = rawResponse.Trim();
+            if (jsonText.StartsWith("```", StringComparison.Ordinal))
+            {
+                var firstNewline = jsonText.IndexOf('\n');
+                if (firstNewline >= 0)
+                    jsonText = jsonText[(firstNewline + 1)..];
+                if (jsonText.EndsWith("```", StringComparison.Ordinal))
+                    jsonText = jsonText[..^3].TrimEnd();
+            }
+
             try
             {
-                var deserialized = System.Text.Json.JsonSerializer.Deserialize<T>(rawResponse, options);
+                var deserialized = System.Text.Json.JsonSerializer.Deserialize<T>(jsonText, options);
 
                 if (deserialized is null)
                 {
