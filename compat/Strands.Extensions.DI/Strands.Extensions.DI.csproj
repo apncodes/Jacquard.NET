@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Strands.Extensions.DI</PackageId>
+    <IsPackable>true</IsPackable>
+    <Description>Deprecated. This package has been renamed to StrandsAgents.Extensions.DI. Please update your package reference.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="StrandsAgents.Extensions.DI" Version="0.1.4" />
+  </ItemGroup>
+</Project>

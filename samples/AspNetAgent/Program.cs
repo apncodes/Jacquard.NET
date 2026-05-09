@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
-using Strands.Core;
-using Strands.Extensions.DI;
+using StrandsAgents.Core;
+using StrandsAgents.Extensions.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-using Strands.Core;
+using StrandsAgents.Core;
 
 namespace SupportTriage;
 

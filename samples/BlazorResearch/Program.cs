@@ -1,7 +1,7 @@
 using BlazorResearch;
 using BlazorResearch.Components;
-using Strands.Core;
-using Strands.Models.Bedrock;
+using StrandsAgents.Core;
+using StrandsAgents.Models.Bedrock;
 
 // BlazorResearch — a Blazor Server research portal backed by a Strands multi-agent swarm.
 //

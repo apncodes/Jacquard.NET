@@ -5,10 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Strands.AgentCore\Strands.AgentCore.csproj" />
-    <ProjectReference Include="..\..\src\Strands.Core\Strands.Core.csproj" />
-    <ProjectReference Include="..\..\src\Strands.Extensions.DI\Strands.Extensions.DI.csproj" />
-    <ProjectReference Include="..\..\src\Strands.Models.Bedrock\Strands.Models.Bedrock.csproj" />
+    <ProjectReference Include="..\..\src\StrandsAgents.Runtime\StrandsAgents.Runtime.csproj" />
+    <ProjectReference Include="..\..\src\StrandsAgents.Core\StrandsAgents.Core.csproj" />
+    <ProjectReference Include="..\..\src\StrandsAgents.Extensions.DI\StrandsAgents.Extensions.DI.csproj" />
+    <ProjectReference Include="..\..\src\StrandsAgents.Models.Bedrock\StrandsAgents.Models.Bedrock.csproj" />
   </ItemGroup>
 
 </Project>

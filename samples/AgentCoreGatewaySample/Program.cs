@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
-using Strands.AgentCore;
-using Strands.AgentCore.Extensions;
-using Strands.Core;
-using Strands.Extensions.DI;
+using StrandsAgents.Runtime;
+using StrandsAgents.Runtime.Extensions;
+using StrandsAgents.Core;
+using StrandsAgents.Extensions.DI;
 
 var gatewayUrl = new Uri(
     Environment.GetEnvironmentVariable("AGENTCORE_GATEWAY_URL")

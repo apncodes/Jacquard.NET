@@ -1,6 +1,6 @@
-using Strands.Core;
-using Strands.Models.Bedrock;
-using Strands.Tools;
+using StrandsAgents.Core;
+using StrandsAgents.Models.Bedrock;
+using StrandsAgents.Tools;
 
 // FileAgent — demonstrates Week 2 built-in file tools and context window trimming.
 //

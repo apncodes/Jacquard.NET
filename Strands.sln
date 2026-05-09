@@ -3,21 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strands.Core", "src\Strands.Core\Strands.Core.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567801}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrandsAgents.Core", "src\StrandsAgents.Core\StrandsAgents.Core.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567801}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strands.SourceGenerator", "src\Strands.SourceGenerator\Strands.SourceGenerator.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567802}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrandsAgents.SourceGenerator", "src\StrandsAgents.SourceGenerator\StrandsAgents.SourceGenerator.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567802}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strands.Extensions.DI", "src\Strands.Extensions.DI\Strands.Extensions.DI.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567803}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrandsAgents.Extensions.DI", "src\StrandsAgents.Extensions.DI\StrandsAgents.Extensions.DI.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567803}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strands.MultiAgent", "src\Strands.MultiAgent\Strands.MultiAgent.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567804}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrandsAgents.MultiAgent", "src\StrandsAgents.MultiAgent\StrandsAgents.MultiAgent.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567804}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strands.Tools", "src\Strands.Tools\Strands.Tools.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567805}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrandsAgents.Tools", "src\StrandsAgents.Tools\StrandsAgents.Tools.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567805}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strands.Models.Bedrock", "src\Strands.Models.Bedrock\Strands.Models.Bedrock.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567806}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrandsAgents.Models.Bedrock", "src\StrandsAgents.Models.Bedrock\StrandsAgents.Models.Bedrock.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567806}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strands.Core.Tests", "tests\Strands.Core.Tests\Strands.Core.Tests.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567807}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrandsAgents.Core.Tests", "tests\StrandsAgents.Core.Tests\StrandsAgents.Core.Tests.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567807}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strands.Integration.Tests", "tests\Strands.Integration.Tests\Strands.Integration.Tests.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567808}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrandsAgents.Integration.Tests", "tests\StrandsAgents.Integration.Tests\StrandsAgents.Integration.Tests.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567808}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CliAgent", "samples\CliAgent\CliAgent.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567809}"
 EndProject
@@ -55,9 +55,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatUI", "samples\ChatUI\Ch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorResearch", "samples\BlazorResearch\BlazorResearch.csproj", "{45D6C5E4-E883-4365-B080-F23C6BA8D6D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strands.AgentCore", "src\Strands.AgentCore\Strands.AgentCore.csproj", "{5D699024-D5DE-4EC9-BC32-A4B8C5AEF4CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrandsAgents.Runtime", "src\StrandsAgents.Runtime\StrandsAgents.Runtime.csproj", "{5D699024-D5DE-4EC9-BC32-A4B8C5AEF4CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strands.AgentCore.Tests", "tests\Strands.AgentCore.Tests\Strands.AgentCore.Tests.csproj", "{1FD61833-C9FF-436E-93CE-EF11943CB2B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrandsAgents.Runtime.Tests", "tests\StrandsAgents.Runtime.Tests\StrandsAgents.Runtime.Tests.csproj", "{1FD61833-C9FF-436E-93CE-EF11943CB2B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentCoreSample", "samples\AgentCoreSample\AgentCoreSample.csproj", "{5DE74ABD-7661-441A-94FE-D5951683AFC2}"
 EndProject

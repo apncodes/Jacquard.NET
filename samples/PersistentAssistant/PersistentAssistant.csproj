@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Strands.Core" Version="0.1.2" />
-    <PackageReference Include="Strands.Models.Bedrock" Version="0.1.2" />
+    <PackageReference Include="StrandsAgents.Core" Version="0.1.4" />
+    <PackageReference Include="StrandsAgents.Models.Bedrock" Version="0.1.4" />
   </ItemGroup>
 
 </Project>

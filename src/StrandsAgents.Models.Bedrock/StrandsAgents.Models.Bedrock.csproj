@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>StrandsAgents.Models.Bedrock</PackageId>
+    <Description>Amazon Bedrock model provider for Strands Agents .NET. Use Claude, Nova, Llama and other Bedrock models with the Strands agent framework. Includes retry, streaming, and structured output support.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.BedrockRuntime" Version="3.7.401" />
+    <PackageReference Include="Polly.Core" Version="8.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StrandsAgents.Core\StrandsAgents.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,6 +1,6 @@
-using Strands.Core;
-using Strands.Models.Bedrock;
-using Strands.MultiAgent;
+using StrandsAgents.Core;
+using StrandsAgents.Models.Bedrock;
+using StrandsAgents.MultiAgent;
 using FinanceAssistant;
 
 // FinanceAssistant — equity research swarm demonstrating parallel multi-agent orchestration.

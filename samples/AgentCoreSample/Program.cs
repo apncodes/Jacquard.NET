@@ -1,7 +1,7 @@
-using Strands.AgentCore.Extensions;
-using Strands.AgentCore.Hosting;
-using Strands.Extensions.DI;
-using Strands.Tools;
+using StrandsAgents.Runtime.Extensions;
+using StrandsAgents.Runtime.Hosting;
+using StrandsAgents.Extensions.DI;
+using StrandsAgents.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 

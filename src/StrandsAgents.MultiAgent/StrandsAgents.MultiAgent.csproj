@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>StrandsAgents.MultiAgent</PackageId>
+    <Description>Multi-agent orchestration for Strands Agents .NET. Graph-based pipelines, agent-as-tool composition, parallel execution, and A2A protocol support for cross-framework agent networks.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StrandsAgents.Core\StrandsAgents.Core.csproj" />
+  </ItemGroup>
+
+</Project>
