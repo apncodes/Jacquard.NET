@@ -4,6 +4,17 @@ All notable changes to Strands Agents .NET are documented here.
 
 ---
 
+## [0.1.5] — 2025-05-09
+
+### Fixed
+
+- Package README files corrected — all `Strands.*` references updated to `StrandsAgents.*`
+- `PackageProjectUrl` and `RepositoryUrl` updated to `https://github.com/apncodes/StrandsAgents.net`
+- CI badge in root README updated to new repo URL
+- `CONTRIBUTING.md` and `docs/ARCHITECTURE.md` updated to `StrandsAgents.*` names
+
+---
+
 ## [0.1.4] — 2025-05-09
 
 This release renames all packages from `Strands.*` to `StrandsAgents.*` to align with the project's brand at [strandsagents.com](https://strandsagents.com). The project was made public only days before this release, so the rename happens early — before any production adoption — to avoid a more disruptive migration later.
