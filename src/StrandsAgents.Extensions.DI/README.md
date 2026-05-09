@@ -1,13 +1,14 @@
-# Strands.Extensions.DI
+# StrandsAgents.Extensions.DI
 
-`Microsoft.Extensions.DependencyInjection` integration for [Strands.NET](https://github.com/apncodes/strands.net).
+`Microsoft.Extensions.DependencyInjection` integration for [Strands Agents .NET](https://github.com/apncodes/strands.net).
 
 ```bash
-dotnet add package Strands.Extensions.DI
+dotnet add package StrandsAgents.Extensions.DI
 ```
 
 ```csharp
-// Program.cs — wire everything in one chain
+using StrandsAgents.Extensions.DI;
+
 builder.Services
     .AddBedrockModel("us-east-1", "us.anthropic.claude-sonnet-4-5-v1:0")
     .AddFileReadTool("/var/data")
@@ -20,4 +21,5 @@ app.MapPost("/ask", async (IAgent agent, AskRequest req) =>
     await agent.InvokeAsync(req.Prompt));
 ```
 
-Supports Bedrock, Anthropic, and OpenAI-compatible model providers. Works with ASP.NET Core, Worker Services, Azure Functions, and AWS Lambda.
+Supports Bedrock, Anthropic, Gemini, and OpenAI-compatible model providers. Works with ASP.NET Core,
+Worker Services, Azure Functions, and AWS Lambda.

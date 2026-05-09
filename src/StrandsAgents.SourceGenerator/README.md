@@ -1,12 +1,14 @@
-# Strands.SourceGenerator
+# StrandsAgents.SourceGenerator
 
-Roslyn source generator for [Strands.NET](https://github.com/apncodes/strands.net). Emits compile-time `ITool` wrappers from `[Tool]`-decorated methods — zero runtime reflection.
+Roslyn source generator for [Strands Agents .NET](https://github.com/apncodes/strands.net). Emits compile-time `ITool` wrappers from `[Tool]`-decorated methods — zero runtime reflection.
 
 ```bash
-dotnet add package Strands.SourceGenerator
+dotnet add package StrandsAgents.SourceGenerator
 ```
 
 ```csharp
+using StrandsAgents.Core;
+
 public class WeatherTool
 {
     [Tool("Get current weather for a city")]
@@ -15,8 +17,7 @@ public class WeatherTool
 }
 
 // Generated at compile time: WeatherTool_GetWeather_Tool
-// JSON schema is a string literal — no reflection at runtime
 var agent = new Agent(model, tools: [new WeatherTool_GetWeather_Tool(new WeatherTool())]);
 ```
 
-The generator handles `CancellationToken` parameters automatically — they are forwarded from `InvokeAsync`'s `ct` and excluded from the JSON schema.
+`CancellationToken` parameters are forwarded automatically and excluded from the JSON schema.

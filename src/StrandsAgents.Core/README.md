@@ -1,24 +1,23 @@
-# Strands.Core
+# StrandsAgents.Core
 
 The [Strands Agents](https://strandsagents.com) framework for .NET — model-driven agentic AI built natively in C# 13.
 
 ```bash
-dotnet add package Strands.Core
-dotnet add package Strands.Models.Bedrock
-dotnet add package Strands.SourceGenerator
+dotnet add package StrandsAgents.Core
+dotnet add package StrandsAgents.Models.Bedrock
+dotnet add package StrandsAgents.SourceGenerator
 ```
 
 Decorate any method with `[Tool]` — the source generator emits a compile-time `ITool` wrapper at build time:
 
 ```csharp
-using Strands.Core;
-using Strands.Core.Tools;
-using Strands.Models.Bedrock;
+using StrandsAgents.Core;
+using StrandsAgents.Models.Bedrock;
 
 // Define a tool
 public class WeatherTools
 {
-    [Tool("get_weather", "Returns the current weather for a city")]
+    [Tool("Returns the current weather for a city")]
     public string GetWeather(string city) => $"Sunny, 22°C in {city}";
 }
 

@@ -1,12 +1,14 @@
-# Strands.MultiAgent
+# StrandsAgents.MultiAgent
 
-Multi-agent orchestration for [Strands.NET](https://github.com/apncodes/strands.net).
+Multi-agent orchestration for [Strands Agents .NET](https://github.com/apncodes/strands.net).
 
 ```bash
-dotnet add package Strands.MultiAgent
+dotnet add package StrandsAgents.MultiAgent
 ```
 
 ```csharp
+using StrandsAgents.MultiAgent;
+
 // Sequential pipeline — each stage receives the previous output as its prompt
 var pipeline = new PipelineOrchestrator([researchAgent, writerAgent, reviewerAgent]);
 var result = await pipeline.InvokeAsync("Write a report on quantum computing");
