@@ -1,6 +1,6 @@
-using Strands.Core;
-using Strands.Models.Bedrock;
-using Strands.MultiAgent;
+using StrandsAgents.Core;
+using StrandsAgents.Models.Bedrock;
+using StrandsAgents.MultiAgent;
 using SupportTriage;
 
 // SupportTriage — demonstrates conditional graph routing, type-safe hooks,

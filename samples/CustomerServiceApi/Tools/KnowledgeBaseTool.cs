@@ -1,4 +1,4 @@
-using Strands.Core;
+using StrandsAgents.Core;
 
 // Namespace matches the project root so the generated KnowledgeBaseTool_Search_Tool
 // is accessible in Program.cs and ChatSessionStore without extra usings.

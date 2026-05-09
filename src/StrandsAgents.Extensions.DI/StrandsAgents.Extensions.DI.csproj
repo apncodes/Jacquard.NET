@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>StrandsAgents.Extensions.DI</PackageId>
+    <Description>Microsoft.Extensions.DependencyInjection integration for Strands Agents .NET. Register agents, models, and tools with AddBedrockModel() and AddStrandsAgent() for use in ASP.NET, Worker Services, Lambda, and any .NET host.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StrandsAgents.Core\StrandsAgents.Core.csproj" />
+    <ProjectReference Include="..\StrandsAgents.Models.Bedrock\StrandsAgents.Models.Bedrock.csproj" />
+    <ProjectReference Include="..\StrandsAgents.Tools\StrandsAgents.Tools.csproj" />
+  </ItemGroup>
+
+</Project>

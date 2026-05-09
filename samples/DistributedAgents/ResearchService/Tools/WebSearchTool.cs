@@ -1,4 +1,4 @@
-using Strands.Core;
+using StrandsAgents.Core;
 
 // Namespace matches the project root namespace so the generated
 // WebSearchTool_Search_Tool class is accessible in Program.cs without extra usings.

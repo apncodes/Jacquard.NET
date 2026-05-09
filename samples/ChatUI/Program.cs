@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
-using Strands.Core;
-using Strands.Models.Bedrock;
+using StrandsAgents.Core;
+using StrandsAgents.Models.Bedrock;
 using ChatUI;
 
 // ChatUI — a browser-based chat UI backed by a Strands streaming agent.

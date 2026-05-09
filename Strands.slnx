@@ -1,17 +1,17 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/Strands.Core/Strands.Core.csproj" />
-    <Project Path="src/Strands.SourceGenerator/Strands.SourceGenerator.csproj" />
-    <Project Path="src/Strands.Extensions.DI/Strands.Extensions.DI.csproj" />
-    <Project Path="src/Strands.MultiAgent/Strands.MultiAgent.csproj" />
-    <Project Path="src/Strands.Tools/Strands.Tools.csproj" />
-    <Project Path="src/Strands.Models.Bedrock/Strands.Models.Bedrock.csproj" />
-    <Project Path="src/Strands.AgentCore/Strands.AgentCore.csproj" />
+    <Project Path="src/StrandsAgents.Core/StrandsAgents.Core.csproj" />
+    <Project Path="src/StrandsAgents.SourceGenerator/StrandsAgents.SourceGenerator.csproj" />
+    <Project Path="src/StrandsAgents.Extensions.DI/StrandsAgents.Extensions.DI.csproj" />
+    <Project Path="src/StrandsAgents.MultiAgent/StrandsAgents.MultiAgent.csproj" />
+    <Project Path="src/StrandsAgents.Tools/StrandsAgents.Tools.csproj" />
+    <Project Path="src/StrandsAgents.Models.Bedrock/StrandsAgents.Models.Bedrock.csproj" />
+    <Project Path="src/StrandsAgents.Runtime/StrandsAgents.Runtime.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Strands.Core.Tests/Strands.Core.Tests.csproj" />
-    <Project Path="tests/Strands.Integration.Tests/Strands.Integration.Tests.csproj" />
-    <Project Path="tests/Strands.AgentCore.Tests/Strands.AgentCore.Tests.csproj" />
+    <Project Path="tests/StrandsAgents.Core.Tests/StrandsAgents.Core.Tests.csproj" />
+    <Project Path="tests/StrandsAgents.Integration.Tests/StrandsAgents.Integration.Tests.csproj" />
+    <Project Path="tests/StrandsAgents.Runtime.Tests/StrandsAgents.Runtime.Tests.csproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/CliAgent/CliAgent.csproj" />

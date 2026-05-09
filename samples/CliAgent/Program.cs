@@ -1,6 +1,6 @@
-using Strands.Core;
-using Strands.Models.Bedrock;
-using Strands.Tools;
+using StrandsAgents.Core;
+using StrandsAgents.Models.Bedrock;
+using StrandsAgents.Tools;
 
 // ── Model selection ──────────────────────────────────────────────────────────
 // Uncomment the model you want to use and comment out the others.

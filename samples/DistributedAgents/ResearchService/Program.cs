@@ -1,6 +1,6 @@
-using Strands.Core;
-using Strands.Models.Bedrock;
-using Strands.MultiAgent;
+using StrandsAgents.Core;
+using StrandsAgents.Models.Bedrock;
+using StrandsAgents.MultiAgent;
 using ResearchService;
 
 // ResearchService — exposes a research agent over the A2A (Agent-to-Agent) protocol.

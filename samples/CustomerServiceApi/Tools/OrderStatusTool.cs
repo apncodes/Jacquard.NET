@@ -1,4 +1,4 @@
-using Strands.Core;
+using StrandsAgents.Core;
 
 // Namespace must match the project root namespace so the source-generated
 // OrderStatusTool_GetStatus_Tool class is accessible in Program.cs without extra usings.

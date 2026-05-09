@@ -1,0 +1,35 @@
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+
+namespace StrandsAgents.Core;
+
+/// <summary>
+/// Central telemetry definitions for the Strands SDK.
+/// Uses built-in System.Diagnostics — no third-party OTel SDK required.
+/// Consumers wire up listeners via ActivitySource.AddActivityListener / MeterListener.
+/// </summary>
+internal static class StrandsTelemetry
+{
+    internal const string SourceName = "Strands.Agent";
+
+    /// <summary>ActivitySource for distributed tracing. Zero overhead when no listener is attached.</summary>
+    internal static readonly ActivitySource ActivitySource = new(SourceName, "0.1.0");
+
+    private static readonly Meter _meter = new(SourceName, "0.1.0");
+
+    /// <summary>Number of input tokens consumed across all model calls.</summary>
+    internal static readonly Counter<long> TokensInput =
+        _meter.CreateCounter<long>("strands.tokens.input", "tokens", "Input tokens consumed");
+
+    /// <summary>Number of output tokens produced across all model calls.</summary>
+    internal static readonly Counter<long> TokensOutput =
+        _meter.CreateCounter<long>("strands.tokens.output", "tokens", "Output tokens produced");
+
+    /// <summary>Number of tool calls executed.</summary>
+    internal static readonly Counter<long> ToolCalls =
+        _meter.CreateCounter<long>("strands.tool.calls", "calls", "Number of tool calls executed");
+
+    /// <summary>Agent invocation latency in milliseconds.</summary>
+    internal static readonly Histogram<double> AgentLatency =
+        _meter.CreateHistogram<double>("strands.agent.latency", "ms", "Agent invocation latency");
+}

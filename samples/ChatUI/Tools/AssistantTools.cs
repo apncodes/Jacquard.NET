@@ -1,4 +1,4 @@
-using Strands.Core;
+using StrandsAgents.Core;
 
 // Namespace matches the project root so the generated tool wrappers
 // (AssistantTools_GetWeather_Tool, AssistantTools_GetCurrentTime_Tool)

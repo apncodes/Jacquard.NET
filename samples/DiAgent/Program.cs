@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using Strands.Core;
-using Strands.Extensions.DI;
+using StrandsAgents.Core;
+using StrandsAgents.Extensions.DI;
 
 // DiAgent — demonstrates Week 2 dependency-injection extensions.
 //
