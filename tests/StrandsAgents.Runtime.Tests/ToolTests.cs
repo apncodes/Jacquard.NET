@@ -1,4 +1,7 @@
 using System.Text.Json;
+using Amazon.BedrockAgentCore;
+using Amazon.BedrockAgentCore.Model;
+using Moq;
 using StrandsAgents.Runtime.Tools;
 using Xunit;
 
@@ -8,10 +11,12 @@ public sealed class ToolTests
 {
     // ── AgentCoreMemoryTool ─────────────────────────────────────────────────
 
+    private static Mock<IAmazonBedrockAgentCore> MemoryMock() => new();
+
     [Fact]
-    public async Task MemoryTool_HasCorrectNameAndDescription()
+    public void MemoryTool_HasCorrectNameAndDescription()
     {
-        await using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: new HttpClient());
+        using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: MemoryMock().Object);
         Assert.Equal("agentcore_memory", tool.Definition.Name);
         Assert.Contains("store", tool.Definition.Description, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("retrieve", tool.Definition.Description, StringComparison.OrdinalIgnoreCase);
@@ -19,17 +24,17 @@ public sealed class ToolTests
     }
 
     [Fact]
-    public async Task MemoryTool_InputSchema_IsValidJson()
+    public void MemoryTool_InputSchema_IsValidJson()
     {
-        await using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: new HttpClient());
+        using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: MemoryMock().Object);
         Assert.Equal(JsonValueKind.Object, tool.Definition.InputSchema.ValueKind);
     }
 
     [Fact]
     public async Task MemoryTool_MissingOperation_ReturnsError()
     {
-        await using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: new HttpClient());
-        var input = JsonDocument.Parse("""{"key": "mykey"}""").RootElement;
+        using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: MemoryMock().Object);
+        var input = JsonDocument.Parse("""{"content": "hello"}""").RootElement;
 
         var result = await tool.InvokeAsync(input);
 
@@ -39,8 +44,8 @@ public sealed class ToolTests
     [Fact]
     public async Task MemoryTool_UnknownOperation_ReturnsError()
     {
-        await using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: new HttpClient());
-        var input = JsonDocument.Parse("""{"operation": "unknown_op", "key": "mykey"}""").RootElement;
+        using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: MemoryMock().Object);
+        var input = JsonDocument.Parse("""{"operation": "unknown_op"}""").RootElement;
 
         var result = await tool.InvokeAsync(input);
 
@@ -49,23 +54,22 @@ public sealed class ToolTests
     }
 
     [Fact]
-    public async Task MemoryTool_StoreMemory_MissingValue_ReturnsError()
+    public async Task MemoryTool_StoreMemory_MissingContent_ReturnsError()
     {
-        await using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: new HttpClient());
-        var input = JsonDocument.Parse("""{"operation": "store_memory", "key": "k1"}""").RootElement;
+        using var tool = new AgentCoreMemoryTool("mem-id-123", clientOverride: MemoryMock().Object);
+        var input = JsonDocument.Parse("""{"operation": "store_memory"}""").RootElement;
 
         var result = await tool.InvokeAsync(input);
 
         Assert.True(result.IsError);
-        Assert.Contains("value", result.Content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("content", result.Content, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task MemoryTool_UsesClientOverride()
+    public void MemoryTool_UsesClientOverride()
     {
-        // clientOverride is used — verifies constructor does not create a new HttpClient
-        var fakeClient = new HttpClient();
-        await using var tool = new AgentCoreMemoryTool("mem-id", clientOverride: fakeClient);
+        var mock = MemoryMock();
+        using var tool = new AgentCoreMemoryTool("mem-id", clientOverride: mock.Object);
         Assert.Equal("agentcore_memory", tool.Definition.Name);
     }
 

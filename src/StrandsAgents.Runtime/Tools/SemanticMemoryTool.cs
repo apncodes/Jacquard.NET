@@ -1,26 +1,27 @@
-using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using Amazon.BedrockAgentCore;
+using Amazon.BedrockAgentCore.Model;
 using StrandsAgents.Core;
 
 namespace StrandsAgents.Runtime.Tools;
 
 /// <summary>
-/// Agent-initiated semantic (vector) memory operations via Amazon Bedrock AgentCore Memory.
+/// Agent-initiated semantic (vector) memory operations via Amazon Bedrock AgentCore Memory,
+/// backed by the official <c>AWSSDK.BedrockAgentCore</c> SDK client.
 ///
 /// <para>
-/// Unlike <see cref="AgentCoreMemoryTool"/> which requires an exact key, this tool exposes
-/// a <c>search_memory</c> operation that retrieves memories by semantic similarity — the
-/// agent describes what it is looking for in natural language and receives the closest
-/// matches ranked by cosine similarity score.
+/// Unlike <see cref="AgentCoreMemoryTool"/> which retrieves by exact record ID, this tool
+/// exposes a <c>search_memory</c> operation that retrieves records by semantic similarity —
+/// the agent describes what it is looking for in natural language and receives the closest
+/// matches ranked by relevance score.
 /// </para>
 ///
 /// <para>
-/// All HTTP requests are signed with AWS SigV4. Pass a <paramref name="clientOverride"/>
-/// to inject a plain <see cref="HttpClient"/> for unit testing (bypasses SigV4).
+/// Authentication is handled automatically by the SDK via the standard AWS credential
+/// chain (environment variables, <c>~/.aws/credentials</c>, instance metadata, etc.).
 /// </para>
 /// </summary>
-public sealed class SemanticMemoryTool : ITool, IAsyncDisposable
+public sealed class SemanticMemoryTool : ITool, IDisposable
 {
     private const string ToolName = "agentcore_semantic_memory";
     private const int DefaultTopK = 5;
@@ -30,15 +31,17 @@ public sealed class SemanticMemoryTool : ITool, IAsyncDisposable
     private static readonly ToolDefinition _definition = new(
         Name: ToolName,
         Description: """
-            Stores, searches, or deletes memories in Amazon Bedrock AgentCore Memory using
-            semantic (vector) search. Use search_memory to retrieve memories by meaning
-            rather than exact key — describe what you are looking for in natural language.
+            Stores, searches, lists, or deletes memory records in Amazon Bedrock AgentCore Memory.
+
+            Records are stored as free-text content with a namespace (e.g. "user:alex:preferences").
+            Use search_memory to retrieve records by meaning rather than exact ID.
+            The system assigns a memoryRecordId on creation — use it to delete a specific record.
 
             Operations:
-            - search_memory: Find memories semantically similar to a query string.
-                             Returns a ranked list of { key, value, score } objects.
-            - store_memory:  Save a key/value pair. Optionally set ttl_seconds for automatic expiry.
-            - delete_memory: Remove a memory entry by key.
+            - store_memory:  Save a text record with a namespace. Returns the assigned memoryRecordId.
+            - search_memory: Find records semantically similar to a query string within a namespace.
+                             Returns a ranked list of { memoryRecordId, content, score }.
+            - delete_memory: Remove a record by its memoryRecordId.
             """,
         InputSchema: JsonDocument.Parse("""
             {
@@ -46,8 +49,16 @@ public sealed class SemanticMemoryTool : ITool, IAsyncDisposable
               "properties": {
                 "operation": {
                   "type": "string",
-                  "enum": ["search_memory", "store_memory", "delete_memory"],
+                  "enum": ["store_memory", "search_memory", "delete_memory"],
                   "description": "The memory operation to perform."
+                },
+                "content": {
+                  "type": "string",
+                  "description": "The text content to store. Required for store_memory."
+                },
+                "namespace": {
+                  "type": "string",
+                  "description": "Namespace for the record (e.g. 'user:alex:preferences'). Required for store_memory and search_memory."
                 },
                 "query": {
                   "type": "string",
@@ -55,49 +66,42 @@ public sealed class SemanticMemoryTool : ITool, IAsyncDisposable
                 },
                 "top_k": {
                   "type": "integer",
-                  "description": "Maximum number of results to return for search_memory. Range: 1–100. Default: 5."
+                  "description": "Maximum number of results for search_memory. Range: 1–100. Default: 5."
                 },
-                "key": {
+                "memory_record_id": {
                   "type": "string",
-                  "description": "Unique identifier for the memory entry. Required for store_memory and delete_memory."
-                },
-                "value": {
-                  "type": "string",
-                  "description": "The value to store. Required for store_memory."
-                },
-                "ttl_seconds": {
-                  "type": "integer",
-                  "description": "Optional TTL in seconds for store_memory. Must be a positive integer."
+                  "description": "The system-assigned record ID. Required for delete_memory."
                 }
               },
               "required": ["operation"]
             }
             """).RootElement.Clone());
 
-    private readonly HttpClient _http;
+    private readonly IAmazonBedrockAgentCore _client;
     private readonly string _memoryId;
     private readonly bool _ownsClient;
 
     /// <summary>
-    /// Initialises a new <see cref="SemanticMemoryTool"/>.
+    /// Initialises a new <see cref="SemanticMemoryTool"/> using the official AWS SDK client.
     /// </summary>
-    /// <param name="memoryId">The AgentCore memory resource ID.</param>
+    /// <param name="memoryId">The AgentCore Memory resource ID.</param>
     /// <param name="region">AWS region. Default: <c>us-east-1</c>.</param>
     /// <param name="clientOverride">
-    /// Optional pre-configured <see cref="HttpClient"/>. When provided, the tool does
-    /// not own the client and will not dispose it. Intended for testing — bypasses SigV4.
+    /// Optional pre-configured <see cref="IAmazonBedrockAgentCore"/> client. When provided,
+    /// the tool does not own the client and will not dispose it. Intended for testing.
     /// </param>
     public SemanticMemoryTool(
         string memoryId,
         string region = "us-east-1",
-        HttpClient? clientOverride = null)
+        IAmazonBedrockAgentCore? clientOverride = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(memoryId);
         ArgumentException.ThrowIfNullOrWhiteSpace(region);
 
         _memoryId = memoryId;
         _ownsClient = clientOverride is null;
-        _http = clientOverride ?? AgentCoreHttpClientFactory.CreateSigned(region);
+        _client = clientOverride ?? new AmazonBedrockAgentCoreClient(
+            Amazon.RegionEndpoint.GetBySystemName(region));
     }
 
     /// <inheritdoc/>
@@ -113,12 +117,54 @@ public sealed class SemanticMemoryTool : ITool, IAsyncDisposable
 
         return operation switch
         {
-            "search_memory" => await HandleSearchAsync(input, ct).ConfigureAwait(false),
             "store_memory"  => await HandleStoreAsync(input, ct).ConfigureAwait(false),
+            "search_memory" => await HandleSearchAsync(input, ct).ConfigureAwait(false),
             "delete_memory" => await HandleDeleteAsync(input, ct).ConfigureAwait(false),
             _ => ToolResult.Failure(ToolName,
-                $"Unknown operation '{operation}'. Supported: search_memory, store_memory, delete_memory."),
+                $"Unknown operation '{operation}'. Supported: store_memory, search_memory, delete_memory."),
         };
+    }
+
+    // ── store_memory ──────────────────────────────────────────────────────────
+
+    private async Task<ToolResult> HandleStoreAsync(JsonElement input, CancellationToken ct)
+    {
+        if (!input.TryGetProperty("content", out var contentEl) ||
+            contentEl.GetString() is not { Length: > 0 } contentText)
+            return ToolResult.Failure(ToolName, "content is required for store_memory and must be non-empty.");
+
+        var namespaces = new List<string>();
+        if (input.TryGetProperty("namespace", out var nsEl) &&
+            nsEl.GetString() is { Length: > 0 } ns)
+            namespaces.Add(ns);
+
+        var record = new MemoryRecordCreateInput
+        {
+            Content = new MemoryContent { Text = contentText },
+            Namespaces = namespaces,
+            RequestIdentifier = Guid.NewGuid().ToString("N")[..16],
+            Timestamp = DateTime.UtcNow,
+        };
+
+        var request = new BatchCreateMemoryRecordsRequest
+        {
+            MemoryId = _memoryId,
+            Records = [record],
+        };
+
+        try
+        {
+            var response = await _client.BatchCreateMemoryRecordsAsync(request, ct)
+                .ConfigureAwait(false);
+
+            var created = response.SuccessfulRecords?.FirstOrDefault();
+            var recordId = created?.MemoryRecordId ?? "unknown";
+            return ToolResult.Success(ToolName, $"Stored memory record. memoryRecordId: {recordId}");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return ToolResult.Failure(ToolName, $"store_memory failed: {ex.Message}");
+        }
     }
 
     // ── search_memory ─────────────────────────────────────────────────────────
@@ -129,6 +175,10 @@ public sealed class SemanticMemoryTool : ITool, IAsyncDisposable
             queryEl.GetString() is not { Length: > 0 } query)
             return ToolResult.Failure(ToolName, "query must be a non-empty string.");
 
+        if (!input.TryGetProperty("namespace", out var nsEl) ||
+            nsEl.GetString() is not { Length: > 0 } ns)
+            return ToolResult.Failure(ToolName, "namespace is required for search_memory.");
+
         var topK = DefaultTopK;
         if (input.TryGetProperty("top_k", out var topKEl) && topKEl.ValueKind == JsonValueKind.Number)
         {
@@ -138,94 +188,69 @@ public sealed class SemanticMemoryTool : ITool, IAsyncDisposable
                     $"top_k must be between {MinTopK} and {MaxTopK}. Got: {topK}.");
         }
 
-        return await SearchAsync(query, topK, ct).ConfigureAwait(false);
-    }
-
-    private async Task<ToolResult> SearchAsync(string query, int topK, CancellationToken ct)
-    {
-        var payload = new { query, topK };
-        var path = $"/memories/{Uri.EscapeDataString(_memoryId)}/search";
-        using var response = await _http.PostAsJsonAsync(path, payload, ct).ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
-            return ToolResult.Failure(ToolName,
-                $"search_memory failed. Status: {(int)response.StatusCode}");
-
-        var results = await response.Content
-            .ReadFromJsonAsync<List<SemanticSearchResult>>(_jsonOptions, ct)
-            .ConfigureAwait(false) ?? [];
-
-        // Sort descending by score (API may already do this, but enforce it client-side).
-        results.Sort((a, b) => b.Score.CompareTo(a.Score));
-
-        var json = JsonSerializer.Serialize(results, _jsonOptions);
-        return ToolResult.Success(ToolName, json);
-    }
-
-    // ── store_memory ──────────────────────────────────────────────────────────
-
-    private async Task<ToolResult> HandleStoreAsync(JsonElement input, CancellationToken ct)
-    {
-        if (!input.TryGetProperty("key", out var keyEl) ||
-            keyEl.GetString() is not { Length: > 0 } key)
-            return ToolResult.Failure(ToolName, "key must be a non-empty string.");
-
-        if (!input.TryGetProperty("value", out var valueEl) ||
-            valueEl.GetString() is not { } value)
-            return ToolResult.Failure(ToolName, "value is required for store_memory.");
-
-        int? ttlSeconds = null;
-        if (input.TryGetProperty("ttl_seconds", out var ttlEl) && ttlEl.ValueKind == JsonValueKind.Number)
+        var request = new RetrieveMemoryRecordsRequest
         {
-            var ttl = ttlEl.GetInt32();
-            if (ttl <= 0)
-                return ToolResult.Failure(ToolName, "ttl_seconds must be a positive integer.");
-            ttlSeconds = ttl;
+            MemoryId = _memoryId,
+            Namespace = ns,
+            SearchCriteria = new SearchCriteria
+            {
+                SearchQuery = query,
+                TopK = topK,
+            },
+        };
+
+        try
+        {
+            var response = await _client.RetrieveMemoryRecordsAsync(request, ct)
+                .ConfigureAwait(false);
+
+            var summaries = response.MemoryRecordSummaries ?? [];
+            var output = summaries.Select(s => new
+            {
+                memoryRecordId = s.MemoryRecordId,
+                content = s.Content?.Text ?? string.Empty,
+                score = s.Score,
+                namespaces = s.Namespaces ?? [],
+            }).ToList();
+
+            return ToolResult.Success(ToolName,
+                JsonSerializer.Serialize(output, new JsonSerializerOptions(JsonSerializerDefaults.Web)));
         }
-
-        var payload = ttlSeconds.HasValue
-            ? (object)new { key, value, ttlSeconds = ttlSeconds.Value }
-            : new { key, value };
-
-        var path = $"/memories/{Uri.EscapeDataString(_memoryId)}/records";
-        using var response = await _http.PostAsJsonAsync(path, payload, ct).ConfigureAwait(false);
-
-        return response.IsSuccessStatusCode
-            ? ToolResult.Success(ToolName, $"Stored memory: {key}")
-            : ToolResult.Failure(ToolName, $"store_memory failed. Status: {(int)response.StatusCode}");
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return ToolResult.Failure(ToolName, $"search_memory failed: {ex.Message}");
+        }
     }
 
     // ── delete_memory ─────────────────────────────────────────────────────────
 
     private async Task<ToolResult> HandleDeleteAsync(JsonElement input, CancellationToken ct)
     {
-        if (!input.TryGetProperty("key", out var keyEl) ||
-            keyEl.GetString() is not { Length: > 0 } key)
-            return ToolResult.Failure(ToolName, "key must be a non-empty string.");
+        if (!input.TryGetProperty("memory_record_id", out var idEl) ||
+            idEl.GetString() is not { Length: > 0 } recordId)
+            return ToolResult.Failure(ToolName, "memory_record_id is required for delete_memory.");
 
-        var path = $"/memories/{Uri.EscapeDataString(_memoryId)}/records/{Uri.EscapeDataString(key)}";
-        using var response = await _http.DeleteAsync(path, ct).ConfigureAwait(false);
+        var request = new DeleteMemoryRecordRequest
+        {
+            MemoryId = _memoryId,
+            MemoryRecordId = recordId,
+        };
 
-        return response.IsSuccessStatusCode
-            ? ToolResult.Success(ToolName, $"Deleted memory: {key}")
-            : ToolResult.Failure(ToolName, $"delete_memory failed. Status: {(int)response.StatusCode}");
+        try
+        {
+            await _client.DeleteMemoryRecordAsync(request, ct).ConfigureAwait(false);
+            return ToolResult.Success(ToolName, $"Deleted memory record: {recordId}");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return ToolResult.Failure(ToolName, $"delete_memory failed: {ex.Message}");
+        }
     }
 
     /// <inheritdoc/>
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
         if (_ownsClient)
-            _http.Dispose();
-
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+            _client.Dispose();
     }
-
-    // ── Internal wire types ───────────────────────────────────────────────────
-
-    private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
-
-    private sealed record SemanticSearchResult(
-        [property: JsonPropertyName("key")]   string Key,
-        [property: JsonPropertyName("value")] string Value,
-        [property: JsonPropertyName("score")] double Score);
 }

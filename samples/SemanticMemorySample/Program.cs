@@ -20,28 +20,19 @@ using StrandsAgents.Runtime.Tools;
 //
 // Prerequisites:
 //   • AWS credentials configured (env vars, ~/.aws/credentials, or IAM role)
-//   • An AgentCore Memory resource created in your AWS account
-//   • Set AGENTCORE_MEMORY_ID environment variable to your memory resource ID
+//   • AgentCore Memory resource: memory_hrutx-EQoEXYAjAJ (us-west-2)
 //
 // Usage:
-//   AGENTCORE_MEMORY_ID=mem-abc123 dotnet run
-//
-// The agent will:
-//   1. Store a few sample memories on startup (user preferences, facts)
-//   2. Enter a REPL where you can ask questions — the agent uses search_memory
-//      to find relevant context before answering
+//   dotnet run --project samples/SemanticMemorySample
 
-var memoryId = Environment.GetEnvironmentVariable("AGENTCORE_MEMORY_ID")
-    ?? throw new InvalidOperationException(
-        "Set the AGENTCORE_MEMORY_ID environment variable to your AgentCore Memory resource ID.");
-
-const string Region  = "us-east-1";
-const string ModelId = "us.anthropic.claude-haiku-4-5-20251001-v1:0";
+const string MemoryId = "memory_hrutx-EQoEXYAjAJ";
+const string Region   = "us-west-2";
+const string ModelId  = "us.anthropic.claude-haiku-4-5-20251001-v1:0";
 
 // ── tools ──────────────────────────────────────────────────────────────────────
 
 // SemanticMemoryTool — SigV4-signed automatically; no clientOverride needed in production.
-await using var semanticMemory = new SemanticMemoryTool(memoryId, region: Region);
+using var semanticMemory = new SemanticMemoryTool(MemoryId, region: Region);
 
 // ── agent ──────────────────────────────────────────────────────────────────────
 
@@ -52,13 +43,15 @@ var agent = new Agent(
     systemPrompt: """
         You are a helpful personal assistant with access to a semantic memory store.
 
+        Records are stored as free-text content with an optional namespace.
+        The system assigns a memoryRecordId when you store a record — remember it if you need to delete it later.
+
         Before answering questions about the user, always call search_memory with a
         natural-language description of what you are looking for. The tool returns
-        memories ranked by relevance — use the top results to inform your answer.
+        records ranked by relevance — use the top results to inform your answer.
 
         When the user shares new facts about themselves, store them with store_memory.
-        For sensitive or temporary facts (e.g. one-time codes, temporary preferences),
-        use ttl_seconds to set an appropriate expiry.
+        Use a descriptive namespace like "user:preferences:coffee" or "user:projects".
 
         Be warm, concise, and reference stored memories naturally in your responses.
         """,
@@ -79,14 +72,16 @@ Console.ResetColor();
 // Seed a few memories so the demo has something to search.
 // In a real app the agent would store these itself via store_memory.
 var seedPrompt = """
-    Please store the following facts about the user using store_memory:
-    1. key="user.name", value="Alex"
-    2. key="user.preference.coffee", value="Prefers oat milk flat white, no sugar"
-    3. key="user.preference.language", value="Prefers concise answers, no bullet points"
-    4. key="user.project", value="Working on a distributed agent system using Strands Agents .NET"
-    5. key="user.timezone", value="Europe/London"
+    Please store the following facts about the user using store_memory.
+    Store each as a separate record with an appropriate namespace.
 
-    Store each one separately. Confirm when done.
+    1. content="User's name is Alex", namespace="user:profile"
+    2. content="Alex prefers oat milk flat white, no sugar", namespace="user:preferences:coffee"
+    3. content="Alex prefers concise answers with no bullet points", namespace="user:preferences:communication"
+    4. content="Alex is working on a distributed agent system using Strands Agents .NET", namespace="user:projects"
+    5. content="Alex is in the Europe/London timezone", namespace="user:profile"
+
+    Store each one separately. After storing, confirm with the memoryRecordId for each.
     """;
 
 var seedResult = await agent.InvokeAsync(seedPrompt);
@@ -99,7 +94,7 @@ Console.WriteLine();
 
 Console.WriteLine(new string('─', 60));
 Console.ForegroundColor = ConsoleColor.DarkGray;
-Console.WriteLine("  Memory ID: " + memoryId);
+Console.WriteLine("  Memory ID: " + MemoryId);
 Console.WriteLine("  Try asking: 'What do you know about me?'");
 Console.WriteLine("              'What coffee do I like?'");
 Console.WriteLine("              'What project am I working on?'");

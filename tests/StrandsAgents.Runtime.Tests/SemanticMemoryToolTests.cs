@@ -1,36 +1,40 @@
-using System.Net;
-using System.Text;
 using System.Text.Json;
+using Amazon.BedrockAgentCore;
+using Amazon.BedrockAgentCore.Model;
+using Moq;
 using StrandsAgents.Runtime.Tools;
 using Xunit;
 
 namespace StrandsAgents.Runtime.Tests;
 
 /// <summary>
-/// Unit tests for SemanticMemoryTool — all HTTP calls are intercepted by FakeHttpHandler.
+/// Unit tests for SemanticMemoryTool — all SDK calls are intercepted by a Moq mock.
 /// </summary>
 public sealed class SemanticMemoryToolTests
 {
     // ── Definition ────────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task Definition_HasCorrectName()
+    public void Definition_HasCorrectName()
     {
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: new HttpClient());
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
         Assert.Equal("agentcore_semantic_memory", tool.Definition.Name);
     }
 
     [Fact]
-    public async Task Definition_InputSchema_IsValidJsonObject()
+    public void Definition_InputSchema_IsValidJsonObject()
     {
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: new HttpClient());
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
         Assert.Equal(JsonValueKind.Object, tool.Definition.InputSchema.ValueKind);
     }
 
     [Fact]
-    public async Task Definition_Description_MentionsSearchStoreDelete()
+    public void Definition_Description_MentionsSearchStoreDelete()
     {
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: new HttpClient());
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
         Assert.Contains("search", tool.Definition.Description, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("store", tool.Definition.Description, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("delete", tool.Definition.Description, StringComparison.OrdinalIgnoreCase);
@@ -41,7 +45,8 @@ public sealed class SemanticMemoryToolTests
     [Fact]
     public async Task InvokeAsync_MissingOperation_ReturnsFailure()
     {
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: new HttpClient());
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
         var input = JsonDocument.Parse("""{"query": "something"}""").RootElement;
 
         var result = await tool.InvokeAsync(input);
@@ -53,7 +58,8 @@ public sealed class SemanticMemoryToolTests
     [Fact]
     public async Task InvokeAsync_UnknownOperation_ReturnsFailure()
     {
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: new HttpClient());
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
         var input = JsonDocument.Parse("""{"operation": "fly_to_moon"}""").RootElement;
 
         var result = await tool.InvokeAsync(input);
@@ -65,340 +71,261 @@ public sealed class SemanticMemoryToolTests
     // ── search_memory validation ──────────────────────────────────────────────
 
     [Fact]
-    public async Task SearchMemory_EmptyQuery_ReturnsFailureWithoutHttpCall()
+    public async Task SearchMemory_EmptyQuery_ReturnsFailureWithoutSdkCall()
     {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "[]");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
 
-        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": ""}""").RootElement;
+        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "", "namespace": "user:profile"}""").RootElement;
         var result = await tool.InvokeAsync(input);
 
         Assert.True(result.IsError);
         Assert.Contains("non-empty", result.Content, StringComparison.OrdinalIgnoreCase);
-        Assert.Equal(0, handler.CallCount); // no HTTP call made
+        mock.Verify(c => c.RetrieveMemoryRecordsAsync(It.IsAny<RetrieveMemoryRecordsRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task SearchMemory_MissingQuery_ReturnsFailureWithoutHttpCall()
+    public async Task SearchMemory_MissingNamespace_ReturnsFailureWithoutSdkCall()
     {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "[]");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
 
-        var input = JsonDocument.Parse("""{"operation": "search_memory"}""").RootElement;
+        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "coffee"}""").RootElement;
         var result = await tool.InvokeAsync(input);
 
         Assert.True(result.IsError);
-        Assert.Equal(0, handler.CallCount);
+        Assert.Contains("namespace", result.Content, StringComparison.OrdinalIgnoreCase);
+        mock.Verify(c => c.RetrieveMemoryRecordsAsync(It.IsAny<RetrieveMemoryRecordsRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task SearchMemory_TopKBelowMin_ReturnsFailureWithoutHttpCall()
+    public async Task SearchMemory_TopKBelowMin_ReturnsFailureWithoutSdkCall()
     {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "[]");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
 
-        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test", "top_k": 0}""").RootElement;
+        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test", "namespace": "ns", "top_k": 0}""").RootElement;
         var result = await tool.InvokeAsync(input);
 
         Assert.True(result.IsError);
-        Assert.Equal(0, handler.CallCount);
+        mock.Verify(c => c.RetrieveMemoryRecordsAsync(It.IsAny<RetrieveMemoryRecordsRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task SearchMemory_TopKAboveMax_ReturnsFailureWithoutHttpCall()
+    public async Task SearchMemory_TopKAboveMax_ReturnsFailureWithoutSdkCall()
     {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "[]");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
 
-        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test", "top_k": 101}""").RootElement;
+        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test", "namespace": "ns", "top_k": 101}""").RootElement;
         var result = await tool.InvokeAsync(input);
 
         Assert.True(result.IsError);
-        Assert.Equal(0, handler.CallCount);
+        mock.Verify(c => c.RetrieveMemoryRecordsAsync(It.IsAny<RetrieveMemoryRecordsRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    // ── search_memory HTTP ────────────────────────────────────────────────────
+    // ── search_memory SDK call ────────────────────────────────────────────────
 
     [Fact]
-    public async Task SearchMemory_ValidQuery_PostsToCorrectPath()
+    public async Task SearchMemory_ValidQuery_CallsSdkWithCorrectParameters()
     {
-        var responseBody = """[{"key":"k1","value":"v1","score":0.9},{"key":"k2","value":"v2","score":0.7}]""";
-        var handler = new CapturingHandler(HttpStatusCode.OK, responseBody);
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-123", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        mock.Setup(c => c.RetrieveMemoryRecordsAsync(
+                It.IsAny<RetrieveMemoryRecordsRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RetrieveMemoryRecordsResponse
+            {
+                MemoryRecordSummaries = [],
+            });
 
-        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "user preferences"}""").RootElement;
+        using var tool = new SemanticMemoryTool("mem-123", clientOverride: mock.Object);
+        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "coffee preference", "namespace": "user:prefs", "top_k": 3}""").RootElement;
+
         var result = await tool.InvokeAsync(input);
 
         Assert.False(result.IsError);
-        Assert.Equal(HttpMethod.Post, handler.LastRequest?.Method);
-        Assert.Contains("/memories/mem-123/search", handler.LastRequest?.RequestUri?.ToString());
+        mock.Verify(c => c.RetrieveMemoryRecordsAsync(
+            It.Is<RetrieveMemoryRecordsRequest>(r =>
+                r.MemoryId == "mem-123" &&
+                r.Namespace == "user:prefs" &&
+                r.SearchCriteria.SearchQuery == "coffee preference" &&
+                r.SearchCriteria.TopK == 3),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task SearchMemory_ValidQuery_ReturnsJsonArraySortedByScore()
+    public async Task SearchMemory_DefaultTopK_Sends5ToSdk()
     {
-        // Return results in non-sorted order — tool should sort descending
-        var responseBody = """[{"key":"k2","value":"v2","score":0.5},{"key":"k1","value":"v1","score":0.9}]""";
-        var handler = new CapturingHandler(HttpStatusCode.OK, responseBody);
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        mock.Setup(c => c.RetrieveMemoryRecordsAsync(It.IsAny<RetrieveMemoryRecordsRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RetrieveMemoryRecordsResponse { MemoryRecordSummaries = [] });
 
-        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test"}""").RootElement;
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
+        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test", "namespace": "ns"}""").RootElement;
+
+        await tool.InvokeAsync(input);
+
+        mock.Verify(c => c.RetrieveMemoryRecordsAsync(
+            It.Is<RetrieveMemoryRecordsRequest>(r => r.SearchCriteria.TopK == 5),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task SearchMemory_ReturnsRankedResults()
+    {
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        mock.Setup(c => c.RetrieveMemoryRecordsAsync(It.IsAny<RetrieveMemoryRecordsRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RetrieveMemoryRecordsResponse
+            {
+                MemoryRecordSummaries =
+                [
+                    new() { MemoryRecordId = "mem-00000000-0000-0000-0000-000000000001", Content = new MemoryContent { Text = "oat milk" }, Score = 0.9f },
+                    new() { MemoryRecordId = "mem-00000000-0000-0000-0000-000000000002", Content = new MemoryContent { Text = "espresso" }, Score = 0.5f },
+                ],
+            });
+
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
+        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "coffee", "namespace": "ns"}""").RootElement;
+
         var result = await tool.InvokeAsync(input);
 
         Assert.False(result.IsError);
         var parsed = JsonDocument.Parse(result.Content).RootElement;
         Assert.Equal(JsonValueKind.Array, parsed.ValueKind);
         Assert.Equal(2, parsed.GetArrayLength());
-        // First result should have higher score
-        Assert.Equal(0.9, parsed[0].GetProperty("score").GetDouble(), precision: 5);
-        Assert.Equal(0.5, parsed[1].GetProperty("score").GetDouble(), precision: 5);
+        Assert.Equal("mem-00000000-0000-0000-0000-000000000001", parsed[0].GetProperty("memoryRecordId").GetString());
     }
 
     [Fact]
-    public async Task SearchMemory_DefaultTopK_SendsTopK5InBody()
+    public async Task SearchMemory_SdkThrows_ReturnsFailure()
     {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "[]");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        mock.Setup(c => c.RetrieveMemoryRecordsAsync(It.IsAny<RetrieveMemoryRecordsRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonBedrockAgentCoreException("Service error"));
 
-        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test"}""").RootElement;
-        await tool.InvokeAsync(input);
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
+        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test", "namespace": "ns"}""").RootElement;
 
-        var body = handler.LastRequestBody;
-        Assert.NotNull(body);
-        var parsed = JsonDocument.Parse(body).RootElement;
-        Assert.Equal(5, parsed.GetProperty("topK").GetInt32());
-    }
-
-    [Fact]
-    public async Task SearchMemory_CustomTopK_SendsCorrectTopKInBody()
-    {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "[]");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
-
-        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test", "top_k": 10}""").RootElement;
-        await tool.InvokeAsync(input);
-
-        var body = handler.LastRequestBody;
-        Assert.NotNull(body);
-        var parsed = JsonDocument.Parse(body).RootElement;
-        Assert.Equal(10, parsed.GetProperty("topK").GetInt32());
-    }
-
-    [Fact]
-    public async Task SearchMemory_ApiReturnsNon2xx_ReturnsFailure()
-    {
-        var handler = new CapturingHandler(HttpStatusCode.InternalServerError, "error");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
-
-        var input = JsonDocument.Parse("""{"operation": "search_memory", "query": "test"}""").RootElement;
         var result = await tool.InvokeAsync(input);
 
         Assert.True(result.IsError);
-        Assert.Contains("500", result.Content);
+        Assert.Contains("search_memory failed", result.Content);
     }
 
     // ── store_memory validation ───────────────────────────────────────────────
 
     [Fact]
-    public async Task StoreMemory_MissingKey_ReturnsFailure()
+    public async Task StoreMemory_MissingContent_ReturnsFailure()
     {
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: new HttpClient());
-        var input = JsonDocument.Parse("""{"operation": "store_memory", "value": "v1"}""").RootElement;
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
+        var input = JsonDocument.Parse("""{"operation": "store_memory"}""").RootElement;
 
         var result = await tool.InvokeAsync(input);
 
         Assert.True(result.IsError);
-        Assert.Contains("key", result.Content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("content", result.Content, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
-    public async Task StoreMemory_MissingValue_ReturnsFailure()
-    {
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: new HttpClient());
-        var input = JsonDocument.Parse("""{"operation": "store_memory", "key": "k1"}""").RootElement;
-
-        var result = await tool.InvokeAsync(input);
-
-        Assert.True(result.IsError);
-        Assert.Contains("value", result.Content, StringComparison.OrdinalIgnoreCase);
-    }
+    // ── store_memory SDK call ─────────────────────────────────────────────────
 
     [Fact]
-    public async Task StoreMemory_TtlSecondsZero_ReturnsFailureWithoutHttpCall()
+    public async Task StoreMemory_ValidContent_CallsSdkWithCorrectParameters()
     {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "{}");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        mock.Setup(c => c.BatchCreateMemoryRecordsAsync(It.IsAny<BatchCreateMemoryRecordsRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new BatchCreateMemoryRecordsResponse
+            {
+                SuccessfulRecords = [new MemoryRecordOutput { MemoryRecordId = "mem-00000000-0000-0000-0000-000000000xyz" }],
+                FailedRecords = [],
+            });
 
-        var input = JsonDocument.Parse("""{"operation": "store_memory", "key": "k1", "value": "v1", "ttl_seconds": 0}""").RootElement;
-        var result = await tool.InvokeAsync(input);
+        using var tool = new SemanticMemoryTool("mem-123", clientOverride: mock.Object);
+        var input = JsonDocument.Parse("""{"operation": "store_memory", "content": "Alex likes oat milk", "namespace": "user:prefs"}""").RootElement;
 
-        Assert.True(result.IsError);
-        Assert.Contains("positive", result.Content, StringComparison.OrdinalIgnoreCase);
-        Assert.Equal(0, handler.CallCount);
-    }
-
-    [Fact]
-    public async Task StoreMemory_NegativeTtlSeconds_ReturnsFailureWithoutHttpCall()
-    {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "{}");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
-
-        var input = JsonDocument.Parse("""{"operation": "store_memory", "key": "k1", "value": "v1", "ttl_seconds": -60}""").RootElement;
-        var result = await tool.InvokeAsync(input);
-
-        Assert.True(result.IsError);
-        Assert.Equal(0, handler.CallCount);
-    }
-
-    // ── store_memory HTTP ─────────────────────────────────────────────────────
-
-    [Fact]
-    public async Task StoreMemory_WithoutTtl_PostsBodyWithoutTtlSeconds()
-    {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "{}");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
-
-        var input = JsonDocument.Parse("""{"operation": "store_memory", "key": "k1", "value": "v1"}""").RootElement;
         var result = await tool.InvokeAsync(input);
 
         Assert.False(result.IsError);
-        var body = JsonDocument.Parse(handler.LastRequestBody!).RootElement;
-        Assert.Equal("k1", body.GetProperty("key").GetString());
-        Assert.Equal("v1", body.GetProperty("value").GetString());
-        Assert.False(body.TryGetProperty("ttlSeconds", out _));
+        Assert.Contains("mem-00000000-0000-0000-0000-000000000xyz", result.Content);
+        mock.Verify(c => c.BatchCreateMemoryRecordsAsync(
+            It.Is<BatchCreateMemoryRecordsRequest>(r =>
+                r.MemoryId == "mem-123" &&
+                r.Records.Count == 1 &&
+                r.Records[0].Content.Text == "Alex likes oat milk" &&
+                r.Records[0].Namespaces.Contains("user:prefs")),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task StoreMemory_WithTtl_ForwardsTtlSecondsInBody()
+    public async Task StoreMemory_SdkThrows_ReturnsFailure()
     {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "{}");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        mock.Setup(c => c.BatchCreateMemoryRecordsAsync(It.IsAny<BatchCreateMemoryRecordsRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonBedrockAgentCoreException("Access denied"));
 
-        var input = JsonDocument.Parse("""{"operation": "store_memory", "key": "k1", "value": "v1", "ttl_seconds": 3600}""").RootElement;
-        var result = await tool.InvokeAsync(input);
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
+        var input = JsonDocument.Parse("""{"operation": "store_memory", "content": "test"}""").RootElement;
 
-        Assert.False(result.IsError);
-        var body = JsonDocument.Parse(handler.LastRequestBody!).RootElement;
-        Assert.Equal(3600, body.GetProperty("ttlSeconds").GetInt32());
-    }
-
-    [Fact]
-    public async Task StoreMemory_ApiReturnsNon2xx_ReturnsFailure()
-    {
-        var handler = new CapturingHandler(HttpStatusCode.Forbidden, "denied");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
-
-        var input = JsonDocument.Parse("""{"operation": "store_memory", "key": "k1", "value": "v1"}""").RootElement;
         var result = await tool.InvokeAsync(input);
 
         Assert.True(result.IsError);
-        Assert.Contains("403", result.Content);
+        Assert.Contains("store_memory failed", result.Content);
     }
 
     // ── delete_memory ─────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task DeleteMemory_MissingKey_ReturnsFailure()
+    public async Task DeleteMemory_MissingMemoryRecordId_ReturnsFailure()
     {
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: new HttpClient());
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        using var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
         var input = JsonDocument.Parse("""{"operation": "delete_memory"}""").RootElement;
 
         var result = await tool.InvokeAsync(input);
 
         Assert.True(result.IsError);
+        Assert.Contains("memory_record_id", result.Content, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task DeleteMemory_ValidKey_SendsDeleteRequest()
+    public async Task DeleteMemory_ValidId_CallsSdkWithCorrectParameters()
     {
-        var handler = new CapturingHandler(HttpStatusCode.OK, "{}");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        mock.Setup(c => c.DeleteMemoryRecordAsync(It.IsAny<DeleteMemoryRecordRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new DeleteMemoryRecordResponse());
 
-        var input = JsonDocument.Parse("""{"operation": "delete_memory", "key": "k1"}""").RootElement;
+        using var tool = new SemanticMemoryTool("mem-123", clientOverride: mock.Object);
+        var input = JsonDocument.Parse("""{"operation": "delete_memory", "memory_record_id": "mem-abc"}""").RootElement;
+
         var result = await tool.InvokeAsync(input);
 
         Assert.False(result.IsError);
-        Assert.Equal(HttpMethod.Delete, handler.LastRequest?.Method);
-        Assert.Contains("k1", handler.LastRequest?.RequestUri?.ToString());
-    }
-
-    [Fact]
-    public async Task DeleteMemory_ApiReturnsNon2xx_ReturnsFailure()
-    {
-        var handler = new CapturingHandler(HttpStatusCode.NotFound, "not found");
-        var http = new HttpClient(handler) { BaseAddress = new Uri("https://fake/") };
-        await using var tool = new SemanticMemoryTool("mem-id", clientOverride: http);
-
-        var input = JsonDocument.Parse("""{"operation": "delete_memory", "key": "k1"}""").RootElement;
-        var result = await tool.InvokeAsync(input);
-
-        Assert.True(result.IsError);
+        mock.Verify(c => c.DeleteMemoryRecordAsync(
+            It.Is<DeleteMemoryRecordRequest>(r =>
+                r.MemoryId == "mem-123" && r.MemoryRecordId == "mem-abc"),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     // ── Disposal ──────────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task DisposeAsync_OwnedClient_DisposesClient()
+    public void Dispose_OwnedClient_DoesNotThrow()
     {
         // When clientOverride is provided, the tool does NOT own the client.
-        // We verify the owned-client path doesn't throw on dispose.
-        var fakeClient = new HttpClient(new CapturingHandler(HttpStatusCode.OK, "{}"))
-        {
-            BaseAddress = new Uri("https://fake/")
-        };
-        var tool = new SemanticMemoryTool("mem-id", clientOverride: fakeClient);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
 
-        await tool.DisposeAsync(); // should not throw
+        tool.Dispose(); // should not throw
     }
 
     [Fact]
-    public async Task DisposeAsync_InjectedClient_DoesNotDisposeClient()
+    public void Dispose_InjectedClient_DoesNotDisposeClient()
     {
-        var fakeClient = new HttpClient();
-        var tool = new SemanticMemoryTool("mem-id", clientOverride: fakeClient);
+        var mock = new Mock<IAmazonBedrockAgentCore>();
+        var tool = new SemanticMemoryTool("mem-id", clientOverride: mock.Object);
 
-        await tool.DisposeAsync();
+        tool.Dispose();
 
-        // Client is still usable — sending a new request should not throw ObjectDisposedException.
-        // We verify by checking the Timeout property (accessible on a live client).
-        Assert.True(fakeClient.Timeout > TimeSpan.Zero);
-    }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    private sealed class CapturingHandler(HttpStatusCode status, string body) : HttpMessageHandler
-    {
-        public int CallCount { get; private set; }
-        public HttpRequestMessage? LastRequest { get; private set; }
-        public string? LastRequestBody { get; private set; }
-
-        protected override async Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            CallCount++;
-            LastRequest = request;
-            if (request.Content is not null)
-                LastRequestBody = await request.Content.ReadAsStringAsync(cancellationToken);
-
-            return new HttpResponseMessage(status)
-            {
-                Content = new StringContent(body, Encoding.UTF8, "application/json"),
-            };
-        }
+        // Injected client should NOT have been disposed
+        mock.Verify(c => c.Dispose(), Times.Never);
     }
 }

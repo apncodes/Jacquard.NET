@@ -1,43 +1,39 @@
-using System.Net.Http.Json;
 using System.Text.Json;
+using Amazon.BedrockAgentCore;
+using Amazon.BedrockAgentCore.Model;
 using StrandsAgents.Core;
 
 namespace StrandsAgents.Runtime.Tools;
 
 /// <summary>
-/// Agent-initiated explicit memory operations via Amazon Bedrock AgentCore Memory.
+/// Agent-initiated memory operations via Amazon Bedrock AgentCore Memory,
+/// backed by the official <c>AWSSDK.BedrockAgentCore</c> SDK client.
 ///
 /// <para>
-/// This tool enables the agent to explicitly store, retrieve, and delete memories.
-/// It is different from <c>AgentCoreSessionManager</c>, which handles automatic
-/// persistence of the full conversation history on every call.
+/// Stores free-text records with optional namespaces, retrieves them by system-assigned
+/// <c>memoryRecordId</c>, and deletes them. For semantic (meaning-based) retrieval use
+/// <see cref="SemanticMemoryTool"/> instead.
 /// </para>
 ///
 /// <para>
-/// Use this tool when the agent needs to remember specific facts across sessions
-/// that are not naturally captured in conversation history — e.g. user preferences,
-/// domain knowledge, or task-specific state.
-/// </para>
-///
-/// <para>
-/// All HTTP requests are signed with AWS SigV4. Pass a <paramref name="clientOverride"/>
-/// to inject a plain <see cref="HttpClient"/> for unit testing (bypasses SigV4).
+/// Authentication is handled automatically by the SDK via the standard AWS credential
+/// chain (environment variables, <c>~/.aws/credentials</c>, instance metadata, etc.).
 /// </para>
 /// </summary>
-public sealed class AgentCoreMemoryTool : ITool, IAsyncDisposable
+public sealed class AgentCoreMemoryTool : ITool, IDisposable
 {
     private static readonly ToolDefinition _definition = new(
         Name: "agentcore_memory",
         Description: """
-            Stores, retrieves, or deletes memories in Amazon Bedrock AgentCore Memory.
-            Use this to persist specific facts, preferences, or knowledge across sessions.
-            Prefer conversation history for short-term context; use this tool for facts
-            that must survive beyond the current conversation.
+            Stores, retrieves, or deletes memory records in Amazon Bedrock AgentCore Memory.
+
+            Records are stored as free-text content with an optional namespace.
+            The system assigns a memoryRecordId on creation — use it to retrieve or delete the record.
 
             Operations:
-            - store_memory: Save a key/value pair to long-term memory. Optionally set ttl_seconds for automatic expiry.
-            - retrieve_memory: Fetch a stored memory by key.
-            - delete_memory: Remove a memory entry by key.
+            - store_memory:    Save a text record. Returns the assigned memoryRecordId.
+            - retrieve_memory: Fetch a stored record by its memoryRecordId.
+            - delete_memory:   Remove a record by its memoryRecordId.
             """,
         InputSchema: JsonDocument.Parse("""
             {
@@ -48,47 +44,48 @@ public sealed class AgentCoreMemoryTool : ITool, IAsyncDisposable
                   "enum": ["store_memory", "retrieve_memory", "delete_memory"],
                   "description": "The memory operation to perform."
                 },
-                "key": {
+                "content": {
                   "type": "string",
-                  "description": "Unique identifier for the memory entry."
+                  "description": "The text content to store. Required for store_memory."
                 },
-                "value": {
+                "namespace": {
                   "type": "string",
-                  "description": "The value to store. Required for store_memory."
+                  "description": "Optional namespace for the record (e.g. 'user:alex:preferences')."
                 },
-                "ttl_seconds": {
-                  "type": "integer",
-                  "description": "Optional TTL in seconds for store_memory. The memory entry will be automatically deleted after this many seconds. Must be a positive integer."
+                "memory_record_id": {
+                  "type": "string",
+                  "description": "The system-assigned record ID. Required for retrieve_memory and delete_memory."
                 }
               },
-              "required": ["operation", "key"]
+              "required": ["operation"]
             }
             """).RootElement.Clone());
 
-    private readonly HttpClient _http;
+    private readonly IAmazonBedrockAgentCore _client;
     private readonly string _memoryId;
     private readonly bool _ownsClient;
 
     /// <summary>
-    /// Initialises a new <see cref="AgentCoreMemoryTool"/>.
+    /// Initialises a new <see cref="AgentCoreMemoryTool"/> using the official AWS SDK client.
     /// </summary>
-    /// <param name="memoryId">The AgentCore memory resource ID.</param>
+    /// <param name="memoryId">The AgentCore Memory resource ID.</param>
     /// <param name="region">AWS region. Default: <c>us-east-1</c>.</param>
     /// <param name="clientOverride">
-    /// Optional pre-configured <see cref="HttpClient"/>. When provided, the tool does
-    /// not own the client and will not dispose it. Intended for testing — bypasses SigV4.
+    /// Optional pre-configured <see cref="IAmazonBedrockAgentCore"/> client. When provided,
+    /// the tool does not own the client and will not dispose it. Intended for testing.
     /// </param>
     public AgentCoreMemoryTool(
         string memoryId,
         string region = "us-east-1",
-        HttpClient? clientOverride = null)
+        IAmazonBedrockAgentCore? clientOverride = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(memoryId);
         ArgumentException.ThrowIfNullOrWhiteSpace(region);
 
         _memoryId = memoryId;
         _ownsClient = clientOverride is null;
-        _http = clientOverride ?? AgentCoreHttpClientFactory.CreateSigned(region);
+        _client = clientOverride ?? new AmazonBedrockAgentCoreClient(
+            Amazon.RegionEndpoint.GetBySystemName(region));
     }
 
     /// <inheritdoc/>
@@ -97,88 +94,127 @@ public sealed class AgentCoreMemoryTool : ITool, IAsyncDisposable
     /// <inheritdoc/>
     public async Task<ToolResult> InvokeAsync(JsonElement input, CancellationToken ct = default)
     {
-        if (!input.TryGetProperty("operation", out var opEl) ||
-            !input.TryGetProperty("key", out var keyEl))
-            return ToolResult.Failure("agentcore_memory", "Missing required fields: operation, key.");
+        if (!input.TryGetProperty("operation", out var opEl))
+            return ToolResult.Failure("agentcore_memory", "Missing required field: operation.");
 
         var operation = opEl.GetString();
-        var key = keyEl.GetString();
-
-        if (string.IsNullOrWhiteSpace(key))
-            return ToolResult.Failure("agentcore_memory", "key must be a non-empty string.");
 
         return operation switch
         {
-            "store_memory"    => await StoreAsync(key, input, ct).ConfigureAwait(false),
-            "retrieve_memory" => await RetrieveAsync(key, ct).ConfigureAwait(false),
-            "delete_memory"   => await DeleteAsync(key, ct).ConfigureAwait(false),
+            "store_memory"    => await StoreAsync(input, ct).ConfigureAwait(false),
+            "retrieve_memory" => await RetrieveAsync(input, ct).ConfigureAwait(false),
+            "delete_memory"   => await DeleteAsync(input, ct).ConfigureAwait(false),
             _ => ToolResult.Failure("agentcore_memory",
                 $"Unknown operation '{operation}'. Supported: store_memory, retrieve_memory, delete_memory."),
         };
     }
 
-    private async Task<ToolResult> StoreAsync(string key, JsonElement input, CancellationToken ct)
+    // ── store_memory ──────────────────────────────────────────────────────────
+
+    private async Task<ToolResult> StoreAsync(JsonElement input, CancellationToken ct)
     {
-        if (!input.TryGetProperty("value", out var valueEl) ||
-            valueEl.GetString() is not { } value)
-            return ToolResult.Failure("agentcore_memory", "Missing required field: value (required for store_memory).");
-
-        // Validate optional ttl_seconds.
-        int? ttlSeconds = null;
-        if (input.TryGetProperty("ttl_seconds", out var ttlEl) && ttlEl.ValueKind == JsonValueKind.Number)
-        {
-            var ttl = ttlEl.GetInt32();
-            if (ttl <= 0)
-                return ToolResult.Failure("agentcore_memory", "ttl_seconds must be a positive integer.");
-            ttlSeconds = ttl;
-        }
-
-        var payload = ttlSeconds.HasValue
-            ? (object)new { key, value, ttlSeconds = ttlSeconds.Value }
-            : new { key, value };
-
-        var path = $"/memories/{Uri.EscapeDataString(_memoryId)}/records";
-        using var response = await _http.PostAsJsonAsync(path, payload, ct).ConfigureAwait(false);
-
-        return response.IsSuccessStatusCode
-            ? ToolResult.Success("agentcore_memory", $"Stored memory: {key}")
-            : ToolResult.Failure("agentcore_memory",
-                $"Failed to store memory. Status: {(int)response.StatusCode}");
-    }
-
-    private async Task<ToolResult> RetrieveAsync(string key, CancellationToken ct)
-    {
-        var path = $"/memories/{Uri.EscapeDataString(_memoryId)}/records/{Uri.EscapeDataString(key)}";
-        using var response = await _http.GetAsync(path, ct).ConfigureAwait(false);
-
-        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-            return ToolResult.Success("agentcore_memory", $"No memory found for key: {key}");
-
-        if (!response.IsSuccessStatusCode)
+        if (!input.TryGetProperty("content", out var contentEl) ||
+            contentEl.GetString() is not { Length: > 0 } contentText)
             return ToolResult.Failure("agentcore_memory",
-                $"Failed to retrieve memory. Status: {(int)response.StatusCode}");
+                "content is required for store_memory and must be non-empty.");
 
-        var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
-        return ToolResult.Success("agentcore_memory", json);
+        var namespaces = new List<string>();
+        if (input.TryGetProperty("namespace", out var nsEl) &&
+            nsEl.GetString() is { Length: > 0 } ns)
+            namespaces.Add(ns);
+
+        var record = new MemoryRecordCreateInput
+        {
+            Content = new MemoryContent { Text = contentText },
+            Namespaces = namespaces,
+            RequestIdentifier = Guid.NewGuid().ToString("N")[..16],
+            Timestamp = DateTime.UtcNow,
+        };
+
+        var request = new BatchCreateMemoryRecordsRequest
+        {
+            MemoryId = _memoryId,
+            Records = [record],
+        };
+
+        try
+        {
+            var response = await _client.BatchCreateMemoryRecordsAsync(request, ct)
+                .ConfigureAwait(false);
+
+            var created = response.SuccessfulRecords?.FirstOrDefault();
+            var recordId = created?.MemoryRecordId ?? "unknown";
+            return ToolResult.Success("agentcore_memory",
+                $"Stored memory record. memoryRecordId: {recordId}");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return ToolResult.Failure("agentcore_memory", $"store_memory failed: {ex.Message}");
+        }
     }
 
-    private async Task<ToolResult> DeleteAsync(string key, CancellationToken ct)
-    {
-        var path = $"/memories/{Uri.EscapeDataString(_memoryId)}/records/{Uri.EscapeDataString(key)}";
-        using var response = await _http.DeleteAsync(path, ct).ConfigureAwait(false);
+    // ── retrieve_memory ───────────────────────────────────────────────────────
 
-        return response.IsSuccessStatusCode
-            ? ToolResult.Success("agentcore_memory", $"Deleted memory: {key}")
-            : ToolResult.Failure("agentcore_memory",
-                $"Failed to delete memory. Status: {(int)response.StatusCode}");
+    private async Task<ToolResult> RetrieveAsync(JsonElement input, CancellationToken ct)
+    {
+        if (!input.TryGetProperty("memory_record_id", out var idEl) ||
+            idEl.GetString() is not { Length: > 0 } recordId)
+            return ToolResult.Failure("agentcore_memory",
+                "memory_record_id is required for retrieve_memory.");
+
+        var request = new GetMemoryRecordRequest
+        {
+            MemoryId = _memoryId,
+            MemoryRecordId = recordId,
+        };
+
+        try
+        {
+            var response = await _client.GetMemoryRecordAsync(request, ct).ConfigureAwait(false);
+            var text = response.MemoryRecord?.Content?.Text ?? string.Empty;
+            return ToolResult.Success("agentcore_memory", text);
+        }
+        catch (Amazon.BedrockAgentCore.Model.ResourceNotFoundException)
+        {
+            return ToolResult.Success("agentcore_memory",
+                $"No memory record found for id: {recordId}");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return ToolResult.Failure("agentcore_memory", $"retrieve_memory failed: {ex.Message}");
+        }
+    }
+
+    // ── delete_memory ─────────────────────────────────────────────────────────
+
+    private async Task<ToolResult> DeleteAsync(JsonElement input, CancellationToken ct)
+    {
+        if (!input.TryGetProperty("memory_record_id", out var idEl) ||
+            idEl.GetString() is not { Length: > 0 } recordId)
+            return ToolResult.Failure("agentcore_memory",
+                "memory_record_id is required for delete_memory.");
+
+        var request = new DeleteMemoryRecordRequest
+        {
+            MemoryId = _memoryId,
+            MemoryRecordId = recordId,
+        };
+
+        try
+        {
+            await _client.DeleteMemoryRecordAsync(request, ct).ConfigureAwait(false);
+            return ToolResult.Success("agentcore_memory", $"Deleted memory record: {recordId}");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return ToolResult.Failure("agentcore_memory", $"delete_memory failed: {ex.Message}");
+        }
     }
 
     /// <inheritdoc/>
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
         if (_ownsClient)
-            _http.Dispose();
-
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+            _client.Dispose();
     }
 }
