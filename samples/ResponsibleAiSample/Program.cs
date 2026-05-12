@@ -30,7 +30,7 @@ var logger = loggerFactory.CreateLogger("ResponsibleAiSample");
 // RESPONSIBLE AI PRINCIPLE: Guardrails
 // Bedrock Guardrails in enforcing mode — blocks harmful input/output and screens tool results.
 var guardrailConfig = new BedrockGuardrailConfig(
-    GuardrailId: "7jgwl3pcfpgo",
+    GuardrailId: "your-guardrail-id",
     GuardrailVersion: "DRAFT")
 {
     Trace = true,                    // Enable trace for debugging
