@@ -1,35 +1,55 @@
-using System.Net.Http.Json;
 using System.Text.Json;
+using Amazon.BedrockAgentCore;
+using Amazon.BedrockAgentCore.Model;
 using StrandsAgents.Core;
 
 namespace StrandsAgents.Runtime.Tools;
 
 /// <summary>
-/// Managed browser sandbox via Amazon Bedrock AgentCore Browser.
+/// Managed browser session management via Amazon Bedrock AgentCore Browser,
+/// backed by the official <c>AWSSDK.BedrockAgentCore</c> SDK client.
 ///
 /// <para>
-/// Provides access to a managed headless browser that can execute JavaScript,
-/// render dynamic pages, and interact with web content. Unlike
-/// <see cref="StrandsAgents.Tools.HttpRequestTool"/>, which makes simple HTTP requests,
-/// this tool operates a full browser engine and can handle JS-rendered SPAs,
-/// authentication flows, and interactive UI elements.
+/// AgentCore Browser provides a managed headless Chrome instance. This tool exposes
+/// session lifecycle operations (start, get, stop) and surfaces the
+/// <c>AutomationStream.StreamEndpoint</c> URL that callers use to connect via
+/// Playwright (CDP) or Nova Act for actual browser automation.
+/// </para>
+///
+/// <para>
+/// Typical usage pattern:
+/// <list type="number">
+///   <item>Call <c>start_session</c> to create a browser session. The response includes
+///   the <c>automationStreamEndpoint</c> URL.</item>
+///   <item>Connect to the endpoint via Playwright (<c>connect_over_cdp</c>) or Nova Act
+///   to perform navigation, clicks, screenshots, etc.</item>
+///   <item>Call <c>stop_session</c> when done to release resources.</item>
+/// </list>
+/// </para>
+///
+/// <para>
+/// Authentication is handled automatically by the SDK via the standard AWS credential
+/// chain (environment variables, <c>~/.aws/credentials</c>, instance metadata, etc.).
 /// </para>
 /// </summary>
-public sealed class AgentCoreBrowserTool : ITool, IAsyncDisposable
+public sealed class AgentCoreBrowserTool : ITool, IDisposable
 {
+    private const string ToolId = "agentcore_browser";
+
     private static readonly ToolDefinition _definition = new(
-        Name: "agentcore_browser",
+        Name: ToolId,
         Description: """
-            Operates a managed browser sandbox provided by Amazon Bedrock AgentCore.
-            Use this for JS-rendered pages, SPAs, or sites that require interaction.
-            For simple HTTP GET/POST requests, use the http_request tool instead.
+            Manages Amazon Bedrock AgentCore Browser sessions.
+
+            AgentCore Browser provides a managed headless Chrome instance. Use start_session
+            to create a session and receive the automationStreamEndpoint URL, then connect
+            to that endpoint via Playwright (connect_over_cdp) or Nova Act to perform
+            browser automation (navigate, click, screenshot, etc.).
 
             Operations:
-            - navigate: Load a URL in the browser.
-            - screenshot: Capture a screenshot of the current page (returns base64 PNG).
-            - extract_text: Extract visible text content from the current page.
-            - click: Click an element identified by CSS selector.
-            - type: Type text into an input element identified by CSS selector.
+            - start_session: Start a new browser session. Returns sessionId and automationStreamEndpoint.
+            - get_session:   Get the status and stream endpoint of an existing session.
+            - stop_session:  Stop a browser session and release its resources.
             """,
         InputSchema: JsonDocument.Parse("""
             {
@@ -37,48 +57,51 @@ public sealed class AgentCoreBrowserTool : ITool, IAsyncDisposable
               "properties": {
                 "operation": {
                   "type": "string",
-                  "enum": ["navigate", "screenshot", "extract_text", "click", "type"],
-                  "description": "The browser operation to perform."
+                  "enum": ["start_session", "get_session", "stop_session"],
+                  "description": "The browser session operation to perform."
                 },
-                "url": {
+                "session_id": {
                   "type": "string",
-                  "description": "URL to navigate to. Required for navigate."
+                  "description": "The browser session ID. Required for get_session and stop_session."
                 },
-                "selector": {
-                  "type": "string",
-                  "description": "CSS selector for click/type operations."
-                },
-                "text": {
-                  "type": "string",
-                  "description": "Text to type. Required for type operation."
+                "session_timeout_seconds": {
+                  "type": "integer",
+                  "description": "Session timeout in seconds for start_session. Default: 3600 (1 hour)."
                 }
               },
               "required": ["operation"]
             }
             """).RootElement.Clone());
 
-    private readonly HttpClient _http;
+    private readonly IAmazonBedrockAgentCore _client;
+    private readonly string _browserIdentifier;
     private readonly bool _ownsClient;
+
+    private static readonly JsonSerializerOptions _json = new(JsonSerializerDefaults.Web);
 
     /// <summary>
     /// Initialises a new <see cref="AgentCoreBrowserTool"/>.
     /// </summary>
+    /// <param name="browserIdentifier">
+    /// The AgentCore Browser resource identifier. When <c>null</c>, the SDK uses the
+    /// default browser for the account.
+    /// </param>
     /// <param name="region">AWS region. Default: <c>us-east-1</c>.</param>
     /// <param name="clientOverride">
-    /// Optional pre-configured <see cref="HttpClient"/>. When provided, the tool does
-    /// not own the client and will not dispose it. Intended for testing.
+    /// Optional pre-configured <see cref="IAmazonBedrockAgentCore"/> client. When provided,
+    /// the tool does not own the client and will not dispose it. Intended for testing.
     /// </param>
     public AgentCoreBrowserTool(
+        string? browserIdentifier = null,
         string region = "us-east-1",
-        HttpClient? clientOverride = null)
+        IAmazonBedrockAgentCore? clientOverride = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(region);
 
+        _browserIdentifier = browserIdentifier ?? "default";
         _ownsClient = clientOverride is null;
-        _http = clientOverride ?? new HttpClient
-        {
-            BaseAddress = new Uri($"https://bedrock-agentcore.{region}.amazonaws.com"),
-        };
+        _client = clientOverride ?? new AmazonBedrockAgentCoreClient(
+            Amazon.RegionEndpoint.GetBySystemName(region));
     }
 
     /// <inheritdoc/>
@@ -88,51 +111,124 @@ public sealed class AgentCoreBrowserTool : ITool, IAsyncDisposable
     public async Task<ToolResult> InvokeAsync(JsonElement input, CancellationToken ct = default)
     {
         if (!input.TryGetProperty("operation", out var opEl))
-            return ToolResult.Failure("agentcore_browser", "Missing required field: operation.");
+            return ToolResult.Failure(ToolId, "Missing required field: operation.");
 
         var operation = opEl.GetString();
 
         return operation switch
         {
-            "navigate" => await BrowserActionAsync("navigate", input, ct).ConfigureAwait(false),
-            "screenshot" => await BrowserActionAsync("screenshot", input, ct).ConfigureAwait(false),
-            "extract_text" => await BrowserActionAsync("extract_text", input, ct).ConfigureAwait(false),
-            "click" => await BrowserActionAsync("click", input, ct).ConfigureAwait(false),
-            "type" => await BrowserActionAsync("type", input, ct).ConfigureAwait(false),
-            _ => ToolResult.Failure("agentcore_browser",
-                $"Unknown operation '{operation}'. Supported: navigate, screenshot, extract_text, click, type."),
+            "start_session" => await HandleStartSessionAsync(input, ct).ConfigureAwait(false),
+            "get_session"   => await HandleGetSessionAsync(input, ct).ConfigureAwait(false),
+            "stop_session"  => await HandleStopSessionAsync(input, ct).ConfigureAwait(false),
+            _ => ToolResult.Failure(ToolId,
+                $"Unknown operation '{operation}'. Supported: start_session, get_session, stop_session."),
         };
     }
 
-    private async Task<ToolResult> BrowserActionAsync(
-        string action, JsonElement input, CancellationToken ct)
+    // ── start_session ─────────────────────────────────────────────────────────
+
+    private async Task<ToolResult> HandleStartSessionAsync(JsonElement input, CancellationToken ct)
     {
-        var payload = new
+        var timeoutSeconds = 3600;
+        if (input.TryGetProperty("session_timeout_seconds", out var timeoutEl) &&
+            timeoutEl.ValueKind == JsonValueKind.Number)
+            timeoutSeconds = timeoutEl.GetInt32();
+
+        var request = new StartBrowserSessionRequest
         {
-            action,
-            url = input.TryGetProperty("url", out var u) ? u.GetString() : null,
-            selector = input.TryGetProperty("selector", out var s) ? s.GetString() : null,
-            text = input.TryGetProperty("text", out var t) ? t.GetString() : null,
+            BrowserIdentifier = _browserIdentifier,
+            Name = $"strands-browser-{Guid.NewGuid():N}"[..40],
+            SessionTimeoutSeconds = timeoutSeconds,
         };
 
-        using var response = await _http
-            .PostAsJsonAsync("/browser/actions", payload, ct)
-            .ConfigureAwait(false);
+        try
+        {
+            var response = await _client.StartBrowserSessionAsync(request, ct)
+                .ConfigureAwait(false);
 
-        if (!response.IsSuccessStatusCode)
-            return ToolResult.Failure("agentcore_browser",
-                $"Browser action '{action}' failed. Status: {(int)response.StatusCode}");
+            var result = new
+            {
+                sessionId = response.SessionId,
+                automationStreamEndpoint = response.Streams?.AutomationStream?.StreamEndpoint,
+                status = "STARTED",
+                message = "Connect to automationStreamEndpoint via Playwright (connect_over_cdp) or Nova Act.",
+            };
 
-        var result = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
-        return ToolResult.Success("agentcore_browser", result);
+            return ToolResult.Success(ToolId, JsonSerializer.Serialize(result, _json));
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return ToolResult.Failure(ToolId, $"start_session failed: {ex.Message}");
+        }
+    }
+
+    // ── get_session ───────────────────────────────────────────────────────────
+
+    private async Task<ToolResult> HandleGetSessionAsync(JsonElement input, CancellationToken ct)
+    {
+        if (!input.TryGetProperty("session_id", out var idEl) ||
+            idEl.GetString() is not { Length: > 0 } sessionId)
+            return ToolResult.Failure(ToolId, "session_id is required for get_session.");
+
+        var request = new GetBrowserSessionRequest
+        {
+            BrowserIdentifier = _browserIdentifier,
+            SessionId = sessionId,
+        };
+
+        try
+        {
+            var response = await _client.GetBrowserSessionAsync(request, ct)
+                .ConfigureAwait(false);
+
+            var result = new
+            {
+                sessionId = response.SessionId,
+                status = response.Status?.Value ?? "UNKNOWN",
+                automationStreamEndpoint = response.Streams?.AutomationStream?.StreamEndpoint,
+            };
+
+            return ToolResult.Success(ToolId, JsonSerializer.Serialize(result, _json));
+        }
+        catch (Amazon.BedrockAgentCore.Model.ResourceNotFoundException)
+        {
+            return ToolResult.Failure(ToolId, $"No browser session found with id: {sessionId}");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return ToolResult.Failure(ToolId, $"get_session failed: {ex.Message}");
+        }
+    }
+
+    // ── stop_session ──────────────────────────────────────────────────────────
+
+    private async Task<ToolResult> HandleStopSessionAsync(JsonElement input, CancellationToken ct)
+    {
+        if (!input.TryGetProperty("session_id", out var idEl) ||
+            idEl.GetString() is not { Length: > 0 } sessionId)
+            return ToolResult.Failure(ToolId, "session_id is required for stop_session.");
+
+        var request = new StopBrowserSessionRequest
+        {
+            BrowserIdentifier = _browserIdentifier,
+            SessionId = sessionId,
+        };
+
+        try
+        {
+            await _client.StopBrowserSessionAsync(request, ct).ConfigureAwait(false);
+            return ToolResult.Success(ToolId, $"Browser session stopped: {sessionId}");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return ToolResult.Failure(ToolId, $"stop_session failed: {ex.Message}");
+        }
     }
 
     /// <inheritdoc/>
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
         if (_ownsClient)
-            _http.Dispose();
-
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+            _client.Dispose();
     }
 }

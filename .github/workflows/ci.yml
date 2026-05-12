@@ -22,11 +22,3 @@ jobs:
 
       - name: Test
         run: dotnet test Strands.sln --configuration Release --verbosity normal
-
-      - name: Pack
-        run: dotnet pack Strands.sln --configuration Release --output ./artifacts
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nuget-packages
-          path: ./artifacts/*.nupkg

@@ -89,7 +89,7 @@ public static class AgentCoreServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton<ITool>(_ => new AgentCoreBrowserTool(region));
+        services.AddSingleton<ITool>(_ => new AgentCoreBrowserTool(region: region));
         return services;
     }
 
@@ -106,7 +106,7 @@ public static class AgentCoreServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton<ITool>(_ => new AgentCoreCodeInterpreterTool(region));
+        services.AddSingleton<ITool>(_ => new AgentCoreCodeInterpreterTool(region: region));
         return services;
     }
 
