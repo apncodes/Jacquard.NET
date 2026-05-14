@@ -8,6 +8,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>NU5128</NoWarn>
     <PackageId>StrandsAgents.SourceGenerator</PackageId>
+    <Version>0.1.8.1</Version>
     <Authors>Strands .NET Contributors</Authors>
     <Company>Community</Company>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
