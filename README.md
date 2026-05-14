@@ -20,7 +20,34 @@ dotnet add package StrandsAgents.SourceGenerator
 
 Decorate a method with `[Tool]` on a `partial class` — the Roslyn source generator emits a compile-time `ITool` wrapper and an `IToolProvider` implementation automatically.
 
-The `partial class` must be in its own file with an explicit namespace. Create two files:
+**Single-file option** — put the class declaration after the top-level statements:
+
+```csharp
+using StrandsAgents.Core;
+using StrandsAgents.Models.Bedrock;
+
+var agent = new Agent(
+    model: new BedrockModel("us-east-1"),
+    systemPrompt: "You are a helpful assistant.",
+    toolProviders: [new MyTools()]
+);
+
+var result = await agent.InvokeAsync("What's the weather in London?");
+Console.WriteLine(result.Message);
+
+// Type declarations must come after top-level statements in the same file.
+// Use a block-body namespace (not file-scoped) when mixing with top-level statements.
+namespace MyApp
+{
+    public partial class MyTools
+    {
+        [Tool("Returns the current weather for a city")]
+        public string GetWeather(string city) => $"Sunny, 22°C in {city}";
+    }
+}
+```
+
+**Two-file option** — cleaner for larger projects:
 
 **MyTools.cs**
 ```csharp
@@ -44,7 +71,7 @@ using MyApp;
 var agent = new Agent(
     model: new BedrockModel("us-east-1"),
     systemPrompt: "You are a helpful assistant.",
-    toolProviders: [new MyTools()]   // pass the class directly — no generated type names needed
+    toolProviders: [new MyTools()]
 );
 
 var result = await agent.InvokeAsync("What's the weather in London?");
