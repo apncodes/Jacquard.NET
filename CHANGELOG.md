@@ -8,6 +8,20 @@ All notable changes to Strands Agents .NET are documented here.
 
 ---
 
+## [0.1.10] — 2026-05-15
+
+### Fixed
+
+- **`StrandsAgents.SourceGenerator`** — Generated tool parameter deserialization now uses AOT-safe `JsonElement` accessors (`GetString()`, `GetInt32()`, `GetDouble()`, `GetBoolean()`) instead of `Deserialize<T>()` which requires runtime reflection. In AOT-published applications (e.g. Lambda `provided.al2023`), the old code silently returned `ToolResult.Failure` on every tool call. In JIT applications, `GetString()` is also the more correct and efficient API for this use case.
+
+- **`StrandsAgents.Models.Bedrock`** — `DocumentToJson` now uses a manual `StringBuilder`-based JSON builder instead of `JsonSerializer.Serialize(Dictionary<string, object?>)`. The old code used polymorphic serialization requiring runtime type inspection, which fails in AOT contexts and generates IL2026/IL3050 trim warnings in all contexts.
+
+### Added
+
+- **`samples/AotLambda`** — New sample demonstrating a Strands Agents .NET agent published as a NativeAOT AWS Lambda function (`provided.al2023` runtime). Includes full benchmark results: ~118ms average cold-start init duration, 52 MB memory, 14 MB binary. See `samples/AotLambda/README.md` for test conditions and reproducibility instructions.
+
+---
+
 ## [0.1.9] — 2026-05-15
 
 ### Changed
