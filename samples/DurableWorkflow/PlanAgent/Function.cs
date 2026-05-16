@@ -134,15 +134,21 @@ namespace PlanAgent
     // Output of Stage 1 / Input to Stage 2
     public class ResearchPlan
     {
+        [JsonPropertyName("topic")]
         public string Topic { get; set; } = "";
+        [JsonPropertyName("objective")]
         public string Objective { get; set; } = "";
+        [JsonPropertyName("focusAreas")]
         public FocusArea[] FocusAreas { get; set; } = [];
     }
 
     public class FocusArea
     {
+        [JsonPropertyName("name")]
         public string Name { get; set; } = "";
+        [JsonPropertyName("question")]
         public string Question { get; set; } = "";
+        [JsonPropertyName("rationale")]
         public string Rationale { get; set; } = "";
     }
 
