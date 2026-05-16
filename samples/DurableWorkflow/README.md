@@ -341,24 +341,6 @@ return result; // Step Functions passes this to the next Lambda
 | Human-in-the-loop | Callbacks | `waitForTaskToken` integration pattern |
 | Agent isolation | Shared process | Separate Lambda deployments |
 
-### When to pick each
+The Strands Agents .NET approach defers durability to the platform rather than building it into the framework. This keeps the framework lightweight and gives you AWS-native observability, declarative retry configuration, and workflows that can run for up to a year — without any framework-level state management code.
 
-**Pick MAF DurableTask if:**
-- You deploy to Azure
-- You want workflow durability built into the framework with minimal infrastructure setup
-- Your team prefers code-first workflow definition over declarative ASL
-- You're already using MAF and want consistency
-
-**Pick Strands Agents .NET + Step Functions if:**
-- You deploy to AWS
-- You want platform-native observability (Step Functions console, CloudWatch, X-Ray)
-- You want to change retry/timeout configuration without redeploying agent code
-- You want workflows that can run for hours or days (Standard Workflows)
-- You prefer separating orchestration concerns from agent logic
-- Your durability requirements are met by the platform you're already running on
-
-### The key philosophical difference
-
-MAF's approach: the framework owns durability. Strands Agents .NET's approach: the platform owns durability, the framework stays lightweight. Neither is wrong — they reflect different priorities. MAF optimizes for developer convenience; Strands Agents .NET optimizes for operational transparency and AWS-native integration.
-
-Both support MCP and A2A, so agents from either framework can interoperate.
+Both frameworks support MCP and A2A, so agents from either can interoperate.
