@@ -142,33 +142,33 @@ namespace ExecuteAgent
 
     // ── Data contracts ────────────────────────────────────────────────────────
     // Input to Stage 2 (output of Stage 1)
-    public record ResearchPlan
+    public class ResearchPlan
     {
-        public string Topic { get; init; } = "";
-        public string Objective { get; init; } = "";
-        public FocusArea[] FocusAreas { get; init; } = [];
+        public string Topic { get; set; } = "";
+        public string Objective { get; set; } = "";
+        public FocusArea[] FocusAreas { get; set; } = [];
     }
 
-    public record FocusArea
+    public class FocusArea
     {
-        public string Name { get; init; } = "";
-        public string Question { get; init; } = "";
-        public string Rationale { get; init; } = "";
+        public string Name { get; set; } = "";
+        public string Question { get; set; } = "";
+        public string Rationale { get; set; } = "";
     }
 
     // Output of Stage 2 / Input to Stage 3
-    public record ResearchFindings
+    public class ResearchFindings
     {
-        public string Topic { get; init; } = "";
-        public string Objective { get; init; } = "";
-        public FocusAreaFinding[] Findings { get; init; } = [];
+        public string Topic { get; set; } = "";
+        public string Objective { get; set; } = "";
+        public FocusAreaFinding[] Findings { get; set; } = [];
     }
 
-    public record FocusAreaFinding
+    public class FocusAreaFinding
     {
-        public string Name { get; init; } = "";
-        public string Question { get; init; } = "";
-        public string Answer { get; init; } = "";
+        public string Name { get; set; } = "";
+        public string Question { get; set; } = "";
+        public string Answer { get; set; } = "";
     }
 
     [JsonSerializable(typeof(ResearchPlan))]

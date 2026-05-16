@@ -86,27 +86,27 @@ await LambdaBootstrapBuilder
 // ── Data contracts ────────────────────────────────────────────────────────────
 
 // Input to Stage 3 (output of Stage 2)
-public record ResearchFindings
+public class ResearchFindings
 {
-    public string Topic { get; init; } = "";
-    public string Objective { get; init; } = "";
-    public FocusAreaFinding[] Findings { get; init; } = [];
+    public string Topic { get; set; } = "";
+    public string Objective { get; set; } = "";
+    public FocusAreaFinding[] Findings { get; set; } = [];
 }
 
-public record FocusAreaFinding
+public class FocusAreaFinding
 {
-    public string Name { get; init; } = "";
-    public string Question { get; init; } = "";
-    public string Answer { get; init; } = "";
+    public string Name { get; set; } = "";
+    public string Question { get; set; } = "";
+    public string Answer { get; set; } = "";
 }
 
 // Final output of the pipeline — the Step Functions execution result
-public record WorkflowResult
+public class WorkflowResult
 {
-    public string Topic { get; init; } = "";
-    public string Objective { get; init; } = "";
-    public string Summary { get; init; } = "";
-    public string[] FocusAreas { get; init; } = [];
+    public string Topic { get; set; } = "";
+    public string Objective { get; set; } = "";
+    public string Summary { get; set; } = "";
+    public string[] FocusAreas { get; set; } = [];
 }
 
 [JsonSerializable(typeof(ResearchFindings))]

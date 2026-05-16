@@ -126,21 +126,24 @@ static string ExtractJson(string text)
 namespace PlanAgent
 {
     // Input to Stage 1
-    public record WorkflowInput(string Topic);
-
-    // Output of Stage 1 / Input to Stage 2
-    public record ResearchPlan
+    public class WorkflowInput
     {
-        public string Topic { get; init; } = "";
-        public string Objective { get; init; } = "";
-        public FocusArea[] FocusAreas { get; init; } = [];
+        public string Topic { get; set; } = "";
     }
 
-    public record FocusArea
+    // Output of Stage 1 / Input to Stage 2
+    public class ResearchPlan
     {
-        public string Name { get; init; } = "";
-        public string Question { get; init; } = "";
-        public string Rationale { get; init; } = "";
+        public string Topic { get; set; } = "";
+        public string Objective { get; set; } = "";
+        public FocusArea[] FocusAreas { get; set; } = [];
+    }
+
+    public class FocusArea
+    {
+        public string Name { get; set; } = "";
+        public string Question { get; set; } = "";
+        public string Rationale { get; set; } = "";
     }
 
     [JsonSerializable(typeof(WorkflowInput))]
