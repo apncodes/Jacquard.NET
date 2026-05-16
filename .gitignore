@@ -52,6 +52,11 @@ generated/
 # Lambda build artifacts
 samples/**/bootstrap
 samples/**/*.zip
+
+# Docs site build artifacts
+docs/node_modules/
+docs/build/
+docs/.docusaurus/
 *.p12
 appsettings.local.json
 appsettings.Development.json

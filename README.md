@@ -2,7 +2,7 @@
 
 > **The Strands Agents framework — built for .NET.** Model-driven agentic AI for C# developers, built on the same principles as [AWS Strands Agents](https://strandsagents.com).
 
-[![NuGet](https://img.shields.io/nuget/v/StrandsAgents.Core?label=NuGet&color=blue)](https://www.nuget.org/packages/StrandsAgents.Core) [![CI](https://github.com/apncodes/StrandsAgents.net/actions/workflows/ci.yml/badge.svg)](https://github.com/apncodes/StrandsAgents.net/actions/workflows/ci.yml) [![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://github.com/apncodes/StrandsAgents.net/blob/main/LICENSE)
+[![NuGet](https://img.shields.io/nuget/v/StrandsAgents.Core?label=NuGet&color=blue)](https://www.nuget.org/packages/StrandsAgents.Core) [![CI](https://github.com/apncodes/StrandsAgents.net/actions/workflows/ci.yml/badge.svg)](https://github.com/apncodes/StrandsAgents.net/actions/workflows/ci.yml) [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-orange)](https://apncodes.github.io/StrandsAgents.net/) [![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://github.com/apncodes/StrandsAgents.net/blob/main/LICENSE)
 
 **Jump to:** [Quickstart](#quickstart) · [Why StrandsAgents.NET](#why-strandsagentsnet) · [Production essentials](#production-essentials) · [AWS-native deployment](#aws-native-deployment) · [Multi-agent](#multi-agent-patterns) · [Samples](#samples)
 
