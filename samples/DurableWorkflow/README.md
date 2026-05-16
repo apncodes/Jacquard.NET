@@ -150,8 +150,8 @@ One of the advantages of the Decomposed Sequential Pipeline pattern is that **ea
 
 | Stage | Model | Rationale |
 |---|---|---|
-| PlanAgent | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` | Structured reasoning, reliable JSON output. Planning requires careful decomposition — Sonnet's reasoning depth produces well-formed focus areas. |
-| ExecuteAgent | `us.anthropic.claude-sonnet-4-6` | Superior tool use and instruction following. Research execution makes multiple tool calls — the latest Sonnet maximises quality for the most expensive stage. |
+| PlanAgent | `us.anthropic.claude-sonnet-4-6` | Structured reasoning, reliable JSON output. Planning requires careful decomposition — Sonnet's reasoning depth produces well-formed focus areas. |
+| ExecuteAgent | `us.anthropic.claude-sonnet-4-6` | Superior tool use and instruction following. Research execution makes multiple tool calls — Sonnet maximises quality for the most expensive stage. |
 | SummarizeAgent | `us.amazon.nova-pro-v1:0` | AWS-native model, fast synthesis, cost-efficient. Summarization is a writing task, not a reasoning task — Nova Pro excels here and costs less than Sonnet. |
 
 This also demonstrates Bedrock's model flexibility: you can mix Claude and Nova models in the same workflow, choosing the right model for each cognitive task. Swap any model by changing one line in the Lambda's `Function.cs` — no other stage is affected.

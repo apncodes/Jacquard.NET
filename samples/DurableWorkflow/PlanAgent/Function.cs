@@ -44,10 +44,10 @@ var handler = async (WorkflowInput input, ILambdaContext context) =>
     var agent = new Agent(
         model: new BedrockModel(
             region: Environment.GetEnvironmentVariable("AWS_REGION") ?? "us-east-1",
-            // Claude Sonnet 4.5 — chosen for structured reasoning and reliable JSON output.
+            // Claude Sonnet 4.6 — chosen for structured reasoning and reliable JSON output.
             // Planning requires careful decomposition into well-formed focus areas.
             // Each stage in this pipeline can use a different model independently.
-            modelId: "us.anthropic.claude-sonnet-4-5-20250929-v1:0"),
+            modelId: "us.anthropic.claude-sonnet-4-6"),
         systemPrompt: """
             You are a research planning specialist. Your job is to decompose a broad topic
             into a structured research plan with 3 specific focus areas.
