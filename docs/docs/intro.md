@@ -46,11 +46,14 @@ public partial class WeatherTools
 - **NativeAOT-ready** — suitable for AOT-published Lambda with sub-100ms cold start
 - **Idiomatic .NET** — `IAsyncEnumerable<T>`, generics, DI, OpenTelemetry
 - **AWS-native** — Bedrock + AgentCore Runtime, Memory, Code Interpreter, Browser, Gateway
+- **Multi-model** — Bedrock, Anthropic direct API, OpenAI-compatible (OpenAI, Azure, Ollama), Google Gemini
 - **Multi-agent** — pipeline, parallel, graph, A2A protocol
 
 ## Where to go next
 
 - **[Getting Started](./getting-started)** — install, configure, run your first agent
-- **[Concepts](./concepts/agent-event-loop)** — understand the mental model
+- **[Concepts: Agent & Event Loop](./concepts/agent-event-loop)** — understand the mental model
+- **[Concepts: Model Providers](./concepts/model-providers)** — Bedrock, Anthropic, OpenAI, Gemini
+- **[Concepts: AgentCore](./concepts/agentcore)** — Runtime, Memory, Code Interpreter, Browser, Gateway
 - **[Tutorials](./tutorials/first-agent)** — step-by-step walkthroughs
 - **[FAQ](./faq)** — common questions and troubleshooting

@@ -23,6 +23,8 @@ const sidebars: SidebarsConfig = {
         'concepts/hooks',
         'concepts/sessions',
         'concepts/multi-agent',
+        'concepts/model-providers',
+        'concepts/agentcore',
       ],
     },
     {
