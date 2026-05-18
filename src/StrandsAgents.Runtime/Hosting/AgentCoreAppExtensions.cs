@@ -8,16 +8,6 @@ namespace StrandsAgents.Runtime.Hosting;
 /// Amazon Bedrock AgentCore Runtime.
 ///
 /// <para>
-/// Python equivalent:
-/// <code>
-/// app = BedrockAgentCoreApp()
-/// @app.entrypoint
-/// def invoke(payload): ...
-/// app.run()
-/// </code>
-/// </para>
-///
-/// <para>
 /// .NET equivalent:
 /// <code>
 /// app.MapAgentCoreEndpoints();
@@ -66,6 +56,8 @@ public static class AgentCoreAppExtensions
 
         app.MapPost(invocationsPath, AgentCoreInvocationHandler.HandleAsync);
         app.MapGet(healthPath, AgentCoreHealthHandler.HandleAsync);
+        // AgentCore Runtime also health-checks /ping in addition to /health
+        app.MapGet("/ping", AgentCoreHealthHandler.HandleAsync);
 
         return app;
     }

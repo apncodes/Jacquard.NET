@@ -81,15 +81,19 @@ public static class AgentCoreServiceCollectionExtensions
     /// Enables the agent to operate a managed browser sandbox for JS-rendered pages.
     /// </summary>
     /// <param name="services">The service collection.</param>
+    /// <param name="browserIdentifier">
+    /// The AgentCore Browser resource identifier. When <c>null</c>, uses the default browser.
+    /// </param>
     /// <param name="region">AWS region. Default: <c>us-east-1</c>.</param>
     /// <returns>The same <see cref="IServiceCollection"/> for chaining.</returns>
     public static IServiceCollection AddAgentCoreBrowser(
         this IServiceCollection services,
+        string? browserIdentifier = null,
         string region = "us-east-1")
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton<ITool>(_ => new AgentCoreBrowserTool(region: region));
+        services.AddSingleton<ITool>(_ => new AgentCoreBrowserTool(browserIdentifier: browserIdentifier, region: region));
         return services;
     }
 
@@ -98,15 +102,19 @@ public static class AgentCoreServiceCollectionExtensions
     /// Enables the agent to execute code in a managed, isolated sandbox.
     /// </summary>
     /// <param name="services">The service collection.</param>
+    /// <param name="codeInterpreterIdentifier">
+    /// The AgentCore Code Interpreter resource identifier. When <c>null</c>, uses the default interpreter.
+    /// </param>
     /// <param name="region">AWS region. Default: <c>us-east-1</c>.</param>
     /// <returns>The same <see cref="IServiceCollection"/> for chaining.</returns>
     public static IServiceCollection AddAgentCoreCodeInterpreter(
         this IServiceCollection services,
+        string? codeInterpreterIdentifier = null,
         string region = "us-east-1")
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton<ITool>(_ => new AgentCoreCodeInterpreterTool(region: region));
+        services.AddSingleton<ITool>(_ => new AgentCoreCodeInterpreterTool(codeInterpreterIdentifier: codeInterpreterIdentifier, region: region));
         return services;
     }
 

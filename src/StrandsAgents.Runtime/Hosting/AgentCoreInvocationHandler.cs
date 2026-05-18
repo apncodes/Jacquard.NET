@@ -28,6 +28,11 @@ internal static class AgentCoreInvocationHandler
         AgentCoreRequest? request;
         try
         {
+            // AgentCore Runtime may omit Content-Type on the invocation request.
+            // Force the content type to application/json so ReadFromJsonAsync works
+            // regardless of what the runtime sends.
+            ctx.Request.ContentType = "application/json";
+
             request = await ctx.Request.ReadFromJsonAsync<AgentCoreRequest>(_json, ctx.RequestAborted)
                 .ConfigureAwait(false);
         }
