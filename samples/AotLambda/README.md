@@ -2,13 +2,13 @@
 
 This sample publishes a Strands Agents .NET agent as a **NativeAOT** AWS Lambda function using the `provided.al2023` custom runtime. The result is a self-contained native binary with no .NET runtime dependency.
 
-**Recommended: use `arm64` (Graviton2).** Measured ~96ms average cold-start init duration at 512 MB — 18% faster than x86_64, smaller binary, and ~20% cheaper per GB-second.
+**Recommended: use `arm64` (Graviton2).** Measured **95.3ms average** cold-start init duration at 512 MB (20 cold starts) — 20% faster than x86_64, 17/20 runs under 100ms, smaller binary, and ~20% cheaper per GB-second.
 
 ## Why AOT?
 
 Standard .NET Lambda functions use the JIT runtime. On first invocation (cold start), the runtime must load, JIT-compile the code, and initialize the agent. This typically takes 200–500ms.
 
-NativeAOT compiles everything to native machine code at build time. There is no JIT warm-up. Cold-start init duration drops to under 100ms on Graviton2 — compared to 200–500ms for the equivalent JIT runtime.
+NativeAOT compiles everything to native machine code at build time. There is no JIT warm-up. Cold-start init duration averages 95.3ms on Graviton2 (17/20 runs under 100ms) — compared to 200–500ms for the equivalent JIT runtime.
 
 The Strands Agents .NET tool system is designed for this: the `[Tool]` attribute triggers a Roslyn source generator that emits compile-time `ITool` wrappers. Zero runtime reflection means zero trimming surprises.
 
@@ -142,54 +142,67 @@ aws lambda invoke \
 | Date | 2026-05-19 |
 | AWS region | `us-east-1` |
 | Lambda runtime | `provided.al2023` |
-| Lambda memory | 512 MB |
 | Model | `us.anthropic.claude-haiku-4-5-20251001-v1:0` (cross-region inference profile) |
 | Cold-start method | `update-function-configuration` between each invocation (forces new execution environment) |
 | Workload | Single tool-using agent: user asks for weather → model calls `GetWeather` tool → model synthesizes response |
 | LLM calls per invocation | 2 (one to decide tool call, one to synthesize result with tool output) |
-| Runs | 5 cold starts per architecture |
+| Runs | 20 cold starts per architecture |
 
-### Results — arm64 (Graviton2)
+### Results — arm64 (Graviton2, 512 MB)
 
-| Run | Init Duration (ms) | Total Duration (ms) | Memory Used |
+| Run | Init Duration (ms) | Run | Init Duration (ms) |
 |---|---|---|---|
-| 1 | 112.22 | 2,311 | 53 MB |
-| 2 | 94.96 | 2,081 | 53 MB |
-| 3 | 82.77 | 3,700 | 51 MB |
-| 4 | 102.94 | 2,130 | 51 MB |
-| 5 | 89.14 | 2,372 | 53 MB |
+| 1 | 108.69 | 11 | 95.85 |
+| 2 | 107.45 | 12 | 83.47 |
+| 3 | 94.29 | 13 | 100.39 |
+| 4 | 97.22 | 14 | 92.29 |
+| 5 | 97.76 | 15 | 86.62 |
+| 6 | 98.88 | 16 | 97.17 |
+| 7 | 94.36 | 17 | 76.99 |
+| 8 | 97.72 | 18 | 99.55 |
+| 9 | 98.78 | 19 | 81.99 |
+| 10 | 99.12 | 20 | 97.00 |
 
-| Metric | Init Duration (ms) | Total Duration (ms) |
-|---|---|---|
-| **Average** | **96.4** | 2,519 |
-| **Min** | **82.8** | 2,081 |
-| Max | 112.2 | 3,700 |
+| Metric | Init Duration (ms) |
+|---|---|
+| **Average** | **95.3** |
+| **Min** | **77.0** |
+| Max | 108.7 |
+| **Runs under 100ms** | **17 / 20** |
 
-### Results — x86_64
+### Results — x86_64 (1024 MB)
 
-| Run | Init Duration (ms) | Total Duration (ms) | Memory Used |
+| Run | Init Duration (ms) | Run | Init Duration (ms) |
 |---|---|---|---|
-| 1 | 107.39 | 2,462 | 52 MB |
-| 2 | 140.28 | 2,970 | 52 MB |
-| 3 | 124.48 | 2,604 | 52 MB |
-| 4 | 108.74 | 2,385 | 52 MB |
-| 5 | 107.26 | 2,457 | 52 MB |
+| 1 | 113.09 | 11 | 112.01 |
+| 2 | 107.96 | 12 | 165.20 |
+| 3 | 113.60 | 13 | 138.43 |
+| 4 | 101.53 | 14 | 114.96 |
+| 5 | 121.22 | 15 | 102.56 |
+| 6 | 116.81 | 16 | 123.84 |
+| 7 | 118.65 | 17 | 110.55 |
+| 8 | 129.82 | 18 | 107.72 |
+| 9 | 128.41 | 19 | 114.56 |
+| 10 | 108.65 | 20 | 146.41 |
 
-| Metric | Init Duration (ms) | Total Duration (ms) |
-|---|---|---|
-| Average | 117.6 | 2,576 |
-| Min | 107.3 | 2,385 |
-| Max | 140.3 | 2,970 |
+| Metric | Init Duration (ms) |
+|---|---|
+| Average | 119.8 |
+| Min | 101.5 |
+| Max | 165.2 |
+| Runs under 100ms | 0 / 20 |
 
 ### Architecture comparison
 
-| | arm64 (Graviton2) | x86_64 |
+| | arm64 (Graviton2, 512 MB) | x86_64 (1024 MB) |
 |---|---|---|
-| Avg init duration | **96.4 ms** | 117.6 ms |
-| Min init duration | **82.8 ms** | 107.3 ms |
+| **Avg init duration** | **95.3 ms** | 119.8 ms |
+| **Min init duration** | **77.0 ms** | 101.5 ms |
+| Max init duration | 108.7 ms | 165.2 ms |
+| Runs under 100ms | **17 / 20** | 0 / 20 |
 | Binary size (uncompressed) | **14 MB** | 25 MB |
 | Zip size | **5.4 MB** | ~14 MB |
-| Memory used | 51–53 MB | 52 MB |
+| Memory used | 51–55 MB | 52 MB |
 | Price per GB-second | ~20% cheaper | baseline |
 
 ### What the numbers mean
