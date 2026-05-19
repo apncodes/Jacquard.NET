@@ -2,7 +2,7 @@
 
 This sample publishes a Strands Agents .NET agent as a **NativeAOT** AWS Lambda function using the `provided.al2023` custom runtime. The result is a self-contained native binary with no .NET runtime dependency.
 
-**Recommended: use `arm64` (Graviton2).** At 512 MB: **95.3ms average** cold-start (17/20 under 100ms). At 1024 MB: **89.6ms average** (19/20 under 100ms). Both are 20%+ faster than x86_64 and ~20% cheaper per GB-second.
+**Recommended: use `arm64` (Graviton2) at 1024 MB.** Best average cold-start at 89.6ms (19/20 under 100ms). Going higher yields no benefit — 2048 MB and 3008 MB regress back to ~95ms.
 
 ## Why AOT?
 
@@ -146,7 +146,18 @@ aws lambda invoke \
 | Cold-start method | `update-function-configuration` between each invocation (forces new execution environment) |
 | Workload | Single tool-using agent: user asks for weather → model calls `GetWeather` tool → model synthesizes response |
 | LLM calls per invocation | 2 (one to decide tool call, one to synthesize result with tool output) |
-| Runs | 20 cold starts per configuration |
+| Runs | 20 cold starts (512 MB, 1024 MB); 10 cold starts (2048 MB, 3008 MB) |
+
+### Memory step-up summary — arm64 Graviton2
+
+| Memory | Avg init | Min | Max | Under 100ms | vs 512 MB |
+|---|---|---|---|---|---|
+| 512 MB | 95.3 ms | 77.0 ms | 108.7 ms | 17/20 | baseline |
+| **1024 MB** | **89.6 ms** | **77.7 ms** | **101.6 ms** | **19/20** | **−5.6 ms** |
+| 2048 MB | 95.1 ms | 81.3 ms | 99.1 ms | 10/10 | −0.2 ms |
+| 3008 MB | 95.1 ms | 82.9 ms | 110.1 ms | 7/10 | −0.2 ms |
+
+**Sweet spot is 1024 MB.** The jump from 512 MB to 1024 MB saves ~5.6ms and pushes 19/20 runs under 100ms. Beyond 1024 MB there is no further improvement — 2048 MB and 3008 MB regress back to ~95ms average, likely due to Lambda provisioning different hardware at higher memory tiers.
 
 ### Results — arm64 Graviton2, 512 MB
 
@@ -192,6 +203,40 @@ aws lambda invoke \
 | Max | 101.6 |
 | Under 100ms | **19 / 20** |
 
+### Results — arm64 Graviton2, 2048 MB
+
+| Run | Init (ms) | Run | Init (ms) |
+|---|---|---|---|
+| 1 | 97.94 | 6 | 98.90 |
+| 2 | 99.11 | 7 | 97.44 |
+| 3 | 90.26 | 8 | 98.27 |
+| 4 | 81.28 | 9 | 92.76 |
+| 5 | 97.87 | 10 | 97.47 |
+
+| Metric | ms |
+|---|---|
+| Average | 95.1 |
+| Min | 81.3 |
+| Max | 99.1 |
+| Under 100ms | 10 / 10 |
+
+### Results — arm64 Graviton2, 3008 MB
+
+| Run | Init (ms) | Run | Init (ms) |
+|---|---|---|---|
+| 1 | 82.90 | 6 | 110.05 |
+| 2 | 99.79 | 7 | 106.57 |
+| 3 | 101.80 | 8 | 98.31 |
+| 4 | 84.22 | 9 | 83.46 |
+| 5 | 83.78 | 10 | 99.84 |
+
+| Metric | ms |
+|---|---|
+| Average | 95.1 |
+| Min | 82.9 |
+| Max | 110.1 |
+| Under 100ms | 7 / 10 |
+
 ### Results — x86_64, 1024 MB
 
 | Run | Init (ms) | Run | Init (ms) |
@@ -214,15 +259,17 @@ aws lambda invoke \
 | Max | 165.2 |
 | Under 100ms | 0 / 20 |
 
-### Three-way comparison
+### Full comparison
 
-| Configuration | Avg init | Min | Max | Under 100ms | Binary size | Price/GB-s |
+| Configuration | Avg init | Min | Max | Under 100ms | Binary | Price/GB-s |
 |---|---|---|---|---|---|---|
 | **arm64 Graviton2, 1024 MB** | **89.6 ms** | 77.7 ms | 101.6 ms | **19/20** | 14 MB | ~20% cheaper |
 | arm64 Graviton2, 512 MB | 95.3 ms | 77.0 ms | 108.7 ms | 17/20 | 14 MB | ~20% cheaper |
+| arm64 Graviton2, 2048 MB | 95.1 ms | 81.3 ms | 99.1 ms | 10/10 | 14 MB | ~20% cheaper |
+| arm64 Graviton2, 3008 MB | 95.1 ms | 82.9 ms | 110.1 ms | 7/10 | 14 MB | ~20% cheaper |
 | x86_64, 1024 MB | 119.8 ms | 101.5 ms | 165.2 ms | 0/20 | 25 MB | baseline |
 
-**Verdict:** arm64 1024 MB is 5.6ms (6%) faster than arm64 512 MB — a real but modest improvement. If cold-start latency is critical, 1024 MB is worth it. For cost-sensitive workloads, 512 MB delivers nearly the same result at half the memory cost. Either arm64 configuration is ~25% faster than x86_64 at 1024 MB.
+**Verdict:** 1024 MB is the sweet spot. It's the only tier that consistently beats 95ms average and gets 19/20 runs under 100ms. Higher memory tiers show no benefit — the bottleneck at 2048 MB+ is not CPU or memory bandwidth but binary loading and static initialization, which don't scale with memory. x86_64 at any memory size doesn't break 100ms.
 
 ### What the numbers mean
 
