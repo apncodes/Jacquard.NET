@@ -12,7 +12,7 @@
 - **NativeAOT-ready** — reflection-free hot path, suitable for AOT-published Lambda binaries
 - **Idiomatic .NET** — `IAsyncEnumerable<T>`, generics, DI, OpenTelemetry, `[LoggerMessage]`
 - **AWS-native** — Bedrock + AgentCore Runtime, Memory, Code Interpreter, Browser, Gateway
-- **Multi-agent in one package** — pipeline, parallel, graph, A2A protocol
+- **Multi-agent in one package** — pipeline, parallel, graph, swarm, A2A protocol
 
 ---
 
@@ -201,6 +201,39 @@ var results = await new ParallelOrchestrator([techAgent, marketAgent, riskAgent]
 // All three run concurrently via Task.WhenAll
 ```
 
+### Swarm — dynamic agent-driven handoffs
+
+Unlike the fixed patterns above, a swarm has no predetermined execution path. Each agent decides autonomously whether to hand off to a peer or terminate. Shared context accumulates as agents contribute knowledge.
+
+```csharp
+var swarm = new SwarmOrchestrator(
+[
+    new SwarmAgentNode("researcher", researchAgent, "Gathers facts and sources"),
+    new SwarmAgentNode("analyst",   analystAgent,  "Structures findings into an outline"),
+    new SwarmAgentNode("writer",    writerAgent,   "Drafts the article"),
+    new SwarmAgentNode("editor",    editorAgent,   "Reviews and polishes the final article"),
+],
+routingModel: model,
+entryPoint: "researcher",
+maxHandoffs: 10,
+maxIterations: 12);
+
+// RunAsync — returns when the swarm terminates
+var result = await swarm.RunAsync("Write an article about quantum computing");
+
+// StreamAsync — observe every lifecycle event in real time
+await foreach (var evt in swarm.StreamAsync("Write an article about quantum computing"))
+{
+    switch (evt)
+    {
+        case AgentStartedEvent e:  Console.WriteLine($"[{e.Iteration}] {e.AgentId}"); break;
+        case AgentTextDeltaEvent e: Console.Write(e.Delta); break;
+        case HandoffEvent e:       Console.WriteLine($"→ {e.ToAgentId}"); break;
+        case SwarmCompletedEvent e: Console.WriteLine($"Done: {e.Status}"); break;
+    }
+}
+```
+
 ### Graph with conditional routing
 
 ```csharp
@@ -314,7 +347,7 @@ builder.Services
 
 ### Multi-agent
 
-- **Multi-agent graph** — `GraphBuilder` with conditional routing; `PipelineOrchestrator`; `ParallelOrchestrator`
+- **Multi-agent graph** — `GraphBuilder` with conditional routing; `PipelineOrchestrator`; `ParallelOrchestrator`; `SwarmOrchestrator` with dynamic agent-driven handoffs and `IAsyncEnumerable<SwarmEvent>` streaming
 - **Agent as tool** — wrap any `IAgent` as an `ITool` with `agent.AsTool()` for hierarchical orchestration
 - **MCP** — connect any Model Context Protocol server (stdio or SSE) via `McpToolProvider`
 - **A2A protocol** — expose agents over HTTP with `MapA2AEndpoint`; call remote agents with `A2AAgent` (cross-framework, cross-language)
@@ -368,6 +401,8 @@ builder.Services
 | [SupportTriage](samples/SupportTriage) | Graph routing, hooks, and structured output extraction |
 | [CustomerServiceApi](samples/CustomerServiceApi) | Production-shaped REST API with session persistence |
 | [FinanceAssistant](samples/FinanceAssistant) | 4-agent parallel swarm with typed report extraction |
+| [SwarmResearch](samples/SwarmResearch) | Dynamic swarm — 4 agents collaborate via autonomous handoffs to write a technology article; `SwarmOrchestrator.StreamAsync` with live console output |
+| [SwarmResearchWeb](samples/SwarmResearchWeb) | Same swarm pattern as a web app — SSE endpoint + dark-theme browser UI with real-time agent pipeline, activity log, and streaming text |
 | [PersistentAssistant](samples/PersistentAssistant) | Cross-run memory with automatic summarization |
 | [DistributedAgents](samples/DistributedAgents) | A2A cross-process agent communication |
 | [ChatUI](samples/ChatUI) | Browser chat UI with SSE streaming and tool badges |

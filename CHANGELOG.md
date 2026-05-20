@@ -6,6 +6,24 @@ All notable changes to Strands Agents .NET are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- **`SwarmOrchestrator`** (`StrandsAgents.MultiAgent`) — dynamic agent-driven handoff chain. Unlike `PipelineOrchestrator` (fixed sequence) or `ParallelOrchestrator` (fan-out/fan-in), a swarm has no predetermined execution path. Each agent receives the full task context — original request, agent history, shared knowledge from previous agents, and the list of available peers — then decides autonomously whether to hand off or terminate.
+
+- **`SwarmOrchestrator.StreamAsync`** — `IAsyncEnumerable<SwarmEvent>` stream of typed lifecycle events. `RunAsync` is implemented by consuming `StreamAsync` internally — single source of truth for loop logic.
+
+- **`SwarmEvent` hierarchy** — `SwarmStartedEvent`, `AgentStartedEvent`, `AgentTextDeltaEvent`, `AgentToolCallEvent`, `AgentToolResultEvent`, `AgentCompletedEvent`, `HandoffEvent`, `SwarmCompletedEvent`. Subscribe from any `IAsyncEnumerable` consumer: console, ASP.NET SSE endpoint, Blazor component, etc.
+
+- **`SwarmAgentNode`** — named agent node with optional description used as routing hints for peer agents.
+
+- **`SwarmResult`** / **`SwarmNodeResult`** — result types carrying final message, ordered node history, termination status (`Completed`, `MaxHandoffsReached`, `MaxIterationsReached`, `TimedOut`), and aggregate token usage.
+
+- **Safety bounds** — `maxHandoffs`, `maxIterations`, `executionTimeout`, `nodeTimeout`, and ping-pong detection via `repetitiveHandoffDetectionWindow` / `repetitiveHandoffMinUniqueAgents`.
+
+- **`samples/SwarmResearch`** — console sample: 4-agent research article swarm (researcher → analyst → writer → editor) with rich live output using the `SwarmEvent` stream.
+
+- **`samples/SwarmResearchWeb`** — ASP.NET Core web sample: same swarm pattern with an SSE endpoint and a dark-theme browser UI showing real-time agent pipeline, activity log, streaming text, and final article tab.
+
 ---
 
 ## [0.1.10] — 2026-05-15
