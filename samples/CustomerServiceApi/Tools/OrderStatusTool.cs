@@ -8,7 +8,7 @@ namespace CustomerServiceApi;
 /// Simulates an order management system lookup.
 /// In production this would call your OMS or ERP API.
 /// </summary>
-public sealed class OrderStatusTool
+public sealed partial class OrderStatusTool
 {
     private static readonly IReadOnlyDictionary<string, string> _orders =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

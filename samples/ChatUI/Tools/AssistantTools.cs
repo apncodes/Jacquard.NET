@@ -10,7 +10,7 @@ namespace ChatUI;
 /// In production, GetWeather would call OpenWeatherMap or similar.
 /// GetCurrentTime uses the real system clock with IANA time-zone identifiers.
 /// </summary>
-public sealed class AssistantTools
+public sealed partial class AssistantTools
 {
     private static readonly IReadOnlyDictionary<string, (string Condition, int TempC, int Humidity, string Wind)> _weather =
         new Dictionary<string, (string, int, int, string)>(StringComparer.OrdinalIgnoreCase)

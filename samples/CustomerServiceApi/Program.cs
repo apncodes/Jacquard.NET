@@ -38,13 +38,10 @@ var sessionsDir = Path.Combine(
 
 builder.Services.AddSingleton<ISessionManager>(_ => new FileSessionManager(sessionsDir));
 
-// ── tools — registered as factory lambdas (generated classes need wrapping type) ──
+// ── tools — registered via IToolProvider pattern ──────────────────────────────
 
-builder.Services.AddTransient<ITool>(_ =>
-    new OrderStatusTool_GetStatus_Tool(new OrderStatusTool()));
-
-builder.Services.AddTransient<ITool>(_ =>
-    new KnowledgeBaseTool_Search_Tool(new KnowledgeBaseTool()));
+builder.Services.AddJacquardToolProvider<OrderStatusTool>();
+builder.Services.AddJacquardToolProvider<KnowledgeBaseTool>();
 
 // ── chat session store ─────────────────────────────────────────────────────────
 

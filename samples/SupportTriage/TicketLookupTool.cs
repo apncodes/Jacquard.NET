@@ -6,7 +6,7 @@ namespace SupportTriage;
 /// Simulates a CRM lookup for support ticket and customer information.
 /// In production this would call your ticketing system API.
 /// </summary>
-public sealed class TicketLookupTool
+public sealed partial class TicketLookupTool
 {
     private static readonly IReadOnlyDictionary<string, string> _crm =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

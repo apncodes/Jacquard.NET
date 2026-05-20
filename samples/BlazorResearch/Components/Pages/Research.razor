@@ -1,7 +1,7 @@
 @page "/"
 @rendermode InteractiveServer
 @inject IModel Model
-@inject IEnumerable<ITool> Tools
+@inject IEnumerable<IToolProvider> Tools
 @implements IDisposable
 
 <PageTitle>Research Portal — Strands</PageTitle>
@@ -251,7 +251,7 @@
             index:     i,
             prompt:    $"Research topic: {currentTopic}",
             systemPrompt: def.Prompt,
-            tools:     toolsArray,
+            toolProviders: toolsArray,
             ct:        ct)).ToArray();
 
         await Task.WhenAll(analystTasks);
@@ -302,11 +302,11 @@
     }
 
     private async Task RunAnalystAsync(
-        int index, string prompt, string systemPrompt, ITool[] tools, CancellationToken ct)
+        int index, string prompt, string systemPrompt, IToolProvider[] toolProviders, CancellationToken ct)
     {
         try
         {
-            var agent = new Agent(Model, systemPrompt: systemPrompt, tools: tools);
+            var agent = new Agent(Model, systemPrompt: systemPrompt, toolProviders: toolProviders);
             var result = await agent.InvokeAsync(prompt, ct).ConfigureAwait(false);
 
             analysts[index].Result = result.Message;

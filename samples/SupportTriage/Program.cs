@@ -33,9 +33,8 @@ var model = new BedrockModel(region: Region, modelId: ModelId);
 
 // ── tool ──────────────────────────────────────────────────────────────────────
 
-// TicketLookupTool_LookupTicket_Tool is generated at compile time by Jacquard.SourceGenerator.
-// The JSON schema is a string literal baked into the generated class — zero runtime reflection.
-ITool[] specialistTools = [new TicketLookupTool_LookupTicket_Tool(new TicketLookupTool())];
+// TicketLookupTool is a partial class — the source generator emits IToolProvider at compile time.
+IToolProvider[] specialistTools = [new TicketLookupTool()];
 
 // ── sample tickets ────────────────────────────────────────────────────────────
 
@@ -135,7 +134,7 @@ Console.WriteLine("All tickets processed.");
 
 // ── graph factory ─────────────────────────────────────────────────────────────
 
-static AgentGraph BuildGraph(IModel model, ITool[] tools, HookRegistry hooks)
+static AgentGraph BuildGraph(IModel model, IToolProvider[] tools, HookRegistry hooks)
 {
     // TriageAgent: classifies the ticket and starts its response with "ROUTE: <category>".
     // The rest of its message becomes the prompt for the specialist (passed via AgentGraph's
@@ -161,7 +160,7 @@ static AgentGraph BuildGraph(IModel model, ITool[] tools, HookRegistry hooks)
             to retrieve their account details before responding.
             Write a clear, empathetic response of 3–4 sentences. Address the customer directly.
             """,
-        tools: tools,
+        toolProviders: tools,
         hooks: hooks);
 
     return new GraphBuilder()

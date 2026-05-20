@@ -8,7 +8,7 @@ namespace CustomerServiceApi;
 /// Simulates a knowledge base article search.
 /// In production this would query a vector store or search index.
 /// </summary>
-public sealed class KnowledgeBaseTool
+public sealed partial class KnowledgeBaseTool
 {
     private static readonly (string[] Keywords, string Article)[] _articles =
     [

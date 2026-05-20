@@ -1,6 +1,7 @@
 using BlazorResearch;
 using BlazorResearch.Components;
 using Jacquard.Core;
+using Jacquard.Extensions.DI;
 using Jacquard.Models.Bedrock;
 
 // BlazorResearch — a Blazor Server research portal backed by a Jacquard multi-agent swarm.
@@ -36,10 +37,8 @@ builder.Services.AddSingleton<IModel>(_ => new BedrockModel(
     region:  builder.Configuration["Bedrock:Region"]  ?? "us-east-1",
     modelId: builder.Configuration["Bedrock:ModelId"] ?? "us.anthropic.claude-haiku-4-5-20251001-v1:0"));
 
-// The source-generated wrapper is registered as a factory lambda because its
-// constructor requires a ResearchTool instance.
-builder.Services.AddSingleton<ITool>(_ =>
-    new ResearchTool_Search_Tool(new ResearchTool()));
+// ResearchTool is a partial class — the source generator emits IToolProvider at compile time.
+builder.Services.AddJacquardToolProvider<ResearchTool>();
 
 // ── Blazor ─────────────────────────────────────────────────────────────────────
 

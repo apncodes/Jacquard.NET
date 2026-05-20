@@ -8,7 +8,7 @@ namespace BlazorResearch;
 /// Simulates a web search API used by the research portal agents.
 /// In production this would call Bing, Tavily, or another search provider.
 /// </summary>
-public sealed class ResearchTool
+public sealed partial class ResearchTool
 {
     private static readonly (string[] Keywords, string Result)[] _index =
     [

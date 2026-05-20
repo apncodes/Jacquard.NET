@@ -30,13 +30,8 @@ var model = new BedrockModel(
     region:  builder.Configuration["Bedrock:Region"]  ?? "us-east-1",
     modelId: builder.Configuration["Bedrock:ModelId"] ?? "us.anthropic.claude-haiku-4-5-20251001-v1:0");
 
-// Shared tool instances — stateless, safe to reuse across sessions.
+// Shared tool instance — stateless, safe to reuse across sessions.
 var tools = new AssistantTools();
-ITool[] toolInstances =
-[
-    new AssistantTools_GetWeather_Tool(tools),
-    new AssistantTools_GetCurrentTime_Tool(tools),
-];
 
 // In-memory session store — each browser session gets its own Agent with conversation history.
 var sessions = new ConcurrentDictionary<string, Agent>(StringComparer.Ordinal);
@@ -52,7 +47,7 @@ Agent GetOrCreate(string sessionId) => sessions.GetOrAdd(sessionId, _ => new Age
         For other questions, answer directly and concisely.
         Keep responses brief and conversational.
         """,
-    tools: toolInstances));
+    toolProviders: [tools]));
 
 var app = builder.Build();
 app.UseDefaultFiles();   // serves index.html for GET /

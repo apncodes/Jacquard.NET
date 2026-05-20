@@ -8,8 +8,8 @@ using Jacquard.Extensions.DI;
 //   • AddBedrockModel()              — registers IModel as BedrockModel singleton
 //   • AddFileReadTool()              — registers FileReadTool scoped to a safe directory
 //   • AddFileWriteTool()             — registers FileWriteTool scoped to the same directory
-//   • AddStrandsAgent()              — wires IAgent from the container, injecting model + tools
-//   • AddStrandsInMemorySessionManager() — ISessionManager persists sessions to an in-memory store
+//   • AddJacquardAgent()              — wires IAgent from the container, injecting model + tools
+//   • AddJacquardInMemorySessionManager() — ISessionManager persists sessions to an in-memory store
 //   • AgentConfig (via configure delegate) — sets SlidingWindowStrategy + MaxContextTokens
 //
 // The sample resolves one agent from the container and runs a two-turn conversation.
@@ -38,8 +38,8 @@ try
             modelId: "us.anthropic.claude-haiku-4-5-20251001-v1:0")
         .AddFileReadTool(workspace)
         .AddFileWriteTool(workspace)
-        .AddStrandsInMemorySessionManager()
-        .AddStrandsAgent(new AgentConfig
+        .AddJacquardInMemorySessionManager()
+        .AddJacquardAgent(new AgentConfig
         {
             // Week 2: configure context window trimming via the AgentConfig record.
             ContextWindowStrategy = new SlidingWindowStrategy(),

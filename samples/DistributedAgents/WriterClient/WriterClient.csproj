@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
-    <ProjectReference Include="..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
-    <ProjectReference Include="..\..\src\Jacquard.MultiAgent\Jacquard.MultiAgent.csproj" />
+    <ProjectReference Include="..\..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
+    <ProjectReference Include="..\..\..\src\Jacquard.MultiAgent\Jacquard.MultiAgent.csproj" />
   </ItemGroup>
 
 </Project>

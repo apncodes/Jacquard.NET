@@ -71,4 +71,4 @@ The `[Tool]` attribute and `partial class` tell the Roslyn source generator — 
 
 Jacquard.NET is a ground-up C# implementation of the Jacquard Agents design. The core concepts — model-driven event loop, tool system, hooks, multi-agent orchestration — follow the Strands architecture, and the A2A protocol implementation is interoperable across the Strands Python and TypeScript SDKs.
 
-This project is currently maintained independently and is not officially affiliated with the upstream Jacquard Agents project. Licensed under Apache 2.0.
+This project is currently maintained independently and is not officially affiliated with the upstream Strands Agents project. Licensed under Apache 2.0.

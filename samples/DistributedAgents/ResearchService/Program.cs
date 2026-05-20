@@ -46,7 +46,7 @@ var researchAgent = new Agent(
           • 1 sentence on the significance or outlook
         Be factual, concise, and cite the source material where appropriate.
         """,
-    tools: [new WebSearchTool_Search_Tool(new WebSearchTool())]);
+    toolProviders: [new WebSearchTool()]);
 
 var app = builder.Build();
 

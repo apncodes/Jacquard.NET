@@ -2,7 +2,7 @@ using Jacquard.Core;
 
 // Namespace matches the project root so source-generated tool wrappers
 // (FinanceDataTool_GetQuote_Tool, etc.) are accessible in Program.cs without extra usings.
-namespace FinanceAssistant;
+namespace FinanceAssistantTools;
 
 /// <summary>
 /// Simulates a market data and financial research API.

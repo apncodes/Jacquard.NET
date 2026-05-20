@@ -8,7 +8,7 @@ namespace ResearchService;
 /// Simulates a web search engine API.
 /// In production this would call Bing, Tavily, or another search provider.
 /// </summary>
-public sealed class WebSearchTool
+public sealed partial class WebSearchTool
 {
     private static readonly (string[] Keywords, string Result)[] _results =
     [
