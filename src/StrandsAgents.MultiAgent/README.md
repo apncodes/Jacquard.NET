@@ -17,6 +17,31 @@ var result = await pipeline.InvokeAsync("Write a report on quantum computing");
 var results = await new ParallelOrchestrator([agent1, agent2, agent3])
     .RunAsync("Analyse this from your specialist perspective");
 
+// Swarm — dynamic agent-driven handoff chain with real-time event streaming
+var swarm = new SwarmOrchestrator(
+[
+    new SwarmAgentNode("researcher", researchAgent, "Gathers facts and sources"),
+    new SwarmAgentNode("writer",     writerAgent,   "Drafts the article"),
+    new SwarmAgentNode("editor",     editorAgent,   "Reviews and polishes"),
+],
+routingModel: model,
+entryPoint: "researcher");
+
+// RunAsync — returns SwarmResult when complete
+var result = await swarm.RunAsync("Write an article about quantum computing");
+
+// StreamAsync — IAsyncEnumerable<SwarmEvent> for real-time observation
+await foreach (var evt in swarm.StreamAsync("Write an article about quantum computing"))
+{
+    switch (evt)
+    {
+        case AgentStartedEvent e:   Console.WriteLine($"[{e.Iteration}] {e.AgentId}"); break;
+        case AgentTextDeltaEvent e: Console.Write(e.Delta); break;
+        case HandoffEvent e:        Console.WriteLine($"→ {e.ToAgentId}"); break;
+        case SwarmCompletedEvent e: Console.WriteLine($"Done: {e.Status}"); break;
+    }
+}
+
 // Graph routing — LLM decides the next node
 var graph = new GraphBuilder()
     .AddNode("triage", triageAgent)

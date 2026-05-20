@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swarm Research — Strands Agents</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <!-- Hexagonal swarm node motif -->
+          <circle cx="12" cy="12" r="2.5"/>
+          <circle cx="12" cy="4"  r="1.5"/>
+          <circle cx="19" cy="8"  r="1.5"/>
+          <circle cx="19" cy="16" r="1.5"/>
+          <circle cx="12" cy="20" r="1.5"/>
+          <circle cx="5"  cy="16" r="1.5"/>
+          <circle cx="5"  cy="8"  r="1.5"/>
+          <line x1="12" y1="9.5"  x2="12" y2="5.5"/>
+          <line x1="12" y1="9.5"  x2="17.5" y2="9"/>
+          <line x1="12" y1="14.5" x2="17.5" y2="15"/>
+          <line x1="12" y1="14.5" x2="12" y2="18.5"/>
+          <line x1="12" y1="14.5" x2="6.5" y2="15"/>
+          <line x1="12" y1="9.5"  x2="6.5" y2="9"/>
+        </svg>
+        <div>
+          <div class="brand-name">Swarm Research</div>
+          <div class="brand-sub">Multi-agent article synthesis · Strands Agents .NET</div>
+        </div>
+      </div>
+      <div id="status-badge" class="status-badge status-idle">Idle</div>
+    </div>
+  </header>
+
+  <!-- ── Main layout ─────────────────────────────────────────────────────── -->
+  <main>
+
+    <!-- Left: input + agent pipeline + activity log -->
+    <aside class="panel panel-left">
+
+      <!-- Topic input -->
+      <section class="input-section">
+        <label class="field-label" for="topic-input">Research Topic</label>
+        <div class="input-row">
+          <input
+            id="topic-input"
+            type="text"
+            placeholder="e.g. quantum computing"
+            value="large language models"
+            autocomplete="off"
+          />
+          <button id="run-btn" onclick="runSwarm()">Run</button>
+        </div>
+        <div class="topic-chips">
+          <button class="chip" onclick="setTopic('quantum computing')">Quantum Computing</button>
+          <button class="chip" onclick="setTopic('renewable energy')">Renewable Energy</button>
+          <button class="chip" onclick="setTopic('artificial intelligence')">Artificial Intelligence</button>
+        </div>
+      </section>
+
+      <!-- Agent pipeline -->
+      <section class="pipeline-section">
+        <div class="section-label">Agent Pipeline</div>
+        <div class="pipeline" id="pipeline">
+          <div class="pipeline-node" id="node-researcher" data-agent="researcher">
+            <div class="node-indicator"></div>
+            <div class="node-body">
+              <div class="node-name">Researcher</div>
+              <div class="node-desc">Facts &amp; sources</div>
+            </div>
+            <div class="node-tokens" id="tokens-researcher"></div>
+          </div>
+          <div class="pipeline-arrow">↓</div>
+          <div class="pipeline-node" id="node-analyst" data-agent="analyst">
+            <div class="node-indicator"></div>
+            <div class="node-body">
+              <div class="node-name">Analyst</div>
+              <div class="node-desc">Outline &amp; structure</div>
+            </div>
+            <div class="node-tokens" id="tokens-analyst"></div>
+          </div>
+          <div class="pipeline-arrow">↓</div>
+          <div class="pipeline-node" id="node-writer" data-agent="writer">
+            <div class="node-indicator"></div>
+            <div class="node-body">
+              <div class="node-name">Writer</div>
+              <div class="node-desc">Article draft</div>
+            </div>
+            <div class="node-tokens" id="tokens-writer"></div>
+          </div>
+          <div class="pipeline-arrow">↓</div>
+          <div class="pipeline-node" id="node-editor" data-agent="editor">
+            <div class="node-indicator"></div>
+            <div class="node-body">
+              <div class="node-name">Editor</div>
+              <div class="node-desc">Review &amp; polish</div>
+            </div>
+            <div class="node-tokens" id="tokens-editor"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity log -->
+      <section class="log-section">
+        <div class="section-label">Activity Log</div>
+        <div class="log" id="log">
+          <div class="log-placeholder">Run the swarm to see activity.</div>
+        </div>
+      </section>
+
+      <!-- Stats bar -->
+      <div class="stats-bar" id="stats-bar" style="display:none">
+        <div class="stat">
+          <span class="stat-label">Status</span>
+          <span class="stat-value" id="stat-status">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Agents</span>
+          <span class="stat-value" id="stat-path">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Tokens</span>
+          <span class="stat-value" id="stat-tokens">—</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Right: live agent output + final article -->
+    <section class="panel panel-right">
+
+      <div class="output-header">
+        <div class="section-label">Agent Output</div>
+        <div class="output-tabs">
+          <button class="tab active" id="tab-live"     onclick="switchTab('live')">Live</button>
+          <button class="tab"        id="tab-article"  onclick="switchTab('article')">Article</button>
+        </div>
+      </div>
+
+      <!-- Live streaming output -->
+      <div class="output-pane" id="pane-live">
+        <div class="output-placeholder" id="output-placeholder">
+          Agent output will stream here in real time.
+        </div>
+        <div id="agent-blocks"></div>
+      </div>
+
+      <!-- Final article -->
+      <div class="output-pane hidden" id="pane-article">
+        <div class="article-placeholder" id="article-placeholder">
+          The final article will appear here when the swarm completes.
+        </div>
+        <div class="article-content" id="article-content" style="display:none"></div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
