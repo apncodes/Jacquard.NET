@@ -8,10 +8,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-
-    # Only the repo owner may trigger a publish by pushing a v* tag.
-    # Any tag pushed by another actor causes the job to exit cleanly without publishing.
-    if: github.actor == 'apncodes'
+    environment: nuget-publish   # requires manual approval from the environment's required reviewers
 
     steps:
       - uses: actions/checkout@v4
