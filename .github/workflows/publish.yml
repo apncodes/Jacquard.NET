@@ -9,6 +9,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
+    # Only the repo owner may trigger a publish by pushing a v* tag.
+    # Any tag pushed by another actor causes the job to exit cleanly without publishing.
+    if: github.actor == 'apncodes'
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,6 +26,6 @@ jobs:
       - name: Push to NuGet
         run: |
           dotnet nuget push ./artifacts/*.nupkg \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --api-key ${{ secrets.get_key }} \
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate
