@@ -1,7 +1,7 @@
 using Jacquard.Core;
 using Jacquard.Models.Bedrock;
 using Jacquard.MultiAgent;
-using FinanceAssistant;
+using FinanceAssistantTools;
 
 // FinanceAssistant — equity research swarm demonstrating parallel multi-agent orchestration.
 //
@@ -48,9 +48,6 @@ var model = new BedrockModel(region: Region, modelId: ModelId);
 //var model = new GeminiModel(apiKey: apikey, modelId: "gemini-2.5-flash");
 
 
-// Single shared tool instance — all generated wrappers reference it.
-var financeTools = new FinanceDataTool();
-
 // ── specialist analyst agents ──────────────────────────────────────────────────
 //
 // Each agent has a single focused tool matching its domain.
@@ -65,7 +62,7 @@ var priceAnalyst = new Agent(model,
         Write a concise 3-4 sentence technical assessment.
         End your response with: Price Trend: Bullish | Neutral | Bearish
         """,
-    tools: [new FinanceDataTool_GetQuote_Tool(financeTools)]);
+    toolProviders: [new FinanceDataTool()]);
 
 var fundamentalsAnalyst = new Agent(model,
     systemPrompt: """
@@ -75,7 +72,7 @@ var fundamentalsAnalyst = new Agent(model,
         Write a concise 3-4 sentence fundamental assessment.
         End your response with: Valuation: Attractive | Fair | Stretched
         """,
-    tools: [new FinanceDataTool_GetFinancials_Tool(financeTools)]);
+    toolProviders: [new FinanceDataTool()]);
 
 var newsAnalyst = new Agent(model,
     systemPrompt: """
@@ -85,7 +82,7 @@ var newsAnalyst = new Agent(model,
         Write a concise 3-4 sentence sentiment assessment.
         End your response with: Sentiment: Positive | Mixed | Negative
         """,
-    tools: [new FinanceDataTool_GetHeadlines_Tool(financeTools)]);
+    toolProviders: [new FinanceDataTool()]);
 
 var riskAnalyst = new Agent(model,
     systemPrompt: """
@@ -95,7 +92,7 @@ var riskAnalyst = new Agent(model,
         Write a concise 3-4 sentence risk assessment.
         End your response with: Risk Rating: Low | Medium | High
         """,
-    tools: [new FinanceDataTool_GetRiskMetrics_Tool(financeTools)]);
+    toolProviders: [new FinanceDataTool()]);
 
 // ── parallel research phase ─────────────────────────────────────────────────────
 
