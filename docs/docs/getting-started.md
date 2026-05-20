@@ -16,12 +16,9 @@ sidebar_position: 2
 ```bash
 dotnet add package StrandsAgents.Core
 dotnet add package StrandsAgents.Models.Bedrock
+dotnet add package StrandsAgents.Tools
 dotnet add package StrandsAgents.SourceGenerator
 ```
-
-:::tip SourceGenerator version
-`StrandsAgents.SourceGenerator` 0.1.9+ is required for the `toolProviders:` pattern. If you're on an older version, upgrade: `dotnet add package StrandsAgents.SourceGenerator --version 0.1.9`
-:::
 
 ## Your first agent
 
@@ -30,22 +27,60 @@ Create a new console app and add this code:
 ```csharp
 using StrandsAgents.Core;
 using StrandsAgents.Models.Bedrock;
-using MyApp;
+using StrandsAgents.Tools;
+using QuickTools;
 
+var model = new BedrockModel(
+    region: "us-east-1",
+    modelId: "us.anthropic.claude-haiku-4-5-20251001-v1:0");
+
+// Three tool providers: one built-in, two custom (defined below)
 var agent = new Agent(
-    model: new BedrockModel("us-east-1"),
-    systemPrompt: "You are a helpful assistant.",
-    toolProviders: [new WeatherTools()]);
+    model,
+    toolProviders: [new CalculatorTool(), new CurrentTimeTool(), new LetterCounterTool()]);
 
-var result = await agent.InvokeAsync("What's the weather in London?");
-Console.WriteLine(result.Message);
+var message = """
+    I have 3 requests:
+    1. What is the time right now?
+    2. Calculate 3111696 / 74088
+    3. Tell me how many letter R's are in the word "strawberry" 🍓
+    """;
 
-namespace MyApp
+Console.Write("Agent: ");
+await foreach (var evt in agent.StreamAsync(message))
 {
-    public partial class WeatherTools
+    if (evt is TextDeltaEvent delta)
+        Console.Write(delta.Delta);
+}
+
+// ── Custom tools ──────────────────────────────────────────────────────────────
+// Decorate a method with [Tool] inside a partial class and the source generator
+// emits a fully-typed ITool wrapper with a JSON schema at compile time.
+// XML doc comments become the descriptions the model sees when choosing a tool.
+// ─────────────────────────────────────────────────────────────────────────────
+
+namespace QuickTools
+{
+    public sealed partial class LetterCounterTool
     {
-        [Tool("Returns the current weather for a city")]
-        public string GetWeather(string city) => $"Sunny, 22°C in {city}";
+        /// <summary>Counts occurrences of a specific letter in a word.</summary>
+        /// <param name="word">The input word to search in.</param>
+        /// <param name="letter">The single character to count.</param>
+        [Tool("Count occurrences of a specific letter in a word.")]
+        public int CountLetter(string word, string letter)
+        {
+            if (letter.Length != 1)
+                throw new ArgumentException("Must be a single character.", nameof(letter));
+            return word.ToLowerInvariant().Count(c => c == char.ToLowerInvariant(letter[0]));
+        }
+    }
+
+    public sealed partial class CurrentTimeTool
+    {
+        /// <summary>Returns the current UTC date and time.</summary>
+        [Tool("Returns the current UTC date and time.")]
+        public string GetCurrentTime() =>
+            DateTimeOffset.UtcNow.ToString("dddd, MMMM d, yyyy HH:mm:ss 'UTC'");
     }
 }
 ```
@@ -56,21 +91,26 @@ Run it:
 dotnet run
 ```
 
-The agent will call the `GetWeather` tool and return a response like:
-
-> The weather in London is currently sunny with a temperature of 22°C.
+The agent calls all three tools and streams back a response covering the current time, the calculation result, and the letter count.
 
 ## What just happened
 
-1. You created a `WeatherTools` class with a `[Tool]`-decorated method
-2. The Roslyn source generator emitted a compile-time `ITool` wrapper and `IToolProvider` implementation
-3. The agent received your prompt, called the Bedrock model, which decided to use the `GetWeather` tool
-4. The agent executed the tool, fed the result back to the model, and returned the final response
+1. `CalculatorTool` is a built-in tool from `StrandsAgents.Tools`
+2. `CurrentTimeTool` and `LetterCounterTool` are custom tools — each is a `partial class` with a `[Tool]`-decorated method
+3. The Roslyn source generator emitted compile-time `ITool` wrappers and `IToolProvider` implementations for all three — no runtime reflection
+4. The agent received the prompt, the model decided which tools to call and in what order, the SDK executed them, and the results were fed back to the model to produce the final streamed response
 
-No reflection. No runtime type discovery. The tool schema was generated at compile time.
+:::tip Custom tool placement
+Type declarations must come after top-level statements in the same file. Use a block-body namespace (not file-scoped `namespace MyApp;`) when mixing with top-level statements. For larger projects, move tool classes to a separate file with a file-scoped namespace.
+:::
+
+:::tip toolProviders vs tools
+Use `toolProviders:` when passing your `[Tool]`-decorated classes — the common case. Use `tools:` when you have pre-built `ITool` instances, such as from `agent.AsTool()` or `AgentCoreGatewayToolProvider`.
+:::
 
 ## Next steps
 
 - **[Concepts: Agent & Event Loop](./concepts/agent-event-loop)** — understand how the loop works
 - **[Concepts: Tools](./concepts/tools)** — learn about the `[Tool]` attribute and source generator
 - **[Tutorial: Build your first agent](./tutorials/first-agent)** — a more detailed walkthrough
+- **[QuickstartSample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/QuickstartSample)** — the full runnable version of the code on this page
