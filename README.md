@@ -1,162 +1,112 @@
-# Strands Agents .NET
+# Jacquard.NET
 
-> **The Strands Agents framework — built for .NET.** Model-driven agentic AI for C# developers, built on the same principles as [AWS Strands Agents](https://strandsagents.com).
+> **Native C# SDK for building agentic AI.** Inspired by the [Strands Agents](https://strandsagents.com) design principles. Independently maintained.
 
-[![NuGet](https://img.shields.io/nuget/v/Jacquard.Core?label=NuGet&color=blue)](https://www.nuget.org/packages/Jacquard.Core) [![CI](https://github.com/apncodes/Jacquard.net/actions/workflows/ci.yml/badge.svg)](https://github.com/apncodes/Jacquard.net/actions/workflows/ci.yml) [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-orange)](https://apncodes.github.io/Jacquard.net/) [![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://github.com/apncodes/Jacquard.net/blob/main/LICENSE)
+[![NuGet](https://img.shields.io/nuget/v/Jacquard.Core?label=NuGet&color=blue)](https://www.nuget.org/packages/Jacquard.Core)
+[![CI](https://github.com/apncodes/Jacquard.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/apncodes/Jacquard.NET/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://github.com/apncodes/Jacquard.NET/blob/main/LICENSE)
 
-**Jump to:** [Quickstart](#quickstart) · [Why Jacquard.NET](#why-strandsagentsnet) · [Production essentials](#production-essentials) · [AWS-native deployment](#aws-native-deployment) · [Multi-agent](#multi-agent-patterns) · [Samples](#samples)
+---
 
-## At a glance
+## Why Jacquard.NET
 
-- **Zero runtime reflection** — compile-time tool dispatch via Roslyn source generators
-- **NativeAOT-ready** — reflection-free hot path, suitable for AOT-published Lambda binaries
-- **Idiomatic .NET** — `IAsyncEnumerable<T>`, generics, DI, OpenTelemetry, `[LoggerMessage]`
-- **AWS-native** — Bedrock + AgentCore Runtime, Memory, Code Interpreter, Browser, Gateway
-- **Multi-agent in one package** — pipeline, parallel, graph, swarm, A2A protocol
+The Jacquard loom — invented in 1804 — was the first machine to use punch cards to control patterns. It inspired Charles Babbage. It is the origin of the idea that a machine could be programmed to weave any pattern from simple instructions. That is what agents do: weave tools, models, loops, and prompts into intelligent behavior.
+
+The .NET ecosystem is the dominant runtime in enterprise — Lambda functions, Windows services, ASP.NET APIs. When AWS released Strands Agents, the design was immediately compelling: model-driven event loop, clean tool system, hooks, multi-agent orchestration. But there was no native .NET implementation.
+
+Jacquard.NET is that implementation. Built ground-up in C# 13. The same design principles as Strands Agents, expressed in the patterns .NET developers already know.
+
+**Four principles guide every decision:**
+
+1. **Don't over-engineer** — if it doesn't need to be a feature, it isn't one
+2. **Keep things clean** — idiomatic C# throughout, no proprietary abstractions
+3. **Embrace open standards** — MCP and A2A native, not bolted on
+4. **Be pragmatic about what to ship** — production-useful, not academically complete
+
+**Five load-bearing technical pillars:**
+
+1. **Easy to learn, idiomatic to write** — if you can write a C# method, you can write a tool. No new programming model, no middleware pipelines to learn before first invocation.
+2. **Industry-standard vocabulary** — agent, tool, system prompt, delta, session, hook. Reads natively to anyone from Strands Python, OpenAI, Anthropic, or LangChain.
+3. **Zero runtime reflection** — compile-time tool dispatch via Roslyn source generators. `STRAND001` diagnostic catches misconfiguration at build time.
+4. **NativeAOT-ready** — measured ~118ms cold-start init on AWS Lambda. Reflection-free hot path designed for AOT publish.
+5. **Multi-agent in one package** — pipeline, parallel, graph orchestration, agent-as-tool, A2A protocol for cross-language interop.
 
 ---
 
 ## Quickstart
 
-Decorate a method with `[Tool]` on a `partial class` — the Roslyn source generator emits a compile-time `ITool` wrapper and an `IToolProvider` implementation automatically.
-
-```bash
+```
 dotnet add package Jacquard.Core
 dotnet add package Jacquard.Models.Bedrock
 dotnet add package Jacquard.Tools
 dotnet add package Jacquard.SourceGenerator
 ```
 
+Decorate a method with `[Tool]` on a `partial class` — the Roslyn source generator emits a compile-time `ITool` wrapper and an `IToolProvider` implementation automatically.
+
+**Single-file option** — put the class declaration after the top-level statements:
+
 ```csharp
 using Jacquard.Core;
 using Jacquard.Models.Bedrock;
-using Jacquard.Tools;
-using QuickTools;
 
-var model = new BedrockModel(
-    region: "us-east-1",
-    modelId: "us.anthropic.claude-haiku-4-5-20251001-v1:0");
-
-// Three tool providers: one built-in, two custom (defined below)
 var agent = new Agent(
-    model,
-    toolProviders: [new CalculatorTool(), new CurrentTimeTool(), new LetterCounterTool()]);
+    model: new BedrockModel("us-east-1"),
+    systemPrompt: "You are a helpful assistant.",
+    toolProviders: [new WeatherTools()]
+);
 
-var message = """
-    I have 3 requests:
-    1. What is the time right now?
-    2. Calculate 3111696 / 74088
-    3. Tell me how many letter R's are in the word "strawberry" 🍓
-    """;
+var result = await agent.InvokeAsync("What's the weather in London?");
+Console.WriteLine(result.Message);
 
-Console.Write("Agent: ");
-await foreach (var evt in agent.StreamAsync(message))
+// Type declarations must come after top-level statements in the same file.
+// Use a block-body namespace (not file-scoped) when mixing with top-level statements.
+namespace MyApp
 {
-    if (evt is TextDeltaEvent delta)
-        Console.Write(delta.Delta);
-}
-
-// ── Custom tools ──────────────────────────────────────────────────────────────
-// Decorate a method with [Tool] inside a partial class and the source generator
-// emits a fully-typed ITool wrapper with a JSON schema at compile time.
-// XML doc comments become the descriptions the model sees when choosing a tool.
-// ─────────────────────────────────────────────────────────────────────────────
-
-namespace QuickTools
-{
-    public sealed partial class LetterCounterTool
+    public partial class WeatherTools
     {
-        /// <summary>Counts occurrences of a specific letter in a word.</summary>
-        /// <param name="word">The input word to search in.</param>
-        /// <param name="letter">The single character to count.</param>
-        [Tool("Count occurrences of a specific letter in a word.")]
-        public int CountLetter(string word, string letter)
-        {
-            if (letter.Length != 1)
-                throw new ArgumentException("Must be a single character.", nameof(letter));
-            return word.ToLowerInvariant().Count(c => c == char.ToLowerInvariant(letter[0]));
-        }
-    }
-
-    public sealed partial class CurrentTimeTool
-    {
-        /// <summary>Returns the current UTC date and time.</summary>
-        [Tool("Returns the current UTC date and time.")]
-        public string GetCurrentTime() =>
-            DateTimeOffset.UtcNow.ToString("dddd, MMMM d, yyyy HH:mm:ss 'UTC'");
+        [Tool("Returns the current weather for a city")]
+        public string GetWeather(string city) => $"Sunny, 22°C in {city}";
     }
 }
 ```
 
-> **Prerequisites:** .NET 10 SDK, AWS credentials with Bedrock access enabled.
+**Two-file option** — cleaner for larger projects:
 
-> **`toolProviders:` vs `tools:`** — use `toolProviders:` when passing your `[Tool]`-decorated classes (the common case). Use `tools:` when you have pre-built `ITool` instances, such as from `agent.AsTool()` or `AgentCoreGatewayToolProvider`.
-
-> The namespace on the `partial class` is required. The source generator emits its `IToolProvider` implementation in the same namespace, and C# merges the two partial declarations into one type.
-
----
-
-## Why Jacquard.NET
-
-.NET is the dominant runtime in enterprise — AWS Lambda, Windows services, ASP.NET APIs, and beyond. Jacquard.NET brings the model-driven agentic approach to every .NET developer: the same event loop, tool system, and multi-agent patterns, built ground-up in idiomatic C# 13. No language bridges, no sidecars.
-
-| Capability | Jacquard.NET |
-| --- | --- |
-| Type safety | Compile-time generics |
-| Streaming | `IAsyncEnumerable<T>` |
-| Hook registration | `Register<TEvent>` — compiler-checked |
-| Tool schema | Roslyn source generator at compile time |
-| Tool registration | `toolProviders: [new WeatherTools()]` — no generated type names |
-| Parallel execution | `Task.WhenAll` |
-| DI integration | `AddBedrockModel()` + `AddStrandsAgent()` + `AddStrandsToolProvider<T>()` |
-| Enterprise hosting | `IHostedService` / AWS Lambda / any host |
-| Model providers | Bedrock, Anthropic, OpenAI-compatible, Gemini |
-| MCP | ✓ |
-| A2A protocol | ✓ (interoperable across languages and frameworks) |
-| Graph orchestration | ✓ with parallel-node support |
-
----
-
-## Production essentials
-
-### Streaming
+**WeatherTools.cs**
 
 ```csharp
-await foreach (var evt in agent.StreamAsync("Explain async/await in C#"))
+using Jacquard.Core;
+
+namespace MyApp;
+
+public partial class WeatherTools
 {
-    if (evt is TextDeltaEvent delta)
-        Console.Write(delta.Delta);
+    [Tool("Returns the current weather for a city")]
+    public string GetWeather(string city) => $"Sunny, 22°C in {city}";
 }
 ```
 
-### Structured output
+**Program.cs**
 
 ```csharp
-record WeatherReport(string City, int TempC, string Condition);
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using MyApp;
 
-var report = await agent.GetStructuredOutputAsync<WeatherReport>(
-    "What is the weather in Paris right now?");
+var agent = new Agent(
+    model: new BedrockModel("us-east-1"),
+    systemPrompt: "You are a helpful assistant.",
+    toolProviders: [new WeatherTools()]
+);
 
-Console.WriteLine($"{report.City}: {report.TempC}°C, {report.Condition}");
+var result = await agent.InvokeAsync("What's the weather in London?");
+Console.WriteLine(result.Message);
 ```
 
-### DI integration (ASP.NET Core / Worker Service)
-
-```bash
-dotnet add package Jacquard.Extensions.DI
-```
-
-```csharp
-builder.Services
-    .AddBedrockModel(region: "us-east-1")
-    .AddHttpRequestTool()
-    .AddStrandsToolProvider<WeatherTools>()     // register a partial [Tool] class as IToolProvider
-    .AddStrandsInMemorySessionManager()
-    .AddStrandsAgent();
-
-// Resolve IAgent from the container
-var agent = app.Services.GetRequiredService<IAgent>();
-```
+> The namespace on the `partial class` is required. The source generator emits its `IToolProvider` implementation in the same namespace, and C# merges the two partial declarations into one type. Without a matching namespace they are treated as separate types and the build fails.
+>
+> Prerequisites: .NET 10 SDK, AWS credentials with Bedrock access enabled.
 
 ---
 
@@ -184,13 +134,105 @@ var model = new GeminiModel(apiKey: "...", modelId: "gemini-2.5-flash");
 
 ---
 
+## Streaming
+
+```csharp
+await foreach (var evt in agent.StreamAsync("Explain async/await in C#"))
+{
+    if (evt is TextDeltaEvent delta)
+        Console.Write(delta.Delta);
+}
+```
+
+---
+
+## Structured output
+
+```csharp
+record WeatherReport(string City, int TempC, string Condition);
+
+var report = await agent.GetStructuredOutputAsync<WeatherReport>(
+    "What is the weather in Paris right now?");
+
+Console.WriteLine($"{report.City}: {report.TempC}°C, {report.Condition}");
+```
+
+---
+
+## DI integration (ASP.NET Core / Worker Service)
+
+```
+dotnet add package Jacquard.Extensions.DI
+```
+
+```csharp
+builder.Services
+    .AddBedrockModel(region: "us-east-1")
+    .AddHttpRequestTool()
+    .AddStrandsToolProvider<WeatherTools>()
+    .AddStrandsInMemorySessionManager()
+    .AddStrandsAgent();
+
+// Resolve IAgent from the container
+var agent = app.Services.GetRequiredService<IAgent>();
+```
+
+---
+
+## Features
+
+- **Model-driven event loop** — the LLM decides which tools to call; the SDK executes them and loops until `EndTurn`
+- **Tool system** — decorate any `partial` class method with `[Tool]`; the Roslyn source generator emits a compile-time `ITool` wrapper with zero runtime reflection
+- **`IToolProvider` pattern** — pass your tool class directly to `Agent` via `toolProviders:`; no generated wrapper type names in user code; `STRAND001` warning guides non-partial classes
+- **Streaming** — `StreamAsync` returns `IAsyncEnumerable<StreamEvent>` end to end with `[EnumeratorCancellation]` on every boundary
+- **Hook system** — type-safe `Register<TEvent>` callbacks for `BeforeToolCall`, `AfterToolCall`, `BeforeModelCall`, `AfterModelCall`
+- **Human-in-the-loop** — set `e.Interrupt = true` in any `BeforeToolCallEvent` hook to pause before sensitive actions
+- **Structured output** — `GetStructuredOutputAsync<T>()` extracts typed records with automatic JSON retry
+- **Session management** — `InMemorySessionManager` or `FileSessionManager`; bring your own via `ISessionManager`
+- **Context window trimming** — `SlidingWindowStrategy` or `SummarizingConversationManager` for long-running agents
+- **OpenTelemetry** — `ActivitySource` named `"Jacquard.Agent"` emits traces and metrics with zero config
+- **DI integration** — `AddBedrockModel()`, `AddAnthropicModel()`, `AddOpenAICompatibleModel()`, `AddGeminiModel()`, `AddStrandsAgent()`, `AddStrandsToolProvider<T>()` for native ASP.NET Core / Worker Service wiring
+- **Multi-agent graph** — `GraphBuilder` with conditional routing; `PipelineOrchestrator`; `ParallelOrchestrator`
+- **Agent as tool** — wrap any `IAgent` as an `ITool` with `agent.AsTool()` for hierarchical orchestration
+- **MCP** — connect any Model Context Protocol server (stdio or SSE) via `McpToolProvider`
+- **A2A protocol** — expose agents over HTTP with `MapA2AEndpoint`; call remote agents with `A2AAgent` (cross-framework, cross-language)
+- **AgentCore Runtime** *(optional)* — `MapAgentCoreEndpoints()` deploys any agent to Amazon Bedrock AgentCore Runtime in one line; `UseAgentCorePort(8080)` binds the required port
+- **AgentCore Memory** *(optional)* — `AgentCoreMemoryTool` / `AddAgentCoreMemory()` gives the agent explicit store/retrieve/delete access to Amazon Bedrock AgentCore Memory; `AddAgentCoreSessionManager()` persists conversation sessions to the same store
+- **AgentCore Code Interpreter** *(optional)* — `AgentCoreCodeInterpreterTool` / `AddAgentCoreCodeInterpreter()` executes Python, JavaScript, or TypeScript in a managed, stateful sandbox; session is created lazily and reused across calls
+- **AgentCore Browser** *(optional)* — `AgentCoreBrowserTool` / `AddAgentCoreBrowser()` manages a headless Chrome session; returns the CDP `automationStreamEndpoint` for Playwright or Nova Act automation
+- **AgentCore Gateway** *(optional)* — `AgentCoreGatewayToolProvider` / `AddAgentCoreGatewayTools()` connects to an Amazon Bedrock AgentCore Gateway MCP endpoint and exposes its tools as `ITool` instances; supports IAM SigV4, JWT Bearer, and network-isolated (no-auth) modes
+
+---
+
+## What native means in practice
+
+These aren't translations — they're the patterns .NET developers already know, applied to agentic AI.
+
+| Capability | Jacquard.NET |
+| --- | --- |
+| Type safety | Compile-time generics |
+| Streaming | `IAsyncEnumerable<T>` |
+| Hook registration | `Register<TEvent>` — compiler-checked |
+| Tool schema | Roslyn source generator at compile time |
+| Tool registration | `toolProviders: [new MyTools()]` — no generated type names |
+| Parallel execution | `Task.WhenAll` |
+| DI integration | `AddBedrockModel()` + `AddStrandsAgent()` + `AddStrandsToolProvider<T>()` |
+| Enterprise hosting | `IHostedService` / AWS Lambda / any host |
+| Model providers | Bedrock, Anthropic, OpenAI-compatible, Gemini |
+| MCP | ✓ |
+| A2A protocol | ✓ (interoperable across languages and frameworks) |
+| Graph orchestration | ✓ with parallel-node support |
+| NativeAOT | ✓ (~118ms cold-start init on AWS Lambda) |
+
+---
+
 ## Multi-agent patterns
 
 ### Sequential pipeline
 
 ```csharp
 var pipeline = new PipelineOrchestrator([researchAgent, writerAgent, reviewerAgent]);
-var result = await pipeline.InvokeAsync("Write a report on quantum computing");
+var result = await pipeline.RunAsync("Write a report on quantum computing");
 ```
 
 ### Parallel fan-out
@@ -199,39 +241,6 @@ var result = await pipeline.InvokeAsync("Write a report on quantum computing");
 var results = await new ParallelOrchestrator([techAgent, marketAgent, riskAgent])
     .RunAsync("Analyse this topic from your specialist perspective");
 // All three run concurrently via Task.WhenAll
-```
-
-### Swarm — dynamic agent-driven handoffs
-
-Unlike the fixed patterns above, a swarm has no predetermined execution path. Each agent decides autonomously whether to hand off to a peer or terminate. Shared context accumulates as agents contribute knowledge.
-
-```csharp
-var swarm = new SwarmOrchestrator(
-[
-    new SwarmAgentNode("researcher", researchAgent, "Gathers facts and sources"),
-    new SwarmAgentNode("analyst",   analystAgent,  "Structures findings into an outline"),
-    new SwarmAgentNode("writer",    writerAgent,   "Drafts the article"),
-    new SwarmAgentNode("editor",    editorAgent,   "Reviews and polishes the final article"),
-],
-routingModel: model,
-entryPoint: "researcher",
-maxHandoffs: 10,
-maxIterations: 12);
-
-// RunAsync — returns when the swarm terminates
-var result = await swarm.RunAsync("Write an article about quantum computing");
-
-// StreamAsync — observe every lifecycle event in real time
-await foreach (var evt in swarm.StreamAsync("Write an article about quantum computing"))
-{
-    switch (evt)
-    {
-        case AgentStartedEvent e:  Console.WriteLine($"[{e.Iteration}] {e.AgentId}"); break;
-        case AgentTextDeltaEvent e: Console.Write(e.Delta); break;
-        case HandoffEvent e:       Console.WriteLine($"→ {e.ToAgentId}"); break;
-        case SwarmCompletedEvent e: Console.WriteLine($"Done: {e.Status}"); break;
-    }
-}
 ```
 
 ### Graph with conditional routing
@@ -255,42 +264,13 @@ var writerAgent  = new Agent(model, tools: [researchTool]);
 
 ---
 
-## AWS-native deployment
-
-### AgentCore Runtime
-
-Deploy any Strands Agents .NET agent to Amazon Bedrock AgentCore Runtime with one line. Your agent code is unchanged.
-
-```bash
-dotnet add package Jacquard.Runtime
-```
-
-```csharp
-builder.Services
-    .AddBedrockModel("us-east-1")
-    .AddStrandsAgent();
-
-var app = builder.Build();
-app.MapAgentCoreEndpoints();  // POST /invocations + GET /health
-app.UseAgentCorePort(8080);   // AgentCore Runtime expects port 8080
-app.Run();
-```
-
-Optionally wire in managed AgentCore services before building the app:
-
-```csharp
-builder.Services
-    .AddBedrockModel("us-east-1")
-    .AddAgentCoreSessionManager(memoryId)      // persist sessions to AgentCore Memory
-    .AddAgentCoreMemory(memoryId)              // give the agent explicit memory store/retrieve/delete
-    .AddAgentCoreCodeInterpreter()             // sandboxed Python / JS / TS execution
-    .AddAgentCoreBrowser()                     // managed headless Chrome (CDP endpoint)
-    .AddStrandsAgent();
-```
-
-### AgentCore Gateway
+## AgentCore Gateway (optional)
 
 Connect your agent to tools hosted on an Amazon Bedrock AgentCore Gateway — a managed MCP endpoint that proxies external APIs, databases, and services with built-in auth and observability.
+
+```
+dotnet add package Jacquard.Runtime
+```
 
 ```csharp
 // Direct usage — connect and list tools
@@ -315,7 +295,7 @@ new AgentCoreGatewayAuth.Bearer(accessToken: token)
 new AgentCoreGatewayAuth.None()
 ```
 
-With DI, `AddAgentCoreGatewayTools()` registers all gateway tools directly into the container — `AddStrandsAgent()` picks them up automatically:
+With DI, `AddAgentCoreGatewayTools()` registers all gateway tools directly into the container — `AddJacquardAgent()` picks them up automatically:
 
 ```csharp
 builder.Services
@@ -326,49 +306,36 @@ builder.Services
 
 ---
 
-## Features
+## AgentCore Runtime deployment (optional)
 
-### Core
+Deploy any Jacquard.NET agent to Amazon Bedrock AgentCore Runtime with one line. Your agent code is unchanged.
 
-- **Model-driven event loop** — the LLM decides which tools to call; the SDK executes them and loops until `EndTurn`
-- **Tool system** — decorate any `partial` class method with `[Tool]`; Roslyn source generator emits a compile-time `ITool` wrapper with zero runtime reflection
-- **`IToolProvider` pattern** — pass your tool class directly to `Agent` via `toolProviders:`; no generated wrapper type names in user code; `STRAND001` warning guides non-partial classes
-- **Hook system** — type-safe `Register<TEvent>` callbacks for `BeforeToolCall`, `AfterToolCall`, `BeforeModelCall`, `AfterModelCall`
-- **Human-in-the-loop** — set `e.Interrupt = true` in any `BeforeToolCallEvent` hook to pause before sensitive actions
-- **Streaming** — `StreamAsync` returns `IAsyncEnumerable<StreamEvent>` end to end with `[EnumeratorCancellation]` on every boundary
-- **Structured output** — `GetStructuredOutputAsync<T>()` extracts typed records with automatic JSON retry
-- **Session management** — `InMemorySessionManager` or `FileSessionManager`; bring your own via `ISessionManager`
-- **Context window trimming** — `SlidingWindowStrategy` or `SummarizingConversationManager` for long-running agents
+```
+dotnet add package Jacquard.Runtime
+```
 
-### Production
+```csharp
+builder.Services
+    .AddBedrockModel("us-east-1")
+    .AddStrandsAgent();
 
-- **DI integration** — `AddBedrockModel()`, `AddAnthropicModel()`, `AddOpenAICompatibleModel()`, `AddGeminiModel()`, `AddStrandsAgent()`, `AddStrandsToolProvider<T>()` for native ASP.NET Core / Worker Service wiring
-- **OpenTelemetry** — `ActivitySource` named `"Jacquard.Agent"` emits traces and metrics with zero config
+var app = builder.Build();
+app.MapAgentCoreEndpoints();  // POST /invocations + GET /health
+app.UseAgentCorePort(8080);   // AgentCore Runtime expects port 8080
+app.Run();
+```
 
-### Multi-agent
+Optionally wire in managed AgentCore services before building the app:
 
-- **Multi-agent graph** — `GraphBuilder` with conditional routing; `PipelineOrchestrator`; `ParallelOrchestrator`; `SwarmOrchestrator` with dynamic agent-driven handoffs and `IAsyncEnumerable<SwarmEvent>` streaming
-- **Agent as tool** — wrap any `IAgent` as an `ITool` with `agent.AsTool()` for hierarchical orchestration
-- **MCP** — connect any Model Context Protocol server (stdio or SSE) via `McpToolProvider`
-- **A2A protocol** — expose agents over HTTP with `MapA2AEndpoint`; call remote agents with `A2AAgent` (cross-framework, cross-language)
-
-### AWS-native (optional)
-
-- **AgentCore Runtime** — `MapAgentCoreEndpoints()` deploys any agent to Amazon Bedrock AgentCore Runtime in one line
-- **AgentCore Memory** — `AgentCoreMemoryTool` / `AddAgentCoreMemory()` gives the agent explicit store/retrieve/delete access; `AddAgentCoreSessionManager()` persists conversation sessions to the same store
-- **AgentCore Code Interpreter** — `AgentCoreCodeInterpreterTool` / `AddAgentCoreCodeInterpreter()` executes Python, JavaScript, or TypeScript in a managed, stateful sandbox
-- **AgentCore Browser** — `AgentCoreBrowserTool` / `AddAgentCoreBrowser()` manages a headless Chrome session; returns the CDP `automationStreamEndpoint` for Playwright or Nova Act automation
-- **AgentCore Gateway** — `AgentCoreGatewayToolProvider` / `AddAgentCoreGatewayTools()` connects to an Amazon Bedrock AgentCore Gateway MCP endpoint; supports IAM SigV4, JWT Bearer, and no-auth modes
-
----
-
-## Roadmap
-
-**Stable in v0.1** — core agent loop, tool system, `IToolProvider` pattern, Bedrock / Anthropic / OpenAI-compatible / Gemini model providers, DI integration, OpenTelemetry, session management, A2A protocol.
-
-**Evolving** — multi-agent orchestration API may see refinements before v1.0.
-
-**Coming next** — Ollama model provider, additional built-in tools, expanded multi-agent patterns.
+```csharp
+builder.Services
+    .AddBedrockModel("us-east-1")
+    .AddAgentCoreSessionManager(memoryId)
+    .AddAgentCoreMemory(memoryId)
+    .AddAgentCoreCodeInterpreter()
+    .AddAgentCoreBrowser()
+    .AddJacquardAgent();
+```
 
 ---
 
@@ -376,10 +343,10 @@ builder.Services
 
 | Package | Description |
 | --- | --- |
-| `Jacquard.Core` | Agent, event loop, tool system, hooks, session management; Gemini / Anthropic / OpenAI model providers |
+| `Jacquard.Core` | Agent, event loop, tool system, hooks, session management, Gemini/Anthropic/OpenAI models |
 | `Jacquard.Models.Bedrock` | Amazon Bedrock model provider (Converse API) |
 | `Jacquard.Tools` | Built-in tools: calculator, file read/write, HTTP request |
-| `Jacquard.SourceGenerator` | Roslyn source generator — emits `ITool` wrappers and `IToolProvider` implementations from `[Tool]` attributes |
+| `Jacquard.SourceGenerator` | Roslyn source generator — emits `ITool` wrappers and `IToolProvider` from `[Tool]` attributes |
 | `Jacquard.Extensions.DI` | ASP.NET Core / Worker Service DI extensions |
 | `Jacquard.MultiAgent` | Pipeline, parallel, and graph orchestration; A2A protocol |
 | `Jacquard.Runtime` | Amazon Bedrock AgentCore Runtime hosting; managed Memory, Code Interpreter, Browser, and Gateway tools |
@@ -390,8 +357,8 @@ builder.Services
 
 | Sample | What it shows |
 | --- | --- |
-| [QuickstartSample](samples/QuickstartSample) | Built-in + custom tools, streaming — the canonical getting-started example |
 | [CliAgent](samples/CliAgent) | Multi-turn streaming REPL — the minimal working agent |
+| [QuickstartSample](samples/QuickstartSample) | Built-in + custom tools, streaming — the canonical getting-started example |
 | [AspNetAgent](samples/AspNetAgent) | `/chat` endpoint with session continuity and SSE streaming |
 | [DiAgent](samples/DiAgent) | Full DI wiring with file tools and session management |
 | [FileAgent](samples/FileAgent) | `FileReadTool` / `FileWriteTool` + `SlidingWindowStrategy` context trimming |
@@ -401,30 +368,30 @@ builder.Services
 | [SupportTriage](samples/SupportTriage) | Graph routing, hooks, and structured output extraction |
 | [CustomerServiceApi](samples/CustomerServiceApi) | Production-shaped REST API with session persistence |
 | [FinanceAssistant](samples/FinanceAssistant) | 4-agent parallel swarm with typed report extraction |
-| [SwarmResearch](samples/SwarmResearch) | Dynamic swarm — 4 agents collaborate via autonomous handoffs to write a technology article; `SwarmOrchestrator.StreamAsync` with live console output |
-| [SwarmResearchWeb](samples/SwarmResearchWeb) | Same swarm pattern as a web app — SSE endpoint + dark-theme browser UI with real-time agent pipeline, activity log, and streaming text |
+| [SwarmResearch](samples/SwarmResearch) | Dynamic swarm — 4 agents collaborate via autonomous handoffs; `SwarmOrchestrator.StreamAsync` with live console output |
+| [SwarmResearchWeb](samples/SwarmResearchWeb) | Same swarm pattern as a web app — SSE endpoint + dark-theme browser UI with real-time agent pipeline and streaming text |
 | [PersistentAssistant](samples/PersistentAssistant) | Cross-run memory with automatic summarization |
 | [DistributedAgents](samples/DistributedAgents) | A2A cross-process agent communication |
 | [ChatUI](samples/ChatUI) | Browser chat UI with SSE streaming and tool badges |
 | [BlazorResearch](samples/BlazorResearch) | Blazor Server portal with live parallel agent cards |
 | [ResponsibleAiSample](samples/ResponsibleAiSample) | Bedrock Guardrails, `[ToolParameterValidation]`, audit logging, least-privilege tool design |
+| [AotLambda](samples/AotLambda) | NativeAOT publish to AWS Lambda — ~118ms cold-start init |
+| [DurableWorkflow](samples/DurableWorkflow) | Decomposed Sequential Pipeline pattern — agent durability inside each invocation, workflow durability between invocations via Step Functions |
 | [CodeInterpreterSample](samples/CodeInterpreterSample) | `AgentCoreCodeInterpreterTool` — stateful Python / JS / TS sandbox via AgentCore |
 | [BrowserSample](samples/BrowserSample) | `AgentCoreBrowserTool` — managed headless Chrome session; CDP endpoint for Playwright / Nova Act |
 | [SemanticMemorySample](samples/SemanticMemorySample) | `SemanticMemoryTool` — vector / semantic search over AgentCore Memory |
 | [AgentCoreSample](samples/AgentCoreSample) | Deploy any agent to AgentCore Runtime — `MapAgentCoreEndpoints()` in one line |
 | [AgentCoreGatewaySample](samples/AgentCoreGatewaySample) | Travel booking assistant using gateway-hosted tools via `AddAgentCoreGatewayTools()` |
-| [AotLambda](samples/AotLambda) | NativeAOT Lambda — sub-100ms cold start, zero runtime reflection, `provided.al2023` runtime |
-| [DurableWorkflow](samples/DurableWorkflow) | Step Functions + three Strands agents — durable multi-step pipeline with retry, state passing, and MAF DurableTask comparison |
 
 ---
 
-## About Strands Agents
+## About
 
-Strands Agents is an open source SDK that takes a model-driven approach to building AI agents — the model drives its own behavior, decides which tools to call, and loops until the task is complete. This approach emerged from real-world production experience building agents at AWS.
+Jacquard.NET is a native C# SDK for building agentic AI, inspired by the Strands Agents design principles, independently maintained. The core concepts — model-driven event loop, tool system, hooks, multi-agent orchestration — follow the Strands architecture, with full interoperability via MCP and A2A.
 
-Strands Agents .NET is a ground-up implementation of those design principles for the .NET ecosystem. It is not a port or wrapper — Strands Agents .NET is built natively in C# 13, using the patterns and idioms .NET developers already know. The core concepts (event loop, tool system, hooks, multi-agent orchestration) follow the Strands design, and the A2A protocol implementation is interoperable across languages and frameworks.
+Strands Agents is an open source SDK from AWS that takes a model-driven approach to building AI agents. The design principles that emerged from that work are sound and worth bringing natively to the .NET ecosystem. Jacquard.NET is that native implementation — not a port, not a wrapper, not a language bridge. Built ground-up in C# 13, using the types and patterns .NET developers already know.
 
-Learn more about the Strands Agents design principles at [strandsagents.com](https://strandsagents.com).
+Learn more about the Strands Agents design at [strandsagents.com](https://strandsagents.com).
 
 This project is not affiliated with or endorsed by AWS.
 
@@ -432,13 +399,7 @@ This project is not affiliated with or endorsed by AWS.
 
 ## Contributing
 
-PRs, issues, and feedback are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. The biggest areas of need are additional model providers (Ollama), more built-in tools, and real-world samples.
-
----
-
-## Community
-
-Questions and ideas welcome in [GitHub Discussions](https://github.com/apncodes/Jacquard.net/discussions).
+PRs, issues, and feedback are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. The biggest areas of need are additional model providers (Ollama), more built-in tools, and real-world samples. Start a thread in [Discussions](../../discussions) before opening a large PR.
 
 ---
 
