@@ -8,7 +8,7 @@ All notable changes to Strands Agents .NET are documented here.
 
 ### Added
 
-- **`SwarmOrchestrator`** (`StrandsAgents.MultiAgent`) — dynamic agent-driven handoff chain. Unlike `PipelineOrchestrator` (fixed sequence) or `ParallelOrchestrator` (fan-out/fan-in), a swarm has no predetermined execution path. Each agent receives the full task context — original request, agent history, shared knowledge from previous agents, and the list of available peers — then decides autonomously whether to hand off or terminate.
+- **`SwarmOrchestrator`** (`Jacquard.MultiAgent`) — dynamic agent-driven handoff chain. Unlike `PipelineOrchestrator` (fixed sequence) or `ParallelOrchestrator` (fan-out/fan-in), a swarm has no predetermined execution path. Each agent receives the full task context — original request, agent history, shared knowledge from previous agents, and the list of available peers — then decides autonomously whether to hand off or terminate.
 
 - **`SwarmOrchestrator.StreamAsync`** — `IAsyncEnumerable<SwarmEvent>` stream of typed lifecycle events. `RunAsync` is implemented by consuming `StreamAsync` internally — single source of truth for loop logic.
 
@@ -30,9 +30,9 @@ All notable changes to Strands Agents .NET are documented here.
 
 ### Fixed
 
-- **`StrandsAgents.SourceGenerator`** — Generated tool parameter deserialization now uses AOT-safe `JsonElement` accessors (`GetString()`, `GetInt32()`, `GetDouble()`, `GetBoolean()`) instead of `Deserialize<T>()` which requires runtime reflection. In AOT-published applications (e.g. Lambda `provided.al2023`), the old code silently returned `ToolResult.Failure` on every tool call. In JIT applications, `GetString()` is also the more correct and efficient API for this use case.
+- **`Jacquard.SourceGenerator`** — Generated tool parameter deserialization now uses AOT-safe `JsonElement` accessors (`GetString()`, `GetInt32()`, `GetDouble()`, `GetBoolean()`) instead of `Deserialize<T>()` which requires runtime reflection. In AOT-published applications (e.g. Lambda `provided.al2023`), the old code silently returned `ToolResult.Failure` on every tool call. In JIT applications, `GetString()` is also the more correct and efficient API for this use case.
 
-- **`StrandsAgents.Models.Bedrock`** — `DocumentToJson` now uses a manual `StringBuilder`-based JSON builder instead of `JsonSerializer.Serialize(Dictionary<string, object?>)`. The old code used polymorphic serialization requiring runtime type inspection, which fails in AOT contexts and generates IL2026/IL3050 trim warnings in all contexts.
+- **`Jacquard.Models.Bedrock`** — `DocumentToJson` now uses a manual `StringBuilder`-based JSON builder instead of `JsonSerializer.Serialize(Dictionary<string, object?>)`. The old code used polymorphic serialization requiring runtime type inspection, which fails in AOT contexts and generates IL2026/IL3050 trim warnings in all contexts.
 
 ### Added
 
@@ -46,7 +46,7 @@ All notable changes to Strands Agents .NET are documented here.
 
 - **NuGet package metadata** — all seven packages now have accurate, package-specific descriptions, expanded tags (`mcp`, `a2a`, `source-generator`, `aot`), and correct repository URLs.
 - **README polish** — fixed broken Jump-to anchor (`#why-strandsagentsnet`), retired the `Strands.NET` name variant, standardized comparison table to use `WeatherTools`, added Community section linking to GitHub Discussions.
-- **Per-package READMEs** — fixed stale GitHub URLs; `StrandsAgents.Tools` README updated to use the modern `toolProviders:` pattern.
+- **Per-package READMEs** — fixed stale GitHub URLs; `Jacquard.Tools` README updated to use the modern `toolProviders:` pattern.
 
 ---
 
@@ -66,13 +66,13 @@ All notable changes to Strands Agents .NET are documented here.
   var agent = new Agent(model, toolProviders: [new MyTools()]);
   ```
 
-- **`IToolProvider` interface** (`StrandsAgents.Core`) — single contract implemented automatically by the source generator. Users never write `GetTools()` by hand.
+- **`IToolProvider` interface** (`Jacquard.Core`) — single contract implemented automatically by the source generator. Users never write `GetTools()` by hand.
 
 - **`STRAND001` diagnostic** — the source generator emits a `Warning` when a class with `[Tool]` methods is not declared `partial`. The per-method wrapper classes are still emitted so existing code keeps compiling.
 
 - **`Agent` constructor `toolProviders` parameter** — new optional `IEnumerable<IToolProvider>? toolProviders` parameter (positioned after `tools`). Both `tools` and `toolProviders` can be supplied simultaneously; all tools are merged into the same registry. All existing call sites compile unchanged.
 
-- **`AddStrandsToolProvider<TProvider>()` DI extension** (`StrandsAgents.Extensions.DI`) — registers a tool-provider type as a transient `IToolProvider`. Multiple calls accumulate providers, all resolved by `AddStrandsAgent()`.
+- **`AddStrandsToolProvider<TProvider>()` DI extension** (`Jacquard.Extensions.DI`) — registers a tool-provider type as a transient `IToolProvider`. Multiple calls accumulate providers, all resolved by `AddStrandsAgent()`.
 
 - **`CalculatorTool` declared `partial`** — enables `toolProviders: [new CalculatorTool()]` in user code and in `samples/CliAgent`.
 
@@ -87,20 +87,20 @@ All notable changes to Strands Agents .NET are documented here.
 
 ### Fixed
 
-- Package README files corrected — all `Strands.*` references updated to `StrandsAgents.*`
-- `PackageProjectUrl` and `RepositoryUrl` updated to `https://github.com/apncodes/StrandsAgents.net`
+- Package README files corrected — all `Strands.*` references updated to `Jacquard.*`
+- `PackageProjectUrl` and `RepositoryUrl` updated to `https://github.com/apncodes/Jacquard.net`
 - CI badge in root README updated to new repo URL
-- `CONTRIBUTING.md` and `docs/ARCHITECTURE.md` updated to `StrandsAgents.*` names
+- `CONTRIBUTING.md` and `docs/ARCHITECTURE.md` updated to `Jacquard.*` names
 
 ---
 
 ## [0.1.4] — 2025-05-09
 
-This release renames all packages from `Strands.*` to `StrandsAgents.*` to align with the project's brand at [strandsagents.com](https://strandsagents.com). The project was made public only days before this release, so the rename happens early — before any production adoption — to avoid a more disruptive migration later.
+This release renames all packages from `Strands.*` to `Jacquard.*` to align with the project's brand at [strandsagents.com](https://strandsagents.com). The project was made public only days before this release, so the rename happens early — before any production adoption — to avoid a more disruptive migration later.
 
 ### New
 
-- **`GeminiModel`** — Google Gemini support via the Gemini Developer REST API. No third-party SDK required; uses `HttpClient` + `System.Text.Json` consistent with `AnthropicModel` and `OpenAICompatibleModel`. Available in `StrandsAgents.Core`.
+- **`GeminiModel`** — Google Gemini support via the Gemini Developer REST API. No third-party SDK required; uses `HttpClient` + `System.Text.Json` consistent with `AnthropicModel` and `OpenAICompatibleModel`. Available in `Jacquard.Core`.
 
 ```csharp
 var model = new GeminiModel(apiKey: "AIza...", modelId: "gemini-2.0-flash");
@@ -115,13 +115,13 @@ services.AddGeminiModel(apiKey: "AIza...", modelId: "gemini-2.0-flash");
 
 | Old | New |
 |---|---|
-| `Strands.Core` | `StrandsAgents.Core` |
-| `Strands.Models.Bedrock` | `StrandsAgents.Models.Bedrock` |
-| `Strands.Tools` | `StrandsAgents.Tools` |
-| `Strands.SourceGenerator` | `StrandsAgents.SourceGenerator` |
-| `Strands.Extensions.DI` | `StrandsAgents.Extensions.DI` |
-| `Strands.MultiAgent` | `StrandsAgents.MultiAgent` |
-| `Strands.AgentCore` | `StrandsAgents.Runtime` |
+| `Strands.Core` | `Jacquard.Core` |
+| `Strands.Models.Bedrock` | `Jacquard.Models.Bedrock` |
+| `Strands.Tools` | `Jacquard.Tools` |
+| `Strands.SourceGenerator` | `Jacquard.SourceGenerator` |
+| `Strands.Extensions.DI` | `Jacquard.Extensions.DI` |
+| `Strands.MultiAgent` | `Jacquard.MultiAgent` |
+| `Strands.AgentCore` | `Jacquard.Runtime` |
 
 The old `Strands.*` packages remain on NuGet as deprecated compatibility shims that forward to the new names. They will stop receiving updates after **November 2025**.
 
@@ -134,9 +134,9 @@ using Strands.Models.Bedrock;
 using Strands.MultiAgent;
 
 // After
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.MultiAgent;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.MultiAgent;
 ```
 
 **OpenTelemetry source and meter names renamed:**
@@ -147,8 +147,8 @@ using StrandsAgents.MultiAgent;
 .AddMeter("Strands.Agent")
 
 // After
-.AddSource("StrandsAgents.Agent")
-.AddMeter("StrandsAgents.Agent")
+.AddSource("Jacquard.Agent")
+.AddMeter("Jacquard.Agent")
 ```
 
 Metric names: `strands.tokens.input` → `strandsagents.tokens.input`, `strands.tokens.output` → `strandsagents.tokens.output`, `strands.tool.calls` → `strandsagents.tool.calls`, `strands.agent.latency` → `strandsagents.agent.latency`.

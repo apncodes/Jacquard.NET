@@ -1,5 +1,5 @@
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
 
 // PersistentAssistant — demonstrates cross-run conversation persistence and
 // automatic context summarization when the conversation grows too long.

@@ -313,7 +313,7 @@ The source generator emits all tool schema and dispatch code at compile time. Th
 **`clang: error: invalid linker name in argument '-fuse-ld=bfd'`**
 You're building on macOS without Docker. Use the Docker command above.
 
-**`NU1102: Unable to find package StrandsAgents.Core with version >= X`**
+**`NU1102: Unable to find package Jacquard.Core with version >= X`**
 The NuGet package hasn't propagated yet. Wait a few minutes and retry, or use project references (already configured in this sample's `.csproj`).
 
 **`IL2104: Assembly 'AWSSDK.Core' produced trim warnings`**

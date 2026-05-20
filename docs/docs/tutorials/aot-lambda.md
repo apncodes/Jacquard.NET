@@ -17,7 +17,7 @@ Across 60 measured cold starts on arm64 Graviton2 (512 MB through 2048 MB), **88
 
 **Recommended configuration: `arm64` (Graviton2) at 1024 MB** — 89.6ms average, 19/20 runs under 100ms, ~20% cheaper per GB-second than x86_64.
 
-See the full benchmark data in the [AotLambda sample README](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/AotLambda).
+See the full benchmark data in the [AotLambda sample README](https://github.com/apncodes/Jacquard.net/tree/main/samples/AotLambda).
 
 ## Prerequisites
 
@@ -27,19 +27,19 @@ See the full benchmark data in the [AotLambda sample README](https://github.com/
 - **Linux build environment** — NativeAOT cross-compilation from macOS to `linux-x64` requires a Linux linker. Use one of:
   - A Linux machine or WSL2
   - Docker: `docker run --rm -v $(pwd):/src -w /src mcr.microsoft.com/dotnet/sdk:10.0 dotnet publish ...`
-  - EC2 instance (see the [AotLambda sample README](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/AotLambda))
+  - EC2 instance (see the [AotLambda sample README](https://github.com/apncodes/Jacquard.net/tree/main/samples/AotLambda))
 
 ## Step 1: Create the project
 
 ```bash
 dotnet new console -n AotWeatherAgent
 cd AotWeatherAgent
-dotnet add package StrandsAgents.Core
-dotnet add package StrandsAgents.Models.Bedrock
+dotnet add package Jacquard.Core
+dotnet add package Jacquard.Models.Bedrock
 dotnet add package Amazon.Lambda.Core
 dotnet add package Amazon.Lambda.RuntimeSupport
 dotnet add package Amazon.Lambda.Serialization.SystemTextJson
-dotnet add package StrandsAgents.SourceGenerator
+dotnet add package Jacquard.SourceGenerator
 ```
 
 ## Step 2: Configure for AOT
@@ -68,8 +68,8 @@ Replace `Program.cs`:
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
 using System.Text.Json.Serialization;
 using AotWeatherAgent;
 
@@ -177,6 +177,6 @@ The binary uses only ~52 MB of memory at runtime — you get near-sub-100ms cold
 
 ## Next steps
 
-- **[AotLambda sample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/AotLambda)** — the full sample with detailed benchmark methodology
-- **[DurableWorkflow sample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/DurableWorkflow)** — multi-step AOT agents with Step Functions durability
+- **[AotLambda sample](https://github.com/apncodes/Jacquard.net/tree/main/samples/AotLambda)** — the full sample with detailed benchmark methodology
+- **[DurableWorkflow sample](https://github.com/apncodes/Jacquard.net/tree/main/samples/DurableWorkflow)** — multi-step AOT agents with Step Functions durability
 - **[FAQ: AOT trimming warnings](../faq#aot-trimming-warnings)** — common issues and fixes

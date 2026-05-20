@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StrandsAgents.Core" Version="0.1.8" />
-    <PackageReference Include="StrandsAgents.Models.Bedrock" Version="0.1.8" />
-    <PackageReference Include="StrandsAgents.Runtime" Version="0.1.8" />
+    <ProjectReference Include="..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
+    <ProjectReference Include="..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
+    <ProjectReference Include="..\..\src\Jacquard.Runtime\Jacquard.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

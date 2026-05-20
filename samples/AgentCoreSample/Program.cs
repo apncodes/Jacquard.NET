@@ -1,7 +1,7 @@
-using StrandsAgents.Runtime.Extensions;
-using StrandsAgents.Runtime.Hosting;
-using StrandsAgents.Extensions.DI;
-using StrandsAgents.Tools;
+using Jacquard.Runtime.Extensions;
+using Jacquard.Runtime.Hosting;
+using Jacquard.Extensions.DI;
+using Jacquard.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 

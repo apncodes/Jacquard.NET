@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.MultiAgent;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.MultiAgent;
 
 const string ModelId = "us.anthropic.claude-haiku-4-5-20251001-v1:0";
 const string Topic   = "the impact of large language models on software development";

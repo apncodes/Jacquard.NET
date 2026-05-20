@@ -48,7 +48,7 @@ var agent = new Agent(
 
 ## DI registration
 
-With `StrandsAgents.Extensions.DI`, register tool providers as services:
+With `Jacquard.Extensions.DI`, register tool providers as services:
 
 ```csharp
 builder.Services

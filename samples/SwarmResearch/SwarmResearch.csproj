@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\StrandsAgents.Core\StrandsAgents.Core.csproj" />
-    <ProjectReference Include="..\..\src\StrandsAgents.Models.Bedrock\StrandsAgents.Models.Bedrock.csproj" />
-    <ProjectReference Include="..\..\src\StrandsAgents.MultiAgent\StrandsAgents.MultiAgent.csproj" />
-    <ProjectReference Include="..\..\src\StrandsAgents.SourceGenerator\StrandsAgents.SourceGenerator.csproj"
+    <ProjectReference Include="..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
+    <ProjectReference Include="..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
+    <ProjectReference Include="..\..\src\Jacquard.MultiAgent\Jacquard.MultiAgent.csproj" />
+    <ProjectReference Include="..\..\src\Jacquard.SourceGenerator\Jacquard.SourceGenerator.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>

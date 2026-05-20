@@ -1,5 +1,5 @@
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
 
 // AutoTrimAssistant — demonstrates zero-boilerplate automatic conversation summarization.
 //

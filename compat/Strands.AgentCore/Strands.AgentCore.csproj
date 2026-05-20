@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Version>0.1.4</Version>
     <IsPackable>true</IsPackable>
-    <Description>Deprecated. This package has been renamed to StrandsAgents.Runtime. Please update your PackageReference. The old name will stop receiving updates after November 2025.</Description>
+    <Description>Deprecated. This package has been renamed to Jacquard.Runtime. Please update your PackageReference. The old name will stop receiving updates after November 2025.</Description>
     <Authors>Strands .NET Contributors</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/apncodes/strands.net</PackageProjectUrl>
@@ -12,6 +12,6 @@
     <PackageReadmeFile></PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="StrandsAgents.Runtime" Version="0.1.5" />
+    <PackageReference Include="Jacquard.Runtime" Version="0.1.5" />
   </ItemGroup>
 </Project>

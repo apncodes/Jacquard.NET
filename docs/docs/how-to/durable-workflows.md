@@ -8,7 +8,7 @@ For multi-step agentic pipelines where individual steps are long-running or expe
 
 Each agent runs as a separate Lambda function. Step Functions manages checkpointing, retry, and state passing between steps. If a step fails, Step Functions retries that step only — prior steps are not re-run.
 
-See the **[DurableWorkflow sample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/DurableWorkflow)** for a complete, deployed example with:
+See the **[DurableWorkflow sample](https://github.com/apncodes/Jacquard.net/tree/main/samples/DurableWorkflow)** for a complete, deployed example with:
 
 - Three NativeAOT Lambda functions (Plan → Execute → Summarize)
 - Three different Bedrock models (Claude Sonnet 4.6 × 2, Amazon Nova Pro)

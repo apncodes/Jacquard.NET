@@ -1,6 +1,6 @@
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.Tools;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.Tools;
 using QuickTools;
 
 // ── Model ─────────────────────────────────────────────────────────────────────
@@ -14,7 +14,7 @@ var model = new BedrockModel(
 
 // ── Agent ─────────────────────────────────────────────────────────────────────
 // Three tool providers:
-//   - CalculatorTool    — built-in, from StrandsAgents.Tools
+//   - CalculatorTool    — built-in, from Jacquard.Tools
 //   - CurrentTimeTool   — custom, defined below
 //   - LetterCounterTool — custom, defined below
 // ─────────────────────────────────────────────────────────────────────────────

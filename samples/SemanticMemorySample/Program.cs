@@ -1,6 +1,6 @@
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.Runtime.Tools;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.Runtime.Tools;
 
 // SemanticMemorySample — demonstrates semantic (vector) memory retrieval via SemanticMemoryTool.
 //

@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
-using StrandsAgents.Runtime;
-using StrandsAgents.Runtime.Extensions;
-using StrandsAgents.Core;
-using StrandsAgents.Extensions.DI;
+using Jacquard.Runtime;
+using Jacquard.Runtime.Extensions;
+using Jacquard.Core;
+using Jacquard.Extensions.DI;
 
 var gatewayUrl = new Uri(
     Environment.GetEnvironmentVariable("AGENTCORE_GATEWAY_URL")

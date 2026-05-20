@@ -19,16 +19,16 @@ Built around four principles: don't over-engineer, keep things clean, embrace op
 ## Quick install
 
 ```bash
-dotnet add package StrandsAgents.Core
-dotnet add package StrandsAgents.Models.Bedrock
-dotnet add package StrandsAgents.SourceGenerator
+dotnet add package Jacquard.Core
+dotnet add package Jacquard.Models.Bedrock
+dotnet add package Jacquard.SourceGenerator
 ```
 
 ## Minimal example
 
 ```csharp
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
 
 var agent = new Agent(
     model: new BedrockModel("us-east-1"),
@@ -54,7 +54,7 @@ The `[Tool]` attribute and `partial class` tell the Roslyn source generator — 
 - **Easy to learn, idiomatic to write** — any .NET developer can pick this up and ship a working agent in an afternoon. If you can write a C# method, you can write a tool. The advanced .NET features are present where they help and hidden where they don't.
 - **Industry-standard vocabulary** — agent, tool, system prompt, session, hook. Reads natively to anyone coming from Strands Python, OpenAI, Anthropic, or LangChain. No proprietary terminology to translate.
 - **Zero runtime reflection** — compile-time tool dispatch via Roslyn source generators. The `STRAND001` diagnostic catches tool misconfiguration at build time, not at first invocation.
-- **NativeAOT-ready** — compile-time tool dispatch means no JIT tax on Lambda cold starts. Measured 93.3ms average across 60 cold starts on Graviton2 (512 MB–2048 MB), 88% under 100ms. Runs fast on small instances — the binary uses only ~52 MB at runtime. See the [AotLambda sample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/AotLambda).
+- **NativeAOT-ready** — compile-time tool dispatch means no JIT tax on Lambda cold starts. Measured 93.3ms average across 60 cold starts on Graviton2 (512 MB–2048 MB), 88% under 100ms. Runs fast on small instances — the binary uses only ~52 MB at runtime. See the [AotLambda sample](https://github.com/apncodes/Jacquard.net/tree/main/samples/AotLambda).
 - **Cloud-neutral core, deep integrations available** — four model providers (Bedrock, Anthropic, OpenAI-compatible, Gemini), open protocols (MCP, A2A), first-class AWS Bedrock and AgentCore support. Runs anywhere .NET runs.
 - **Multi-agent in one package** — pipeline, parallel, graph orchestration, agent-as-tool, A2A protocol for cross-language interop.
 

@@ -1,6 +1,6 @@
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.MultiAgent;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.MultiAgent;
 
 // OrchestratedResearch — demonstrates Week 2 multi-agent orchestration patterns.
 //

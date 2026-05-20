@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using StrandsAgents.Core;
-using StrandsAgents.Extensions.DI;
+using Jacquard.Core;
+using Jacquard.Extensions.DI;
 
 // DiAgent — demonstrates Week 2 dependency-injection extensions.
 //

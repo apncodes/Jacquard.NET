@@ -14,10 +14,10 @@ sidebar_position: 2
 ## Install packages
 
 ```bash
-dotnet add package StrandsAgents.Core
-dotnet add package StrandsAgents.Models.Bedrock
-dotnet add package StrandsAgents.Tools
-dotnet add package StrandsAgents.SourceGenerator
+dotnet add package Jacquard.Core
+dotnet add package Jacquard.Models.Bedrock
+dotnet add package Jacquard.Tools
+dotnet add package Jacquard.SourceGenerator
 ```
 
 ## Your first agent
@@ -25,9 +25,9 @@ dotnet add package StrandsAgents.SourceGenerator
 Create a new console app and add this code:
 
 ```csharp
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.Tools;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.Tools;
 using QuickTools;
 
 var model = new BedrockModel(
@@ -95,7 +95,7 @@ The agent calls all three tools and streams back a response covering the current
 
 ## What just happened
 
-1. `CalculatorTool` is a built-in tool from `StrandsAgents.Tools`
+1. `CalculatorTool` is a built-in tool from `Jacquard.Tools`
 2. `CurrentTimeTool` and `LetterCounterTool` are custom tools — each is a `partial class` with a `[Tool]`-decorated method
 3. The Roslyn source generator emitted compile-time `ITool` wrappers and `IToolProvider` implementations for all three — no runtime reflection
 4. The agent received the prompt, the model decided which tools to call and in what order, the SDK executed them, and the results were fed back to the model to produce the final streamed response
@@ -113,4 +113,4 @@ Use `toolProviders:` when passing your `[Tool]`-decorated classes — the common
 - **[Concepts: Agent & Event Loop](./concepts/agent-event-loop)** — understand how the loop works
 - **[Concepts: Tools](./concepts/tools)** — learn about the `[Tool]` attribute and source generator
 - **[Tutorial: Build your first agent](./tutorials/first-agent)** — a more detailed walkthrough
-- **[QuickstartSample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/QuickstartSample)** — the full runnable version of the code on this page
+- **[QuickstartSample](https://github.com/apncodes/Jacquard.net/tree/main/samples/QuickstartSample)** — the full runnable version of the code on this page

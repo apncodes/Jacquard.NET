@@ -1,6 +1,6 @@
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.MultiAgent;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.MultiAgent;
 
 // WriterClient — calls a remote ResearchService over A2A and uses it as a tool
 // inside a local Writer agent.

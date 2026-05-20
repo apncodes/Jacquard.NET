@@ -18,12 +18,12 @@ warning STRAND001: Class 'WeatherTools' has [Tool] methods but is not declared p
 
 Fix: add `partial` to the class declaration.
 
-### Which version of `StrandsAgents.SourceGenerator` do I need for `toolProviders:`?
+### Which version of `Jacquard.SourceGenerator` do I need for `toolProviders:`?
 
 Version **0.1.9+** is required. If you're on an older version:
 
 ```bash
-dotnet add package StrandsAgents.SourceGenerator --version 0.1.9
+dotnet add package Jacquard.SourceGenerator --version 0.1.9
 ```
 
 ### Why isn't my tool being called by the model?
@@ -130,7 +130,7 @@ Also ensure all types are registered in your `JsonSerializerContext`.
 
 ### How do I persist sessions across Lambda invocations?
 
-Use `AgentCoreSessionManager` (requires `StrandsAgents.Runtime`):
+Use `AgentCoreSessionManager` (requires `Jacquard.Runtime`):
 
 ```csharp
 builder.Services
@@ -208,7 +208,7 @@ var model = new GeminiModel(apiKey: "AIza...", modelId: "gemini-2.0-flash");
 ```csharp
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing
-        .AddSource("StrandsAgents.Agent")  // the SDK's ActivitySource
+        .AddSource("Jacquard.Agent")  // the SDK's ActivitySource
         .AddOtlpExporter());               // or AddConsoleExporter() for development
 ```
 

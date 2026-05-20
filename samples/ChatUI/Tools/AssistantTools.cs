@@ -1,4 +1,4 @@
-using StrandsAgents.Core;
+using Jacquard.Core;
 
 // Namespace matches the project root so the generated tool wrappers
 // (AssistantTools_GetWeather_Tool, AssistantTools_GetCurrentTime_Tool)

@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
-using StrandsAgents.Core;
-using StrandsAgents.Extensions.DI;
+using Jacquard.Core;
+using Jacquard.Extensions.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 

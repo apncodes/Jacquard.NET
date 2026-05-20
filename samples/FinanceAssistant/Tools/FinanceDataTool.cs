@@ -1,4 +1,4 @@
-using StrandsAgents.Core;
+using Jacquard.Core;
 
 // Namespace matches the project root so source-generated tool wrappers
 // (FinanceDataTool_GetQuote_Tool, etc.) are accessible in Program.cs without extra usings.

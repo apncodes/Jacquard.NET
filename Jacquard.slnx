@@ -1,0 +1,36 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Jacquard.Core/Jacquard.Core.csproj" />
+    <Project Path="src/Jacquard.SourceGenerator/Jacquard.SourceGenerator.csproj" />
+    <Project Path="src/Jacquard.Extensions.DI/Jacquard.Extensions.DI.csproj" />
+    <Project Path="src/Jacquard.MultiAgent/Jacquard.MultiAgent.csproj" />
+    <Project Path="src/Jacquard.Tools/Jacquard.Tools.csproj" />
+    <Project Path="src/Jacquard.Models.Bedrock/Jacquard.Models.Bedrock.csproj" />
+    <Project Path="src/Jacquard.Runtime/Jacquard.Runtime.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Jacquard.Core.Tests/Jacquard.Core.Tests.csproj" />
+    <Project Path="tests/Jacquard.Integration.Tests/Jacquard.Integration.Tests.csproj" />
+    <Project Path="tests/Jacquard.Runtime.Tests/Jacquard.Runtime.Tests.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/CliAgent/CliAgent.csproj" />
+    <Project Path="samples/AspNetAgent/AspNetAgent.csproj" />
+    <Project Path="samples/DiAgent/DiAgent.csproj" />
+    <Project Path="samples/FileAgent/FileAgent.csproj" />
+    <Project Path="samples/MultiAgentPipeline/MultiAgentPipeline.csproj" />
+    <Project Path="samples/OrchestratedResearch/OrchestratedResearch.csproj" />
+    <Project Path="samples/SupportTriage/SupportTriage.csproj" />
+    <Project Path="samples/CustomerServiceApi/CustomerServiceApi.csproj" />
+    <Project Path="samples/FinanceAssistant/FinanceAssistant.csproj" />
+    <Project Path="samples/PersistentAssistant/PersistentAssistant.csproj" />
+    <Project Path="samples/ChatUI/ChatUI.csproj" />
+    <Project Path="samples/BlazorResearch/BlazorResearch.csproj" />
+    <Project Path="samples/AgentCoreSample/AgentCoreSample.csproj" />
+    <Project Path="samples/AgentCoreGatewaySample/AgentCoreGatewaySample.csproj" />
+    <Folder Name="/samples/DistributedAgents/">
+      <Project Path="samples/DistributedAgents/ResearchService/ResearchService.csproj" />
+      <Project Path="samples/DistributedAgents/WriterClient/WriterClient.csproj" />
+    </Folder>
+  </Folder>
+</Solution>

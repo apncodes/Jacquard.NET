@@ -6,13 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StrandsAgents.Core" Version="0.1.10" />
-    <PackageReference Include="StrandsAgents.Models.Bedrock" Version="0.1.10" />
-    <PackageReference Include="StrandsAgents.Tools" Version="0.1.10" />
-    <PackageReference Include="StrandsAgents.SourceGenerator" Version="0.1.10">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
+    <ProjectReference Include="..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
+    <ProjectReference Include="..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
+    <ProjectReference Include="..\..\src\Jacquard.Tools\Jacquard.Tools.csproj" />
+    <ProjectReference Include="..\..\src\Jacquard.SourceGenerator\Jacquard.SourceGenerator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

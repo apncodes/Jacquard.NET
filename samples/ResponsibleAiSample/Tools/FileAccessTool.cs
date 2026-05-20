@@ -1,4 +1,4 @@
-using StrandsAgents.Core;
+using Jacquard.Core;
 
 namespace ResponsibleAiSample.Tools;
 

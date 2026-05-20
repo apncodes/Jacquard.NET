@@ -2,9 +2,9 @@
 
 > **The Strands Agents framework — built for .NET.** Model-driven agentic AI for C# developers, built on the same principles as [AWS Strands Agents](https://strandsagents.com).
 
-[![NuGet](https://img.shields.io/nuget/v/StrandsAgents.Core?label=NuGet&color=blue)](https://www.nuget.org/packages/StrandsAgents.Core) [![CI](https://github.com/apncodes/StrandsAgents.net/actions/workflows/ci.yml/badge.svg)](https://github.com/apncodes/StrandsAgents.net/actions/workflows/ci.yml) [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-orange)](https://apncodes.github.io/StrandsAgents.net/) [![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://github.com/apncodes/StrandsAgents.net/blob/main/LICENSE)
+[![NuGet](https://img.shields.io/nuget/v/Jacquard.Core?label=NuGet&color=blue)](https://www.nuget.org/packages/Jacquard.Core) [![CI](https://github.com/apncodes/Jacquard.net/actions/workflows/ci.yml/badge.svg)](https://github.com/apncodes/Jacquard.net/actions/workflows/ci.yml) [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-orange)](https://apncodes.github.io/Jacquard.net/) [![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://github.com/apncodes/Jacquard.net/blob/main/LICENSE)
 
-**Jump to:** [Quickstart](#quickstart) · [Why StrandsAgents.NET](#why-strandsagentsnet) · [Production essentials](#production-essentials) · [AWS-native deployment](#aws-native-deployment) · [Multi-agent](#multi-agent-patterns) · [Samples](#samples)
+**Jump to:** [Quickstart](#quickstart) · [Why Jacquard.NET](#why-strandsagentsnet) · [Production essentials](#production-essentials) · [AWS-native deployment](#aws-native-deployment) · [Multi-agent](#multi-agent-patterns) · [Samples](#samples)
 
 ## At a glance
 
@@ -21,16 +21,16 @@
 Decorate a method with `[Tool]` on a `partial class` — the Roslyn source generator emits a compile-time `ITool` wrapper and an `IToolProvider` implementation automatically.
 
 ```bash
-dotnet add package StrandsAgents.Core
-dotnet add package StrandsAgents.Models.Bedrock
-dotnet add package StrandsAgents.Tools
-dotnet add package StrandsAgents.SourceGenerator
+dotnet add package Jacquard.Core
+dotnet add package Jacquard.Models.Bedrock
+dotnet add package Jacquard.Tools
+dotnet add package Jacquard.SourceGenerator
 ```
 
 ```csharp
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.Tools;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.Tools;
 using QuickTools;
 
 var model = new BedrockModel(
@@ -96,11 +96,11 @@ namespace QuickTools
 
 ---
 
-## Why StrandsAgents.NET
+## Why Jacquard.NET
 
-.NET is the dominant runtime in enterprise — AWS Lambda, Windows services, ASP.NET APIs, and beyond. StrandsAgents.NET brings the model-driven agentic approach to every .NET developer: the same event loop, tool system, and multi-agent patterns, built ground-up in idiomatic C# 13. No language bridges, no sidecars.
+.NET is the dominant runtime in enterprise — AWS Lambda, Windows services, ASP.NET APIs, and beyond. Jacquard.NET brings the model-driven agentic approach to every .NET developer: the same event loop, tool system, and multi-agent patterns, built ground-up in idiomatic C# 13. No language bridges, no sidecars.
 
-| Capability | StrandsAgents.NET |
+| Capability | Jacquard.NET |
 | --- | --- |
 | Type safety | Compile-time generics |
 | Streaming | `IAsyncEnumerable<T>` |
@@ -143,7 +143,7 @@ Console.WriteLine($"{report.City}: {report.TempC}°C, {report.Condition}");
 ### DI integration (ASP.NET Core / Worker Service)
 
 ```bash
-dotnet add package StrandsAgents.Extensions.DI
+dotnet add package Jacquard.Extensions.DI
 ```
 
 ```csharp
@@ -262,7 +262,7 @@ var writerAgent  = new Agent(model, tools: [researchTool]);
 Deploy any Strands Agents .NET agent to Amazon Bedrock AgentCore Runtime with one line. Your agent code is unchanged.
 
 ```bash
-dotnet add package StrandsAgents.Runtime
+dotnet add package Jacquard.Runtime
 ```
 
 ```csharp
@@ -343,7 +343,7 @@ builder.Services
 ### Production
 
 - **DI integration** — `AddBedrockModel()`, `AddAnthropicModel()`, `AddOpenAICompatibleModel()`, `AddGeminiModel()`, `AddStrandsAgent()`, `AddStrandsToolProvider<T>()` for native ASP.NET Core / Worker Service wiring
-- **OpenTelemetry** — `ActivitySource` named `"StrandsAgents.Agent"` emits traces and metrics with zero config
+- **OpenTelemetry** — `ActivitySource` named `"Jacquard.Agent"` emits traces and metrics with zero config
 
 ### Multi-agent
 
@@ -376,13 +376,13 @@ builder.Services
 
 | Package | Description |
 | --- | --- |
-| `StrandsAgents.Core` | Agent, event loop, tool system, hooks, session management; Gemini / Anthropic / OpenAI model providers |
-| `StrandsAgents.Models.Bedrock` | Amazon Bedrock model provider (Converse API) |
-| `StrandsAgents.Tools` | Built-in tools: calculator, file read/write, HTTP request |
-| `StrandsAgents.SourceGenerator` | Roslyn source generator — emits `ITool` wrappers and `IToolProvider` implementations from `[Tool]` attributes |
-| `StrandsAgents.Extensions.DI` | ASP.NET Core / Worker Service DI extensions |
-| `StrandsAgents.MultiAgent` | Pipeline, parallel, and graph orchestration; A2A protocol |
-| `StrandsAgents.Runtime` | Amazon Bedrock AgentCore Runtime hosting; managed Memory, Code Interpreter, Browser, and Gateway tools |
+| `Jacquard.Core` | Agent, event loop, tool system, hooks, session management; Gemini / Anthropic / OpenAI model providers |
+| `Jacquard.Models.Bedrock` | Amazon Bedrock model provider (Converse API) |
+| `Jacquard.Tools` | Built-in tools: calculator, file read/write, HTTP request |
+| `Jacquard.SourceGenerator` | Roslyn source generator — emits `ITool` wrappers and `IToolProvider` implementations from `[Tool]` attributes |
+| `Jacquard.Extensions.DI` | ASP.NET Core / Worker Service DI extensions |
+| `Jacquard.MultiAgent` | Pipeline, parallel, and graph orchestration; A2A protocol |
+| `Jacquard.Runtime` | Amazon Bedrock AgentCore Runtime hosting; managed Memory, Code Interpreter, Browser, and Gateway tools |
 
 ---
 
@@ -438,7 +438,7 @@ PRs, issues, and feedback are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) fo
 
 ## Community
 
-Questions and ideas welcome in [GitHub Discussions](https://github.com/apncodes/StrandsAgents.net/discussions).
+Questions and ideas welcome in [GitHub Discussions](https://github.com/apncodes/Jacquard.net/discussions).
 
 ---
 

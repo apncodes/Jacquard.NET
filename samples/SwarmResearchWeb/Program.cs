@@ -1,7 +1,7 @@
 using System.Text.Json;
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.MultiAgent;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.MultiAgent;
 using SwarmResearchWeb;
 
 var builder = WebApplication.CreateBuilder(args);

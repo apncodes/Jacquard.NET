@@ -6,14 +6,14 @@ sidebar_position: 7
 
 ## What it is
 
-Strands Agents .NET ships four model providers out of the box, all in `StrandsAgents.Core`. Every provider implements `IModel` — swap one for another by changing a single line. No third-party SDKs required: each provider uses `HttpClient` + `System.Text.Json` directly.
+Strands Agents .NET ships four model providers out of the box, all in `Jacquard.Core`. Every provider implements `IModel` — swap one for another by changing a single line. No third-party SDKs required: each provider uses `HttpClient` + `System.Text.Json` directly.
 
 ## Amazon Bedrock
 
 The primary provider for AWS deployments. Uses the Bedrock Converse API with support for cross-region inference profiles, Guardrails, and all Bedrock-hosted model families.
 
 ```bash
-dotnet add package StrandsAgents.Models.Bedrock
+dotnet add package Jacquard.Models.Bedrock
 ```
 
 ```csharp

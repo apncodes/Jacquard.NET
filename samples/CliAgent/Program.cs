@@ -1,6 +1,6 @@
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
-using StrandsAgents.Tools;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
+using Jacquard.Tools;
 
 // ── Model selection ──────────────────────────────────────────────────────────
 // Uncomment the model you want to use and comment out the others.

@@ -17,9 +17,9 @@ sidebar_position: 1
 ```bash
 dotnet new console -n MyFirstAgent
 cd MyFirstAgent
-dotnet add package StrandsAgents.Core
-dotnet add package StrandsAgents.Models.Bedrock
-dotnet add package StrandsAgents.SourceGenerator
+dotnet add package Jacquard.Core
+dotnet add package Jacquard.Models.Bedrock
+dotnet add package Jacquard.SourceGenerator
 ```
 
 ## Step 2: Define a tool
@@ -27,7 +27,7 @@ dotnet add package StrandsAgents.SourceGenerator
 Create `WeatherTools.cs`:
 
 ```csharp
-using StrandsAgents.Core;
+using Jacquard.Core;
 
 namespace MyFirstAgent;
 
@@ -52,8 +52,8 @@ Two things to notice:
 Replace `Program.cs`:
 
 ```csharp
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
 using MyFirstAgent;
 
 var agent = new Agent(
@@ -127,4 +127,4 @@ The `partial class WeatherTools` becomes an `IToolProvider` at compile time — 
 - **[Tutorial: Production wiring with DI](./di-production)** — add dependency injection, sessions, and OpenTelemetry
 - **[Concepts: Tools](../concepts/tools)** — learn more about the `[Tool]` attribute
 - **[Concepts: Hooks](../concepts/hooks)** — add logging and human-in-the-loop approval
-- **[Sample: CliAgent](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/CliAgent)** — the full sample this tutorial is based on
+- **[Sample: CliAgent](https://github.com/apncodes/Jacquard.net/tree/main/samples/CliAgent)** — the full sample this tutorial is based on

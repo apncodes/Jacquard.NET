@@ -1,5 +1,5 @@
-using StrandsAgents.Core;
-using StrandsAgents.Extensions.DI;
+using Jacquard.Core;
+using Jacquard.Extensions.DI;
 using CustomerServiceApi;
 
 // CustomerServiceApi — demonstrates Strands SDK in an ASP.NET Core minimal API.

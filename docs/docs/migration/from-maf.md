@@ -17,7 +17,7 @@ Coming from Semantic Kernel, Microsoft Agent Framework (MAF), or AutoGen? The co
 | **Planner** | Event loop | No separate planner. The model decides which tools to call and when to stop. |
 | **Streaming** | `agent.StreamAsync(...)` → `IAsyncEnumerable<StreamEvent>` | Yields `TextDeltaEvent`, `ToolCallEvent`, `ToolResultEvent` as they arrive. |
 | **Filters** / **Middleware** | `HookRegistry` | Register typed hooks for `BeforeToolCall`, `AfterToolCall`, `BeforeModelCall`, etc. |
-| **Multi-agent** | `StrandsAgents.MultiAgent` | Pipeline, parallel fan-out, graph with conditional routing, agent-as-tool. |
+| **Multi-agent** | `Jacquard.MultiAgent` | Pipeline, parallel fan-out, graph with conditional routing, agent-as-tool. |
 | **Process Framework** | Graph orchestration | `GraphBuilder` with typed edge conditions. |
 
 ## Key differences
@@ -26,7 +26,7 @@ Coming from Semantic Kernel, Microsoft Agent Framework (MAF), or AutoGen? The co
 
 **Compile-time tool schema.** The `[Tool]` attribute triggers a Roslyn source generator. There is no runtime reflection, no `KernelPlugin.CreateFromType<T>()`, no dynamic discovery. The tool schema is baked into the binary at build time. This is what makes NativeAOT work.
 
-**One loop, not a pipeline.** The event loop runs until `EndTurn`. You don't compose a chain of steps — you give the agent tools and let the model decide the sequence. For multi-step workflows with explicit ordering, use the Graph or Pipeline patterns in `StrandsAgents.MultiAgent`.
+**One loop, not a pipeline.** The event loop runs until `EndTurn`. You don't compose a chain of steps — you give the agent tools and let the model decide the sequence. For multi-step workflows with explicit ordering, use the Graph or Pipeline patterns in `Jacquard.MultiAgent`.
 
 **Open protocols.** MCP (Model Context Protocol) and A2A (Agent-to-Agent) are first-class. If you're building agents that need to interop with Python or TypeScript Strands agents, A2A is the bridge.
 
@@ -34,4 +34,4 @@ Coming from Semantic Kernel, Microsoft Agent Framework (MAF), or AutoGen? The co
 
 The [Getting Started](../getting-started) guide and [Concepts: Agent & Event Loop](../concepts/agent-event-loop) are the fastest path to a working agent. Most developers coming from other frameworks are productive within an hour.
 
-Questions? Start a thread in [GitHub Discussions](https://github.com/apncodes/StrandsAgents.net/discussions).
+Questions? Start a thread in [GitHub Discussions](https://github.com/apncodes/Jacquard.net/discussions).

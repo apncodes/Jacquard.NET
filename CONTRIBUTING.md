@@ -6,8 +6,8 @@ Thank you for helping bring Strands to the .NET community.
 
 1. Fork and clone the repo
 2. Install .NET 10 SDK — [dot.net](https://dot.net)
-3. Run `dotnet build StrandsAgents.sln` — everything should build clean, zero warnings
-4. Run `dotnet test StrandsAgents.sln` — all tests should pass
+3. Run `dotnet build Jacquard.sln` — everything should build clean, zero warnings
+4. Run `dotnet test Jacquard.sln` — all tests should pass
 
 ## Making changes
 

@@ -1,6 +1,6 @@
 # SwarmResearch — Equity Research Swarm (Console)
 
-Demonstrates the **Swarm** multi-agent pattern using `SwarmOrchestrator` from `StrandsAgents.MultiAgent`. Four specialist agents collaborate autonomously via dynamic handoffs to produce a technology article.
+Demonstrates the **Swarm** multi-agent pattern using `SwarmOrchestrator` from `Jacquard.MultiAgent`. Four specialist agents collaborate autonomously via dynamic handoffs to produce a technology article.
 
 ## Architecture
 

@@ -18,10 +18,10 @@ sidebar_position: 2
 ```bash
 dotnet new webapi -n WeatherApi
 cd WeatherApi
-dotnet add package StrandsAgents.Core
-dotnet add package StrandsAgents.Models.Bedrock
-dotnet add package StrandsAgents.Extensions.DI
-dotnet add package StrandsAgents.SourceGenerator
+dotnet add package Jacquard.Core
+dotnet add package Jacquard.Models.Bedrock
+dotnet add package Jacquard.Extensions.DI
+dotnet add package Jacquard.SourceGenerator
 dotnet add package OpenTelemetry.Extensions.Hosting
 dotnet add package OpenTelemetry.Exporter.Console
 ```
@@ -31,7 +31,7 @@ dotnet add package OpenTelemetry.Exporter.Console
 Create `Tools/WeatherTools.cs`:
 
 ```csharp
-using StrandsAgents.Core;
+using Jacquard.Core;
 
 namespace WeatherApi.Tools;
 
@@ -60,7 +60,7 @@ Note: tool classes can accept constructor-injected dependencies when registered 
 Replace `Program.cs`:
 
 ```csharp
-using StrandsAgents.Extensions.DI;
+using Jacquard.Extensions.DI;
 using WeatherApi.Tools;
 using OpenTelemetry.Trace;
 
@@ -79,7 +79,7 @@ builder.Services
 // ── OpenTelemetry ─────────────────────────────────────────────────────────────
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing
-        .AddSource("StrandsAgents.Agent")   // the SDK's ActivitySource
+        .AddSource("Jacquard.Agent")   // the SDK's ActivitySource
         .AddConsoleExporter());             // swap for OTLP in production
 
 var app = builder.Build();
@@ -131,7 +131,7 @@ The agent remembers the conversation context because both requests use the same 
 
 ## OpenTelemetry traces
 
-The SDK emits traces via an `ActivitySource` named `"StrandsAgents.Agent"`. Each agent invocation creates a root span with child spans for each model call and tool execution. In the console output you'll see:
+The SDK emits traces via an `ActivitySource` named `"Jacquard.Agent"`. Each agent invocation creates a root span with child spans for each model call and tool execution. In the console output you'll see:
 
 ```
 Activity.DisplayName: Agent.Invoke
@@ -147,5 +147,5 @@ Replace `AddConsoleExporter()` with `AddOtlpExporter()` to send traces to Jaeger
 ## Next steps
 
 - **[Tutorial: Deploy to Lambda with AOT](./aot-lambda)** — take this agent to production on AWS Lambda
-- **[Sample: DiAgent](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/DiAgent)** — the full DI sample
-- **[Sample: AspNetAgent](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/AspNetAgent)** — SSE streaming with session continuity
+- **[Sample: DiAgent](https://github.com/apncodes/Jacquard.net/tree/main/samples/DiAgent)** — the full DI sample
+- **[Sample: AspNetAgent](https://github.com/apncodes/Jacquard.net/tree/main/samples/AspNetAgent)** — SSE streaming with session continuity

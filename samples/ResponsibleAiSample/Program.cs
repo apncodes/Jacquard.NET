@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using ResponsibleAiSample.Tools;
-using StrandsAgents.Core;
-using StrandsAgents.Models.Bedrock;
+using Jacquard.Core;
+using Jacquard.Models.Bedrock;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Responsible AI Sample — Conversational Mode

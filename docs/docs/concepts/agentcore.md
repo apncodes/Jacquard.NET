@@ -4,10 +4,10 @@ sidebar_position: 8
 
 # Amazon Bedrock AgentCore
 
-Amazon Bedrock AgentCore is a suite of managed AWS services for production agentic AI. Strands Agents .NET has first-class support for all AgentCore capabilities via the `StrandsAgents.Runtime` package.
+Amazon Bedrock AgentCore is a suite of managed AWS services for production agentic AI. Strands Agents .NET has first-class support for all AgentCore capabilities via the `Jacquard.Runtime` package.
 
 ```bash
-dotnet add package StrandsAgents.Runtime
+dotnet add package Jacquard.Runtime
 ```
 
 ---
@@ -17,8 +17,8 @@ dotnet add package StrandsAgents.Runtime
 AgentCore Runtime is a managed hosting environment for AI agents. Deploy any Strands Agents .NET agent to it by adding two lines to your ASP.NET Core app:
 
 ```csharp
-using StrandsAgents.Runtime.Hosting;
-using StrandsAgents.Extensions.DI;
+using Jacquard.Runtime.Hosting;
+using Jacquard.Extensions.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,7 +47,7 @@ COPY publish/ .
 ENTRYPOINT ["dotnet", "YourAgent.dll"]
 ```
 
-See the [AgentCoreSample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/AgentCoreSample) for a complete deployment example.
+See the [AgentCoreSample](https://github.com/apncodes/Jacquard.net/tree/main/samples/AgentCoreSample) for a complete deployment example.
 
 ---
 
@@ -104,7 +104,7 @@ builder.Services
     .AddStrandsAgent();
 ```
 
-See the [SemanticMemorySample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/SemanticMemorySample) for a complete example.
+See the [SemanticMemorySample](https://github.com/apncodes/Jacquard.net/tree/main/samples/SemanticMemorySample) for a complete example.
 
 ---
 
@@ -138,7 +138,7 @@ Example agent interaction:
 
 **Stateful sessions:** The tool creates a session on first use and reuses it across calls. Variables defined in one call are available in subsequent calls. The session is cleaned up when the tool is disposed.
 
-See the [CodeInterpreterSample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/CodeInterpreterSample) for a complete example.
+See the [CodeInterpreterSample](https://github.com/apncodes/Jacquard.net/tree/main/samples/CodeInterpreterSample) for a complete example.
 
 ---
 
@@ -174,7 +174,7 @@ stop_session:  Stop a browser session and release its resources.
 3. Perform navigation, clicks, screenshots via Playwright
 4. Agent calls `stop_session` when done
 
-See the [BrowserSample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/BrowserSample) for a complete example.
+See the [BrowserSample](https://github.com/apncodes/Jacquard.net/tree/main/samples/BrowserSample) for a complete example.
 
 ---
 
@@ -218,7 +218,7 @@ builder.Services
 
 `AddStrandsAgent()` picks up the gateway tools automatically — no explicit wiring needed.
 
-See the [AgentCoreGatewaySample](https://github.com/apncodes/StrandsAgents.net/tree/main/samples/AgentCoreGatewaySample) for a complete travel booking assistant example.
+See the [AgentCoreGatewaySample](https://github.com/apncodes/Jacquard.net/tree/main/samples/AgentCoreGatewaySample) for a complete travel booking assistant example.
 
 ---
 

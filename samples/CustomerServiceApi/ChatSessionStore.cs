@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using StrandsAgents.Core;
+using Jacquard.Core;
 
 namespace CustomerServiceApi;
 

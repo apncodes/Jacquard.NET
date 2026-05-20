@@ -8,10 +8,10 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   url: 'https://apncodes.github.io',
-  baseUrl: '/StrandsAgents.net/',
+  baseUrl: '/Jacquard.net/',
 
   organizationName: 'apncodes',
-  projectName: 'StrandsAgents.net',
+  projectName: 'Jacquard.net',
   trailingSlash: false,
 
   onBrokenLinks: 'throw',
@@ -28,7 +28,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/apncodes/StrandsAgents.net/tree/main/docs/',
+          editUrl: 'https://github.com/apncodes/Jacquard.net/tree/main/docs/',
         },
         blog: false,
         theme: {
@@ -54,12 +54,12 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          href: 'https://github.com/apncodes/StrandsAgents.net',
+          href: 'https://github.com/apncodes/Jacquard.net',
           label: 'GitHub',
           position: 'right',
         },
         {
-          href: 'https://www.nuget.org/packages/StrandsAgents.Core',
+          href: 'https://www.nuget.org/packages/Jacquard.Core',
           label: 'NuGet',
           position: 'right',
         },
@@ -81,11 +81,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub Discussions',
-              href: 'https://github.com/apncodes/StrandsAgents.net/discussions',
+              href: 'https://github.com/apncodes/Jacquard.net/discussions',
             },
             {
               label: 'Issues',
-              href: 'https://github.com/apncodes/StrandsAgents.net/issues',
+              href: 'https://github.com/apncodes/Jacquard.net/issues',
             },
           ],
         },
@@ -94,11 +94,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/apncodes/StrandsAgents.net',
+              href: 'https://github.com/apncodes/Jacquard.net',
             },
             {
               label: 'NuGet',
-              href: 'https://www.nuget.org/packages/StrandsAgents.Core',
+              href: 'https://www.nuget.org/packages/Jacquard.Core',
             },
             {
               label: 'Strands Agents',
