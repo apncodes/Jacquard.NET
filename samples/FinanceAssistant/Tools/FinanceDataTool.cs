@@ -8,7 +8,7 @@ namespace FinanceAssistant;
 /// Simulates a market data and financial research API.
 /// In production this would call Bloomberg, Refinitiv, or a broker data feed.
 /// </summary>
-public sealed class FinanceDataTool
+public sealed partial class FinanceDataTool
 {
     private static readonly IReadOnlyDictionary<string, TickerData> _data =
         new Dictionary<string, TickerData>(StringComparer.OrdinalIgnoreCase)
