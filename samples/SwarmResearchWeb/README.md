@@ -77,3 +77,10 @@ switch (type) {
 ## Design
 
 Dark slate background (`#0f1117`), warm white text, single amber accent (`#d97706`) for active state, green for completion. Monospace font for tool calls and token counts. No gradients, no emoji in UI chrome — professional research tool aesthetic.
+
+## Where you'd use these patterns
+
+- **Internal research portals** — give teams a browser UI to commission multi-agent research runs and watch the agents work in real time, with the final article ready to copy when the swarm completes.
+- **Live agent dashboards** — any application that needs to surface swarm progress to end users: customer-facing status pages, operator consoles, or CI/CD pipelines that run agent workflows.
+- **SSE-based integrations** — the `/swarm` endpoint is a plain HTTP SSE stream; any client that can consume SSE (browser `EventSource`, curl, Python `httpx`) can subscribe without a WebSocket or polling loop.
+- **Prototype-to-production path** — start with the console sample to validate the swarm logic, then drop in this web layer to expose it to users without changing the `SwarmOrchestrator` code.

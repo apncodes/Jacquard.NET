@@ -88,3 +88,10 @@ Use `RunAsync` if you only need the final result without streaming:
 var result = await swarm.RunAsync(task);
 Console.WriteLine(result.FinalMessage);
 ```
+
+## Where you'd use these patterns
+
+- **Long-form content production** — research → outline → draft → edit pipelines where each specialist hands off to the next and the final output needs to be publication-ready.
+- **Autonomous investigation** — give the swarm a question and let agents decide which peers to involve; useful when the required expertise isn't known upfront (e.g. a bug report that might need a security analyst, a performance engineer, or a database expert).
+- **Multi-stage document generation** — legal briefs, technical reports, or RFPs where fact-gathering, structuring, writing, and compliance review are distinct specialisms.
+- **Observability-first workflows** — subscribe to `StreamAsync` to feed each `SwarmEvent` into a logging pipeline, a progress UI, or an audit trail without changing the swarm logic itself.
