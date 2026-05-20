@@ -1,6 +1,6 @@
 # Jacquard.NET
 
-> **Native C# SDK for building agentic AI.** Inspired by the [Jacquard Agents](https://strandsagents.com) design principles. Independently maintained.
+> **Native C# SDK for building agentic AI.** Inspired by the [Strands Agents](https://strandsagents.com) design principles. Community maintained.
 
 [![NuGet](https://img.shields.io/nuget/v/Jacquard.Core?label=NuGet&color=blue)](https://www.nuget.org/packages/Jacquard.Core)
 [![CI](https://github.com/apncodes/Jacquard.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/apncodes/Jacquard.NET/actions/workflows/ci.yml)
@@ -12,9 +12,9 @@
 
 The Jacquard loom — invented in 1804 — was the first machine to use punch cards to control patterns. It inspired Charles Babbage. It is the origin of the idea that a machine could be programmed to weave any pattern from simple instructions. That is what agents do: weave tools, models, loops, and prompts into intelligent behavior.
 
-The .NET ecosystem is the dominant runtime in enterprise — Lambda functions, Windows services, ASP.NET APIs. When AWS released Jacquard Agents, the design was immediately compelling: model-driven event loop, clean tool system, hooks, multi-agent orchestration. But there was no native .NET implementation.
+The .NET ecosystem is the dominant runtime in enterprise — Lambda functions, Windows services, ASP.NET APIs. When AWS released Strands Agents, the design was immediately compelling: model-driven event loop, clean tool system, hooks, multi-agent orchestration. But there was no native .NET implementation.
 
-Jacquard.NET is that implementation. Built ground-up in C# 13. The same design principles as Jacquard Agents, expressed in the patterns .NET developers already know.
+Jacquard.NET is that implementation. Built ground-up in C# 13. The same design principles as Strands Agents, expressed in the patterns .NET developers already know.
 
 **Four principles guide every decision:**
 
@@ -387,11 +387,9 @@ builder.Services
 
 ## About
 
-Jacquard.NET is a native C# SDK for building agentic AI, inspired by the Jacquard Agents design principles, independently maintained. The core concepts — model-driven event loop, tool system, hooks, multi-agent orchestration — follow the Strands architecture, with full interoperability via MCP and A2A.
+Jacquard.NET is a native C# SDK for building agentic AI, inspired by the [Strands Agents](https://strandsagents.com) design principles, independently maintained. The core concepts — model-driven event loop, tool system, hooks, multi-agent orchestration — are implemented ground-up in C# 13, with full interoperability via MCP and A2A.
 
-Jacquard Agents is an open source SDK from AWS that takes a model-driven approach to building AI agents. The design principles that emerged from that work are sound and worth bringing natively to the .NET ecosystem. Jacquard.NET is that native implementation — not a port, not a wrapper, not a language bridge. Built ground-up in C# 13, using the types and patterns .NET developers already know.
-
-Learn more about the Jacquard Agents design at [strandsagents.com](https://strandsagents.com).
+Strands Agents is an open source SDK from AWS that takes a model-driven approach to building AI agents. The design principles that emerged from that work are sound and worth bringing natively to the .NET ecosystem. Jacquard.NET is that native implementation — not a port, not a wrapper, not a language bridge. Built using the types and patterns .NET developers already know.
 
 This project is not affiliated with or endorsed by AWS.
 
