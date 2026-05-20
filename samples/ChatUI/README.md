@@ -1,6 +1,6 @@
 # ChatUI
 
-A browser chat interface backed by a streaming Strands agent. Each browser tab gets its own isolated session with full conversation history. Tool invocations appear as inline badges as they happen.
+A browser chat interface backed by a streaming Jacquard agent. Each browser tab gets its own isolated session with full conversation history. Tool invocations appear as inline badges as they happen.
 
 ## SDK concepts demonstrated
 
@@ -28,4 +28,4 @@ Open **http://localhost:5000** — try `"What's the weather in Tokyo?"` or `"Wha
 
 - **Customer-facing chat widgets** — the SSE + session isolation pattern maps directly to a production chat endpoint where each user has their own conversation.
 - **Internal copilot tools** — embed the same streaming agent behind any HTML page without a frontend framework.
-- **Prototyping** — the lightest path from a Strands agent to a browser UI: one minimal API endpoint, one HTML file, no build step.
+- **Prototyping** — the lightest path from a Jacquard agent to a browser UI: one minimal API endpoint, one HTML file, no build step.

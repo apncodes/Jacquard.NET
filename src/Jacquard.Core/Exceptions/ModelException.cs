@@ -4,7 +4,7 @@ namespace Jacquard.Core;
 /// Thrown when a model provider returns a non-success response or encounters a protocol error.
 /// Carries the originating request and optional HTTP status code for diagnostics.
 /// </summary>
-public sealed class ModelException : StrandsException
+public sealed class ModelException : JacquardException
 {
     /// <summary>The model request that triggered the failure.</summary>
     public ModelRequest Request { get; }

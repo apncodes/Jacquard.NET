@@ -6,18 +6,18 @@ using Jacquard.Core;
 namespace Jacquard.Runtime.Extensions;
 
 /// <summary>
-/// Extension methods for registering Strands AgentCore components with
+/// Extension methods for registering Jacquard AgentCore components with
 /// <see cref="IServiceCollection"/>.
 ///
 /// <para>
-/// These methods are additive — they extend the standard Strands.NET DI setup
+/// These methods are additive — they extend the standard Jacquard.NET DI setup
 /// without modifying any existing registrations.
 /// </para>
 ///
 /// <para>Three customer journeys:</para>
 /// <code>
-/// // Journey 1 — pure Strands.NET, no AgentCore package installed
-/// builder.Services.AddBedrockModel().AddStrandsAgent();
+/// // Journey 1 — pure Jacquard.NET, no AgentCore package installed
+/// builder.Services.AddBedrockModel().AddJacquardAgent();
 ///
 /// // Journey 2 — AgentCore managed services, any hosting
 /// builder.Services
@@ -25,7 +25,7 @@ namespace Jacquard.Runtime.Extensions;
 ///     .AddAgentCoreSessionManager(memoryId)
 ///     .AddAgentCoreBrowser()
 ///     .AddAgentCoreCodeInterpreter()
-///     .AddStrandsAgent();
+///     .AddJacquardAgent();
 ///
 /// // Journey 3 — full AgentCore: managed services + Runtime hosting
 /// var app = builder.Build();
@@ -141,7 +141,7 @@ public static class AgentCoreServiceCollectionExtensions
 
         // Connect to the gateway and discover tools eagerly at registration time.
         // This performs the MCP handshake (tools/list) once so each tool can be
-        // registered individually as ITool — the pattern AddStrandsAgent expects.
+        // registered individually as ITool — the pattern AddJacquardAgent expects.
         var provider = AgentCoreGatewayToolProvider.CreateAsync(gatewayUrl, auth)
             .GetAwaiter().GetResult();
 
@@ -150,7 +150,7 @@ public static class AgentCoreServiceCollectionExtensions
         // Register the provider as a singleton for direct resolution if needed.
         services.AddSingleton(provider);
 
-        // Register each discovered tool as ITool so AddStrandsAgent picks them all up
+        // Register each discovered tool as ITool so AddJacquardAgent picks them all up
         // via IEnumerable<ITool> — same pattern as AddAgentCoreBrowser, AddStrandsTool, etc.
         foreach (var tool in tools)
         {

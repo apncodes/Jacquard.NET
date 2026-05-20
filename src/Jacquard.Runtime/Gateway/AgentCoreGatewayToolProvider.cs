@@ -8,7 +8,7 @@ namespace Jacquard.Runtime;
 /// <summary>
 /// Connects to an Amazon Bedrock AgentCore Gateway endpoint, performs the MCP handshake,
 /// and exposes the gateway's tools as <see cref="ITool"/> instances for use with the
-/// Strands agent.
+/// Jacquard agent.
 /// </summary>
 /// <remarks>
 /// Use the static factory method <see cref="CreateAsync"/> to construct an instance.

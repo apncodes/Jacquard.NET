@@ -5,13 +5,13 @@ sidebar_position: 3
 # Deploy to Lambda with AOT
 
 **Time:** ~30 minutes  
-**What you'll build:** A Strands Agents .NET agent published as a NativeAOT AWS Lambda function with sub-100ms cold start on Graviton2.
+**What you'll build:** A Jacquard.NET agent published as a NativeAOT AWS Lambda function with sub-100ms cold start on Graviton2.
 
 ## Why AOT on Lambda?
 
 Most agent frameworks carry a JIT tax on Lambda. The runtime loads, assemblies resolve, the hot path compiles — all before your first request. For a typical managed .NET agent, that's 200–500ms of init duration on every cold start.
 
-Strands Agents .NET eliminates that tax. The `[Tool]` attribute triggers a Roslyn source generator that emits all tool schema and dispatch code at compile time. Zero runtime reflection means the binary loads and starts in under 100ms — on Graviton2, consistently, across all memory tiers.
+Jacquard.NET eliminates that tax. The `[Tool]` attribute triggers a Roslyn source generator that emits all tool schema and dispatch code at compile time. Zero runtime reflection means the binary loads and starts in under 100ms — on Graviton2, consistently, across all memory tiers.
 
 Across 60 measured cold starts on arm64 Graviton2 (512 MB through 2048 MB), **88% came in under 100ms with an overall average of 93.3ms**. The binary uses only ~52 MB of memory at runtime — meaning you get near-sub-100ms cold starts on the smallest practical Lambda configuration, not just on oversized instances.
 

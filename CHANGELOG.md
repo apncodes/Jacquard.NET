@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Strands Agents .NET are documented here.
+All notable changes to Jacquard.NET are documented here.
 
 ---
 
@@ -36,7 +36,7 @@ All notable changes to Strands Agents .NET are documented here.
 
 ### Added
 
-- **`samples/AotLambda`** — New sample demonstrating a Strands Agents .NET agent published as a NativeAOT AWS Lambda function (`provided.al2023` runtime). Includes full benchmark results: ~118ms average cold-start init duration, 52 MB memory, 14 MB binary. See `samples/AotLambda/README.md` for test conditions and reproducibility instructions.
+- **`samples/AotLambda`** — New sample demonstrating a Jacquard.NET agent published as a NativeAOT AWS Lambda function (`provided.al2023` runtime). Includes full benchmark results: ~118ms average cold-start init duration, 52 MB memory, 14 MB binary. See `samples/AotLambda/README.md` for test conditions and reproducibility instructions.
 
 ---
 
@@ -45,7 +45,7 @@ All notable changes to Strands Agents .NET are documented here.
 ### Changed
 
 - **NuGet package metadata** — all seven packages now have accurate, package-specific descriptions, expanded tags (`mcp`, `a2a`, `source-generator`, `aot`), and correct repository URLs.
-- **README polish** — fixed broken Jump-to anchor (`#why-strandsagentsnet`), retired the `Strands.NET` name variant, standardized comparison table to use `WeatherTools`, added Community section linking to GitHub Discussions.
+- **README polish** — fixed broken Jump-to anchor (`#why-strandsagentsnet`), retired the `Jacquard.NET` name variant, standardized comparison table to use `WeatherTools`, added Community section linking to GitHub Discussions.
 - **Per-package READMEs** — fixed stale GitHub URLs; `Jacquard.Tools` README updated to use the modern `toolProviders:` pattern.
 
 ---
@@ -68,11 +68,11 @@ All notable changes to Strands Agents .NET are documented here.
 
 - **`IToolProvider` interface** (`Jacquard.Core`) — single contract implemented automatically by the source generator. Users never write `GetTools()` by hand.
 
-- **`STRAND001` diagnostic** — the source generator emits a `Warning` when a class with `[Tool]` methods is not declared `partial`. The per-method wrapper classes are still emitted so existing code keeps compiling.
+- **`JACQUARD001` diagnostic** — the source generator emits a `Warning` when a class with `[Tool]` methods is not declared `partial`. The per-method wrapper classes are still emitted so existing code keeps compiling.
 
 - **`Agent` constructor `toolProviders` parameter** — new optional `IEnumerable<IToolProvider>? toolProviders` parameter (positioned after `tools`). Both `tools` and `toolProviders` can be supplied simultaneously; all tools are merged into the same registry. All existing call sites compile unchanged.
 
-- **`AddStrandsToolProvider<TProvider>()` DI extension** (`Jacquard.Extensions.DI`) — registers a tool-provider type as a transient `IToolProvider`. Multiple calls accumulate providers, all resolved by `AddStrandsAgent()`.
+- **`AddJacquardToolProvider<TProvider>()` DI extension** (`Jacquard.Extensions.DI`) — registers a tool-provider type as a transient `IToolProvider`. Multiple calls accumulate providers, all resolved by `AddJacquardAgent()`.
 
 - **`CalculatorTool` declared `partial`** — enables `toolProviders: [new CalculatorTool()]` in user code and in `samples/CliAgent`.
 
@@ -118,7 +118,7 @@ services.AddGeminiModel(apiKey: "AIza...", modelId: "gemini-2.0-flash");
 | `Strands.Core` | `Jacquard.Core` |
 | `Strands.Models.Bedrock` | `Jacquard.Models.Bedrock` |
 | `Strands.Tools` | `Jacquard.Tools` |
-| `Strands.SourceGenerator` | `Jacquard.SourceGenerator` |
+| `Jacquard.SourceGenerator` | `Jacquard.SourceGenerator` |
 | `Strands.Extensions.DI` | `Jacquard.Extensions.DI` |
 | `Strands.MultiAgent` | `Jacquard.MultiAgent` |
 | `Strands.AgentCore` | `Jacquard.Runtime` |
@@ -143,15 +143,15 @@ using Jacquard.MultiAgent;
 
 ```csharp
 // Before
-.AddSource("Strands.Agent")
-.AddMeter("Strands.Agent")
+.AddSource("Jacquard.Agent")
+.AddMeter("Jacquard.Agent")
 
 // After
 .AddSource("Jacquard.Agent")
 .AddMeter("Jacquard.Agent")
 ```
 
-Metric names: `strands.tokens.input` → `strandsagents.tokens.input`, `strands.tokens.output` → `strandsagents.tokens.output`, `strands.tool.calls` → `strandsagents.tool.calls`, `strands.agent.latency` → `strandsagents.agent.latency`.
+Metric names: `strands.tokens.input` → `jacquard.tokens.input`, `strands.tokens.output` → `jacquard.tokens.output`, `strands.tool.calls` → `jacquard.tool.calls`, `strands.agent.latency` → `jacquard.agent.latency`.
 
 ---
 

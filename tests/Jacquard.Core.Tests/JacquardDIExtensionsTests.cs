@@ -35,11 +35,11 @@ public class StrandsDIExtensionsTests
     }
 
     [Fact]
-    public void AddStrandsAgent_WithModel_ResolvesIAgent()
+    public void AddJacquardAgent_WithModel_ResolvesIAgent()
     {
         var services = new ServiceCollection();
         services.AddOpenAICompatibleModel("http://localhost", "key");
-        services.AddStrandsAgent();
+        services.AddJacquardAgent();
 
         using var provider = services.BuildServiceProvider();
         var agent = provider.GetService<IAgent>();
@@ -102,10 +102,10 @@ public class StrandsDIExtensionsTests
     }
 
     [Fact]
-    public void AddStrandsInMemorySessionManager_RegistersISessionManager()
+    public void AddJacquardInMemorySessionManager_RegistersISessionManager()
     {
         var services = new ServiceCollection();
-        services.AddStrandsInMemorySessionManager();
+        services.AddJacquardInMemorySessionManager();
 
         using var provider = services.BuildServiceProvider();
         var sessionManager = provider.GetService<ISessionManager>();
@@ -114,10 +114,10 @@ public class StrandsDIExtensionsTests
     }
 
     [Fact]
-    public void AddStrandsWorker_RegistersIHostedService()
+    public void AddJacquardWorker_RegistersIHostedService()
     {
         var services = new ServiceCollection();
-        services.AddStrandsWorker<StubWorker>();
+        services.AddJacquardWorker<StubWorker>();
 
         using var provider = services.BuildServiceProvider();
         var hostedServices = provider.GetServices<IHostedService>().ToList();
@@ -127,13 +127,13 @@ public class StrandsDIExtensionsTests
     }
 
     [Fact]
-    public void AddStrandsAgent_MultipleTools_AllResolvable()
+    public void AddJacquardAgent_MultipleTools_AllResolvable()
     {
         var services = new ServiceCollection();
         services.AddOpenAICompatibleModel("http://localhost", "key");
         services.AddFileReadTool(Path.GetTempPath());
         services.AddFileWriteTool(Path.GetTempPath());
-        services.AddStrandsAgent();
+        services.AddJacquardAgent();
 
         using var provider = services.BuildServiceProvider();
         var tools = provider.GetServices<ITool>().ToList();

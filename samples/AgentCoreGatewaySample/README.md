@@ -1,6 +1,6 @@
 # AgentCoreGatewaySample
 
-A conversational travel booking assistant that demonstrates connecting a Strands.NET agent to an [Amazon Bedrock AgentCore Gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-building.html). The agent discovers and calls flight and hotel search tools exposed by the gateway over MCP — no tool code required in the agent itself.
+A conversational travel booking assistant that demonstrates connecting a Jacquard.NET agent to an [Amazon Bedrock AgentCore Gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-building.html). The agent discovers and calls flight and hotel search tools exposed by the gateway over MCP — no tool code required in the agent itself.
 
 ## What this sample shows
 

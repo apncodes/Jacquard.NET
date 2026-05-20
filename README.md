@@ -1,6 +1,6 @@
 # Jacquard.NET
 
-> **Native C# SDK for building agentic AI.** Inspired by the [Strands Agents](https://strandsagents.com) design principles. Independently maintained.
+> **Native C# SDK for building agentic AI.** Inspired by the [Jacquard Agents](https://strandsagents.com) design principles. Independently maintained.
 
 [![NuGet](https://img.shields.io/nuget/v/Jacquard.Core?label=NuGet&color=blue)](https://www.nuget.org/packages/Jacquard.Core)
 [![CI](https://github.com/apncodes/Jacquard.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/apncodes/Jacquard.NET/actions/workflows/ci.yml)
@@ -12,9 +12,9 @@
 
 The Jacquard loom — invented in 1804 — was the first machine to use punch cards to control patterns. It inspired Charles Babbage. It is the origin of the idea that a machine could be programmed to weave any pattern from simple instructions. That is what agents do: weave tools, models, loops, and prompts into intelligent behavior.
 
-The .NET ecosystem is the dominant runtime in enterprise — Lambda functions, Windows services, ASP.NET APIs. When AWS released Strands Agents, the design was immediately compelling: model-driven event loop, clean tool system, hooks, multi-agent orchestration. But there was no native .NET implementation.
+The .NET ecosystem is the dominant runtime in enterprise — Lambda functions, Windows services, ASP.NET APIs. When AWS released Jacquard Agents, the design was immediately compelling: model-driven event loop, clean tool system, hooks, multi-agent orchestration. But there was no native .NET implementation.
 
-Jacquard.NET is that implementation. Built ground-up in C# 13. The same design principles as Strands Agents, expressed in the patterns .NET developers already know.
+Jacquard.NET is that implementation. Built ground-up in C# 13. The same design principles as Jacquard Agents, expressed in the patterns .NET developers already know.
 
 **Four principles guide every decision:**
 
@@ -27,7 +27,7 @@ Jacquard.NET is that implementation. Built ground-up in C# 13. The same design p
 
 1. **Easy to learn, idiomatic to write** — if you can write a C# method, you can write a tool. No new programming model, no middleware pipelines to learn before first invocation.
 2. **Industry-standard vocabulary** — agent, tool, system prompt, delta, session, hook. Reads natively to anyone from Strands Python, OpenAI, Anthropic, or LangChain.
-3. **Zero runtime reflection** — compile-time tool dispatch via Roslyn source generators. `STRAND001` diagnostic catches misconfiguration at build time.
+3. **Zero runtime reflection** — compile-time tool dispatch via Roslyn source generators. `JACQUARD001` diagnostic catches misconfiguration at build time.
 4. **NativeAOT-ready** — measured ~118ms cold-start init on AWS Lambda. Reflection-free hot path designed for AOT publish.
 5. **Multi-agent in one package** — pipeline, parallel, graph orchestration, agent-as-tool, A2A protocol for cross-language interop.
 
@@ -169,9 +169,9 @@ dotnet add package Jacquard.Extensions.DI
 builder.Services
     .AddBedrockModel(region: "us-east-1")
     .AddHttpRequestTool()
-    .AddStrandsToolProvider<WeatherTools>()
-    .AddStrandsInMemorySessionManager()
-    .AddStrandsAgent();
+    .AddJacquardToolProvider<WeatherTools>()
+    .AddJacquardInMemorySessionManager()
+    .AddJacquardAgent();
 
 // Resolve IAgent from the container
 var agent = app.Services.GetRequiredService<IAgent>();
@@ -183,7 +183,7 @@ var agent = app.Services.GetRequiredService<IAgent>();
 
 - **Model-driven event loop** — the LLM decides which tools to call; the SDK executes them and loops until `EndTurn`
 - **Tool system** — decorate any `partial` class method with `[Tool]`; the Roslyn source generator emits a compile-time `ITool` wrapper with zero runtime reflection
-- **`IToolProvider` pattern** — pass your tool class directly to `Agent` via `toolProviders:`; no generated wrapper type names in user code; `STRAND001` warning guides non-partial classes
+- **`IToolProvider` pattern** — pass your tool class directly to `Agent` via `toolProviders:`; no generated wrapper type names in user code; `JACQUARD001` warning guides non-partial classes
 - **Streaming** — `StreamAsync` returns `IAsyncEnumerable<StreamEvent>` end to end with `[EnumeratorCancellation]` on every boundary
 - **Hook system** — type-safe `Register<TEvent>` callbacks for `BeforeToolCall`, `AfterToolCall`, `BeforeModelCall`, `AfterModelCall`
 - **Human-in-the-loop** — set `e.Interrupt = true` in any `BeforeToolCallEvent` hook to pause before sensitive actions
@@ -191,7 +191,7 @@ var agent = app.Services.GetRequiredService<IAgent>();
 - **Session management** — `InMemorySessionManager` or `FileSessionManager`; bring your own via `ISessionManager`
 - **Context window trimming** — `SlidingWindowStrategy` or `SummarizingConversationManager` for long-running agents
 - **OpenTelemetry** — `ActivitySource` named `"Jacquard.Agent"` emits traces and metrics with zero config
-- **DI integration** — `AddBedrockModel()`, `AddAnthropicModel()`, `AddOpenAICompatibleModel()`, `AddGeminiModel()`, `AddStrandsAgent()`, `AddStrandsToolProvider<T>()` for native ASP.NET Core / Worker Service wiring
+- **DI integration** — `AddBedrockModel()`, `AddAnthropicModel()`, `AddOpenAICompatibleModel()`, `AddGeminiModel()`, `AddJacquardAgent()`, `AddJacquardToolProvider<T>()` for native ASP.NET Core / Worker Service wiring
 - **Multi-agent graph** — `GraphBuilder` with conditional routing; `PipelineOrchestrator`; `ParallelOrchestrator`
 - **Agent as tool** — wrap any `IAgent` as an `ITool` with `agent.AsTool()` for hierarchical orchestration
 - **MCP** — connect any Model Context Protocol server (stdio or SSE) via `McpToolProvider`
@@ -216,7 +216,7 @@ These aren't translations — they're the patterns .NET developers already know,
 | Tool schema | Roslyn source generator at compile time |
 | Tool registration | `toolProviders: [new MyTools()]` — no generated type names |
 | Parallel execution | `Task.WhenAll` |
-| DI integration | `AddBedrockModel()` + `AddStrandsAgent()` + `AddStrandsToolProvider<T>()` |
+| DI integration | `AddBedrockModel()` + `AddJacquardAgent()` + `AddJacquardToolProvider<T>()` |
 | Enterprise hosting | `IHostedService` / AWS Lambda / any host |
 | Model providers | Bedrock, Anthropic, OpenAI-compatible, Gemini |
 | MCP | ✓ |
@@ -301,7 +301,7 @@ With DI, `AddAgentCoreGatewayTools()` registers all gateway tools directly into 
 builder.Services
     .AddBedrockModel("us-east-1")
     .AddAgentCoreGatewayTools(gatewayUrl, auth: new AgentCoreGatewayAuth.Iam("us-east-1"))
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 ```
 
 ---
@@ -317,7 +317,7 @@ dotnet add package Jacquard.Runtime
 ```csharp
 builder.Services
     .AddBedrockModel("us-east-1")
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 
 var app = builder.Build();
 app.MapAgentCoreEndpoints();  // POST /invocations + GET /health
@@ -387,11 +387,11 @@ builder.Services
 
 ## About
 
-Jacquard.NET is a native C# SDK for building agentic AI, inspired by the Strands Agents design principles, independently maintained. The core concepts — model-driven event loop, tool system, hooks, multi-agent orchestration — follow the Strands architecture, with full interoperability via MCP and A2A.
+Jacquard.NET is a native C# SDK for building agentic AI, inspired by the Jacquard Agents design principles, independently maintained. The core concepts — model-driven event loop, tool system, hooks, multi-agent orchestration — follow the Strands architecture, with full interoperability via MCP and A2A.
 
-Strands Agents is an open source SDK from AWS that takes a model-driven approach to building AI agents. The design principles that emerged from that work are sound and worth bringing natively to the .NET ecosystem. Jacquard.NET is that native implementation — not a port, not a wrapper, not a language bridge. Built ground-up in C# 13, using the types and patterns .NET developers already know.
+Jacquard Agents is an open source SDK from AWS that takes a model-driven approach to building AI agents. The design principles that emerged from that work are sound and worth bringing natively to the .NET ecosystem. Jacquard.NET is that native implementation — not a port, not a wrapper, not a language bridge. Built ground-up in C# 13, using the types and patterns .NET developers already know.
 
-Learn more about the Strands Agents design at [strandsagents.com](https://strandsagents.com).
+Learn more about the Jacquard Agents design at [strandsagents.com](https://strandsagents.com).
 
 This project is not affiliated with or endorsed by AWS.
 

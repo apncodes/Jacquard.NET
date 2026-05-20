@@ -9,7 +9,7 @@ This sample demonstrates the **Decomposed Sequential Pipeline** pattern — a mu
 3. The orchestrator (Step Functions) owns the state between stages
 4. Each stage is independently retryable without re-running prior stages
 
-This is distinct from the in-process `PipelineOrchestrator` already in Strands Agents .NET. The in-process pipeline runs all stages in one Lambda invocation. The decomposed pipeline runs each stage in a separate Lambda invocation, with Step Functions as the checkpoint manager between them.
+This is distinct from the in-process `PipelineOrchestrator` already in Jacquard.NET. The in-process pipeline runs all stages in one Lambda invocation. The decomposed pipeline runs each stage in a separate Lambda invocation, with Step Functions as the checkpoint manager between them.
 
 ## Why decompose? The durability problem
 

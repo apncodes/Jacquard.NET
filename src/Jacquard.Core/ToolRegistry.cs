@@ -51,7 +51,7 @@ public sealed class ToolRegistry
 
     private async Task<ToolResult> ExecuteSingleAsync(ToolCall call, CancellationToken ct)
     {
-        using var toolActivity = StrandsTelemetry.ActivitySource.StartActivity("agent.tool_call");
+        using var toolActivity = JacquardTelemetry.ActivitySource.StartActivity("agent.tool_call");
         toolActivity?.SetTag("tool.name", call.Name);
 
         var tool = Resolve(call.Name);
@@ -81,14 +81,14 @@ public sealed class ToolRegistry
 
             toolActivity?.SetTag("tool.success", !result.IsError);
             toolActivity?.SetTag("tool.duration_ms", sw.ElapsedMilliseconds);
-            StrandsTelemetry.ToolCalls.Add(1);
+            JacquardTelemetry.ToolCalls.Add(1);
 
             return result;
         }
         catch (Exception ex)
         {
             toolActivity?.SetTag("tool.success", false);
-            StrandsTelemetry.ToolCalls.Add(1);
+            JacquardTelemetry.ToolCalls.Add(1);
             return ToolResult.Failure(call.Id, ex.Message);
         }
     }

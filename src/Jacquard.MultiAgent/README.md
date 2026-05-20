@@ -1,6 +1,6 @@
 # Jacquard.MultiAgent
 
-Multi-agent orchestration for [Strands Agents .NET](https://github.com/apncodes/Jacquard.net).
+Multi-agent orchestration for [Jacquard.NET](https://github.com/apncodes/Jacquard.net).
 
 ```bash
 dotnet add package Jacquard.MultiAgent

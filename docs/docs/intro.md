@@ -2,15 +2,15 @@
 sidebar_position: 1
 ---
 
-# Strands Agents .NET
+# Jacquard.NET
 
 **Model-driven agentic AI for C# developers.**
 
-Strands Agents .NET brings the [Strands Agents](https://strandsagents.com) architecture to the .NET ecosystem — the same event loop, tool system, and multi-agent patterns, built ground-up in idiomatic C# 13.
+Jacquard.NET brings the [Jacquard Agents](https://strandsagents.com) architecture to the .NET ecosystem — the same event loop, tool system, and multi-agent patterns, built ground-up in idiomatic C# 13.
 
 Give an agent a model, tools, and a prompt. The event loop calls the model, executes whatever tools it requests, feeds results back, and repeats until the model signals it's done. You never write the orchestration loop.
 
-## Why Strands Agents .NET
+## Why Jacquard.NET
 
 **The goal is that any .NET developer — from line-of-business engineer to senior architect — can read the quickstart and start building agents the same afternoon.** No prior agent experience required, no agent-framework vocabulary to learn, no orchestration loop to write.
 
@@ -53,7 +53,7 @@ The `[Tool]` attribute and `partial class` tell the Roslyn source generator — 
 
 - **Easy to learn, idiomatic to write** — any .NET developer can pick this up and ship a working agent in an afternoon. If you can write a C# method, you can write a tool. The advanced .NET features are present where they help and hidden where they don't.
 - **Industry-standard vocabulary** — agent, tool, system prompt, session, hook. Reads natively to anyone coming from Strands Python, OpenAI, Anthropic, or LangChain. No proprietary terminology to translate.
-- **Zero runtime reflection** — compile-time tool dispatch via Roslyn source generators. The `STRAND001` diagnostic catches tool misconfiguration at build time, not at first invocation.
+- **Zero runtime reflection** — compile-time tool dispatch via Roslyn source generators. The `JACQUARD001` diagnostic catches tool misconfiguration at build time, not at first invocation.
 - **NativeAOT-ready** — compile-time tool dispatch means no JIT tax on Lambda cold starts. Measured 93.3ms average across 60 cold starts on Graviton2 (512 MB–2048 MB), 88% under 100ms. Runs fast on small instances — the binary uses only ~52 MB at runtime. See the [AotLambda sample](https://github.com/apncodes/Jacquard.net/tree/main/samples/AotLambda).
 - **Cloud-neutral core, deep integrations available** — four model providers (Bedrock, Anthropic, OpenAI-compatible, Gemini), open protocols (MCP, A2A), first-class AWS Bedrock and AgentCore support. Runs anywhere .NET runs.
 - **Multi-agent in one package** — pipeline, parallel, graph orchestration, agent-as-tool, A2A protocol for cross-language interop.
@@ -69,6 +69,6 @@ The `[Tool]` attribute and `partial class` tell the Roslyn source generator — 
 
 ## About this project
 
-Strands Agents .NET is a ground-up C# implementation of the Strands Agents design. The core concepts — model-driven event loop, tool system, hooks, multi-agent orchestration — follow the Strands architecture, and the A2A protocol implementation is interoperable across the Strands Python and TypeScript SDKs.
+Jacquard.NET is a ground-up C# implementation of the Jacquard Agents design. The core concepts — model-driven event loop, tool system, hooks, multi-agent orchestration — follow the Strands architecture, and the A2A protocol implementation is interoperable across the Strands Python and TypeScript SDKs.
 
-This project is currently maintained independently and is not officially affiliated with the upstream Strands Agents project. Licensed under Apache 2.0.
+This project is currently maintained independently and is not officially affiliated with the upstream Jacquard Agents project. Licensed under Apache 2.0.

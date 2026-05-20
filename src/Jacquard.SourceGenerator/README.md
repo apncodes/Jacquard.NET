@@ -1,6 +1,6 @@
 # Jacquard.SourceGenerator
 
-Roslyn source generator for [Strands Agents .NET](https://github.com/apncodes/strands.net). Emits compile-time `ITool` wrappers from `[Tool]`-decorated methods — zero runtime reflection.
+Roslyn source generator for [Jacquard.NET](https://github.com/apncodes/strands.net). Emits compile-time `ITool` wrappers from `[Tool]`-decorated methods — zero runtime reflection.
 
 ```bash
 dotnet add package Jacquard.SourceGenerator

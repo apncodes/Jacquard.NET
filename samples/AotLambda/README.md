@@ -1,6 +1,6 @@
-# AotLambda — NativeAOT Strands Agent on AWS Lambda
+# AotLambda — NativeAOT Jacquard Agent on AWS Lambda
 
-This sample publishes a Strands Agents .NET agent as a **NativeAOT** AWS Lambda function using the `provided.al2023` custom runtime. The result is a self-contained native binary with no .NET runtime dependency.
+This sample publishes a Jacquard.NET agent as a **NativeAOT** AWS Lambda function using the `provided.al2023` custom runtime. The result is a self-contained native binary with no .NET runtime dependency.
 
 **Recommended: `arm64` (Graviton2) at 1024 MB** — 89.6ms average cold-start, 19/20 runs under 100ms.
 
@@ -8,7 +8,7 @@ This sample publishes a Strands Agents .NET agent as a **NativeAOT** AWS Lambda 
 
 Most agent frameworks carry a JIT tax on Lambda. The runtime loads, assemblies resolve, the hot path compiles — all before your first request. For a typical managed .NET agent, that's 200–500ms of init duration you pay on every cold start.
 
-Strands Agents .NET is designed to eliminate that tax entirely. The `[Tool]` attribute triggers a Roslyn source generator that emits all tool schema and dispatch code at compile time. There is no runtime reflection, no dynamic type discovery, no `JsonSerializer` with reflection. The result is a binary that Lambda can load and start in under 100ms — on Graviton2, consistently, across all memory tiers from 512 MB to 2048 MB.
+Jacquard.NET is designed to eliminate that tax entirely. The `[Tool]` attribute triggers a Roslyn source generator that emits all tool schema and dispatch code at compile time. There is no runtime reflection, no dynamic type discovery, no `JsonSerializer` with reflection. The result is a binary that Lambda can load and start in under 100ms — on Graviton2, consistently, across all memory tiers from 512 MB to 2048 MB.
 
 Across 60 measured cold starts on arm64 Graviton2 (512 MB, 1024 MB, 2048 MB, 3008 MB), **88% came in under 100ms with an overall average of 93.3ms**. The binary uses only 51–55 MB of memory at runtime — meaning you get sub-100ms cold starts on the smallest practical Lambda configuration, not just on oversized instances.
 

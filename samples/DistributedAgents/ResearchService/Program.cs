@@ -50,7 +50,7 @@ var researchAgent = new Agent(
 
 var app = builder.Build();
 
-// Expose the research agent at /a2a using the Strands A2A protocol.
+// Expose the research agent at /a2a using the Jacquard A2A protocol.
 app.MapA2AEndpoint("/a2a", researchAgent);
 
 // Liveness probe for readiness checks.

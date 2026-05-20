@@ -10,24 +10,24 @@ public class ExceptionHierarchyTests
         new([], null, [], new ModelParameters());
 
     [Fact]
-    public void ModelException_IsA_StrandsException()
+    public void ModelException_IsA_JacquardException()
     {
         var ex = new ModelException("model error", FakeRequest());
-        Assert.IsAssignableFrom<StrandsException>(ex);
+        Assert.IsAssignableFrom<JacquardException>(ex);
     }
 
     [Fact]
-    public void ToolException_IsA_StrandsException()
+    public void ToolException_IsA_JacquardException()
     {
         var ex = new ToolException("tool error", "myTool", "call-1");
-        Assert.IsAssignableFrom<StrandsException>(ex);
+        Assert.IsAssignableFrom<JacquardException>(ex);
     }
 
     [Fact]
-    public void StructuredOutputException_IsA_StrandsException()
+    public void StructuredOutputException_IsA_JacquardException()
     {
         var ex = new StructuredOutputException("bad json", "raw");
-        Assert.IsAssignableFrom<StrandsException>(ex);
+        Assert.IsAssignableFrom<JacquardException>(ex);
     }
 
     [Fact]

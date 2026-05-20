@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # Deploy to Lambda
 
-Strands Agents .NET agents can be deployed to AWS Lambda as NativeAOT binaries on the `provided.al2023` runtime. The recommended configuration is `arm64` (Graviton2) — smaller binary, faster cold start, ~20% cheaper per GB-second.
+Jacquard.NET agents can be deployed to AWS Lambda as NativeAOT binaries on the `provided.al2023` runtime. The recommended configuration is `arm64` (Graviton2) — smaller binary, faster cold start, ~20% cheaper per GB-second.
 
 ## Quick reference
 

@@ -34,5 +34,5 @@ dotnet run --project samples/DistributedAgents/WriterClient -- "climate change"
 ## Where you'd use these patterns
 
 - **Microservice AI architectures** — specialist agents deployed and scaled independently; any service can call any other via A2A without shared libraries or in-process coupling.
-- **Cross-language interop** — A2A is the same protocol used by the Python Strands SDK. A Python research agent can serve as a tool for a C# writer agent, or vice versa.
+- **Cross-language interop** — A2A is the same protocol used by the Python Jacquard SDK. A Python research agent can serve as a tool for a C# writer agent, or vice versa.
 - **Reusable agent APIs** — expose a single well-tested agent (legal review, code analysis, data extraction) as an HTTP service and let any number of orchestrators call it.

@@ -51,8 +51,8 @@ var agent = new Agent(
 ```csharp
 builder.Services
     .AddBedrockModel("us-east-1")
-    .AddStrandsInMemorySessionManager()   // or AddStrandsFileSessionManager(path)
-    .AddStrandsAgent();
+    .AddJacquardInMemorySessionManager()   // or AddStrandsFileSessionManager(path)
+    .AddJacquardAgent();
 ```
 
 ## Context window trimming
@@ -81,7 +81,7 @@ Sessions solve **agent durability** — the ability to resume a conversation aft
 
 The distinction matters:
 
-| Concern | What it means | How Strands.NET addresses it |
+| Concern | What it means | How Jacquard.NET addresses it |
 |---|---|---|
 | **Agent durability** | Resume conversation history across process boundaries | `FileSessionManager`, `AgentCoreSessionManager`, or any custom `ISessionManager` |
 | **Workflow durability** | Guaranteed step execution, retry on failure, durable timers | Compose with platform primitives: AWS Step Functions, Azure Durable Functions, or Hangfire |

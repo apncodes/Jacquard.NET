@@ -4,9 +4,9 @@ A two-turn console assistant wired entirely through `Microsoft.Extensions.Depend
 
 ## SDK concepts demonstrated
 
-**DI extension methods** — `AddBedrockModel`, `AddFileReadTool`, `AddFileWriteTool`, `AddStrandsInMemorySessionManager`, and `AddStrandsAgent` register all SDK components into a standard `ServiceCollection`. The agent is resolved with `provider.GetRequiredService<IAgent>()` — no manual construction.
+**DI extension methods** — `AddBedrockModel`, `AddFileReadTool`, `AddFileWriteTool`, `AddJacquardInMemorySessionManager`, and `AddJacquardAgent` register all SDK components into a standard `ServiceCollection`. The agent is resolved with `provider.GetRequiredService<IAgent>()` — no manual construction.
 
-**`AgentConfig` with `SlidingWindowStrategy`** — passed to `AddStrandsAgent` to configure the context window. When accumulated messages exceed `MaxContextTokens`, the strategy trims the middle of the conversation, always preserving the system prompt and the most recent message. This is the mechanism for keeping long-running agents within token limits.
+**`AgentConfig` with `SlidingWindowStrategy`** — passed to `AddJacquardAgent` to configure the context window. When accumulated messages exceed `MaxContextTokens`, the strategy trims the middle of the conversation, always preserving the system prompt and the most recent message. This is the mechanism for keeping long-running agents within token limits.
 
 **Multi-turn conversation** — the resolved `IAgent` instance holds its own `InMemoryConversationManager`. Calling `InvokeAsync` twice on the same instance produces a two-turn conversation; the second turn can reference what happened in the first because the full message history is in memory.
 

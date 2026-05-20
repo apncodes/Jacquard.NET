@@ -1,6 +1,6 @@
 # Jacquard.Models.Bedrock
 
-Amazon Bedrock model provider for [Strands Agents .NET](https://github.com/apncodes/Jacquard.net).
+Amazon Bedrock model provider for [Jacquard.NET](https://github.com/apncodes/Jacquard.net).
 
 ```bash
 dotnet add package Jacquard.Core

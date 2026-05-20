@@ -8,7 +8,7 @@
     <NoWarn>CA2024</NoWarn>
     <Authors>Strands .NET Contributors</Authors>
     <Company>Community</Company>
-    <Description>Strands Agents .NET — a model-driven agentic AI framework for C# developers.</Description>
+    <Description>Jacquard.NET — a model-driven agentic AI framework for C# developers.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Version>0.1.11</Version>

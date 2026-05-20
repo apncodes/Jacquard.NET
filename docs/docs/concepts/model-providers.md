@@ -6,7 +6,7 @@ sidebar_position: 7
 
 ## What it is
 
-Strands Agents .NET ships four model providers out of the box, all in `Jacquard.Core`. Every provider implements `IModel` — swap one for another by changing a single line. No third-party SDKs required: each provider uses `HttpClient` + `System.Text.Json` directly.
+Jacquard.NET ships four model providers out of the box, all in `Jacquard.Core`. Every provider implements `IModel` — swap one for another by changing a single line. No third-party SDKs required: each provider uses `HttpClient` + `System.Text.Json` directly.
 
 ## Amazon Bedrock
 

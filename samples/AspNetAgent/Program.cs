@@ -4,13 +4,13 @@ using Jacquard.Extensions.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Wire the Strands stack through DI — model, tools, session manager.
+// Wire the Jacquard stack through DI — model, tools, session manager.
 builder.Services
     .AddBedrockModel(
         region:  builder.Configuration["Bedrock:Region"]  ?? "us-east-1",
         modelId: builder.Configuration["Bedrock:ModelId"] ?? "us.anthropic.claude-haiku-4-5-20251001-v1:0")
     .AddHttpRequestTool()
-    .AddStrandsInMemorySessionManager();
+    .AddJacquardInMemorySessionManager();
 
 var app = builder.Build();
 

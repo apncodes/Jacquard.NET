@@ -1,7 +1,7 @@
 namespace Jacquard.Core;
 
 /// <summary>
-/// Marks a method as an agent tool. The Strands source generator will emit
+/// Marks a method as an agent tool. The Jacquard source generator will emit
 /// a compile-time ITool wrapper with a JSON schema derived from parameter types.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]

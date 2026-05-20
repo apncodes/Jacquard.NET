@@ -1,6 +1,6 @@
 # Jacquard.Tools
 
-Built-in tools for [Strands Agents .NET](https://github.com/apncodes/Jacquard.net) agents.
+Built-in tools for [Jacquard.NET](https://github.com/apncodes/Jacquard.net) agents.
 
 ```bash
 dotnet add package Jacquard.Tools

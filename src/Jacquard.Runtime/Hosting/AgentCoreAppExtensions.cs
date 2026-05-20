@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 namespace Jacquard.Runtime.Hosting;
 
 /// <summary>
-/// Extension methods to make any Strands.NET agent deployable to
+/// Extension methods to make any Jacquard.NET agent deployable to
 /// Amazon Bedrock AgentCore Runtime.
 ///
 /// <para>
@@ -37,7 +37,7 @@ public static class AgentCoreAppExtensions
     ///
     /// builder.Services
     ///     .AddBedrockModel("us-east-1")
-    ///     .AddStrandsAgent("You are a helpful assistant.");
+    ///     .AddJacquardAgent("You are a helpful assistant.");
     ///
     /// var app = builder.Build();
     /// app.MapAgentCoreEndpoints();  // one line — agent is now AgentCore-deployable

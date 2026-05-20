@@ -4,11 +4,11 @@ using System.Diagnostics.Metrics;
 namespace Jacquard.Core;
 
 /// <summary>
-/// Central telemetry definitions for the Strands SDK.
+/// Central telemetry definitions for the Jacquard SDK.
 /// Uses built-in System.Diagnostics — no third-party OTel SDK required.
 /// Consumers wire up listeners via ActivitySource.AddActivityListener / MeterListener.
 /// </summary>
-internal static class StrandsTelemetry
+internal static class JacquardTelemetry
 {
     internal const string SourceName = "Jacquard.Agent";
 
@@ -19,17 +19,17 @@ internal static class StrandsTelemetry
 
     /// <summary>Number of input tokens consumed across all model calls.</summary>
     internal static readonly Counter<long> TokensInput =
-        _meter.CreateCounter<long>("strandsagents.tokens.input", "tokens", "Input tokens consumed");
+        _meter.CreateCounter<long>("jacquard.tokens.input", "tokens", "Input tokens consumed");
 
     /// <summary>Number of output tokens produced across all model calls.</summary>
     internal static readonly Counter<long> TokensOutput =
-        _meter.CreateCounter<long>("strandsagents.tokens.output", "tokens", "Output tokens produced");
+        _meter.CreateCounter<long>("jacquard.tokens.output", "tokens", "Output tokens produced");
 
     /// <summary>Number of tool calls executed.</summary>
     internal static readonly Counter<long> ToolCalls =
-        _meter.CreateCounter<long>("strandsagents.tool.calls", "calls", "Number of tool calls executed");
+        _meter.CreateCounter<long>("jacquard.tool.calls", "calls", "Number of tool calls executed");
 
     /// <summary>Agent invocation latency in milliseconds.</summary>
     internal static readonly Histogram<double> AgentLatency =
-        _meter.CreateHistogram<double>("strandsagents.agent.latency", "ms", "Agent invocation latency");
+        _meter.CreateHistogram<double>("jacquard.agent.latency", "ms", "Agent invocation latency");
 }

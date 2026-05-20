@@ -5,7 +5,7 @@ sidebar_position: 2
 # Production Wiring with DI
 
 **Time:** ~20 minutes  
-**What you'll build:** An ASP.NET Core API with a Strands agent wired via dependency injection, file-based session persistence, and OpenTelemetry tracing.
+**What you'll build:** An ASP.NET Core API with a Jacquard agent wired via dependency injection, file-based session persistence, and OpenTelemetry tracing.
 
 ## Prerequisites
 
@@ -71,10 +71,10 @@ builder.Services
     .AddBedrockModel(
         region: "us-east-1",
         modelId: "us.anthropic.claude-haiku-4-5-20251001-v1:0")
-    .AddStrandsToolProvider<WeatherTools>()
+    .AddJacquardToolProvider<WeatherTools>()
     .AddStrandsFileSessionManager(
         basePath: Path.Combine(Path.GetTempPath(), "weather-api-sessions"))
-    .AddStrandsAgent(systemPrompt: "You are a helpful weather assistant.");
+    .AddJacquardAgent(systemPrompt: "You are a helpful weather assistant.");
 
 // ── OpenTelemetry ─────────────────────────────────────────────────────────────
 builder.Services.AddOpenTelemetry()
@@ -123,9 +123,9 @@ The agent remembers the conversation context because both requests use the same 
 
 ## What DI gives you
 
-**Lifetime management:** `AddStrandsAgent()` registers `IAgent` as a scoped service. Each HTTP request gets its own agent instance, but the session manager is singleton — sessions persist across requests.
+**Lifetime management:** `AddJacquardAgent()` registers `IAgent` as a scoped service. Each HTTP request gets its own agent instance, but the session manager is singleton — sessions persist across requests.
 
-**Tool injection:** `AddStrandsToolProvider<WeatherTools>()` registers `WeatherTools` as a transient `IToolProvider`. The DI container resolves its `ILogger<WeatherTools>` dependency automatically.
+**Tool injection:** `AddJacquardToolProvider<WeatherTools>()` registers `WeatherTools` as a transient `IToolProvider`. The DI container resolves its `ILogger<WeatherTools>` dependency automatically.
 
 **Testability:** Swap `BedrockModel` for a mock `IModel` in tests without changing any agent code.
 

@@ -22,7 +22,7 @@ var agent = new Agent(
     systemPrompt: "You are a helpful assistant. Use the calculator tool when arithmetic is needed.",
     toolProviders: [new CalculatorTool()]);
 
-Console.WriteLine("Strands CLI Agent — type your message, 'exit' to quit");
+Console.WriteLine("Jacquard CLI Agent — type your message, 'exit' to quit");
 Console.WriteLine();
 
 using var cts = new CancellationTokenSource();

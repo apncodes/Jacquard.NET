@@ -1,6 +1,6 @@
 # Jacquard.Extensions.DI
 
-`Microsoft.Extensions.DependencyInjection` integration for [Strands Agents .NET](https://github.com/apncodes/Jacquard.net).
+`Microsoft.Extensions.DependencyInjection` integration for [Jacquard.NET](https://github.com/apncodes/Jacquard.net).
 
 ```bash
 dotnet add package Jacquard.Extensions.DI
@@ -13,8 +13,8 @@ builder.Services
     .AddBedrockModel("us-east-1", "us.anthropic.claude-sonnet-4-5-v1:0")
     .AddFileReadTool("/var/data")
     .AddFileWriteTool("/var/data")
-    .AddStrandsInMemorySessionManager()
-    .AddStrandsAgent();
+    .AddJacquardInMemorySessionManager()
+    .AddJacquardAgent();
 
 // Inject IAgent anywhere
 app.MapPost("/ask", async (IAgent agent, AskRequest req) =>

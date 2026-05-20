@@ -15,7 +15,7 @@ internal static class AgentCoreHealthHandler
         return ctx.Response.WriteAsJsonAsync(new
         {
             status = "healthy",
-            framework = "Strands.NET",
+            framework = "Jacquard.NET",
             timestamp = DateTimeOffset.UtcNow,
         });
     }

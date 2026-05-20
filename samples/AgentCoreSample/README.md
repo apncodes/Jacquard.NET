@@ -1,6 +1,6 @@
 # AgentCoreSample
 
-Demonstrates deploying a Strands.NET agent to [Amazon Bedrock AgentCore Runtime](https://aws.amazon.com/bedrock/agentcore/) with a single line of hosting code. The agent itself is completely unchanged.
+Demonstrates deploying a Jacquard.NET agent to [Amazon Bedrock AgentCore Runtime](https://aws.amazon.com/bedrock/agentcore/) with a single line of hosting code. The agent itself is completely unchanged.
 
 This sample has two parts:
 
@@ -21,7 +21,7 @@ This sample has two parts:
 
 `Program.cs` is split into two clearly labelled sections:
 
-1. **Agent configuration** — identical to any other Strands.NET agent. The optional AgentCore services activate automatically based on environment variables — no code changes needed between local and deployed.
+1. **Agent configuration** — identical to any other Jacquard.NET agent. The optional AgentCore services activate automatically based on environment variables — no code changes needed between local and deployed.
 2. **AgentCore hosting** — two lines. Remove them and the agent still builds and runs locally.
 
 ## Prerequisites

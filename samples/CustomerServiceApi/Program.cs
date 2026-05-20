@@ -2,7 +2,7 @@ using Jacquard.Core;
 using Jacquard.Extensions.DI;
 using CustomerServiceApi;
 
-// CustomerServiceApi — demonstrates Strands SDK in an ASP.NET Core minimal API.
+// CustomerServiceApi — demonstrates Jacquard SDK in an ASP.NET Core minimal API.
 //
 // Architecture:
 //   POST /sessions          → create a new chat session (returns session ID)
@@ -11,7 +11,7 @@ using CustomerServiceApi;
 //   GET  /health            → liveness probe
 //
 // SDK features shown:
-//   • AddBedrockModel / AddStrandsAgent  — DI registration
+//   • AddBedrockModel / AddJacquardAgent  — DI registration
 //   • Source-generated tools             — OrderStatusTool_GetStatus_Tool, KnowledgeBaseTool_Search_Tool
 //   • ChatSessionStore                   — per-session Agent with typed system prompt + hooks
 //   • FileSessionManager                 — disk-backed conversation persistence

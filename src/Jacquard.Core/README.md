@@ -1,6 +1,6 @@
 # Jacquard.Core
 
-The [Strands Agents](https://strandsagents.com) framework for .NET — model-driven agentic AI built natively in C# 13.
+The [Jacquard Agents](https://strandsagents.com) framework for .NET — model-driven agentic AI built natively in C# 13.
 
 ```bash
 dotnet add package Jacquard.Core

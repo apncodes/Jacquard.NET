@@ -33,7 +33,7 @@ var model = new BedrockModel(region: Region, modelId: ModelId);
 
 // ── tool ──────────────────────────────────────────────────────────────────────
 
-// TicketLookupTool_LookupTicket_Tool is generated at compile time by Strands.SourceGenerator.
+// TicketLookupTool_LookupTicket_Tool is generated at compile time by Jacquard.SourceGenerator.
 // The JSON schema is a string literal baked into the generated class — zero runtime reflection.
 ITool[] specialistTools = [new TicketLookupTool_LookupTicket_Tool(new TicketLookupTool())];
 

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Jacquard.Runtime</PackageId>
-    <Description>Amazon Bedrock AgentCore Runtime hosting for Strands Agents .NET — MapAgentCoreEndpoints(), managed Memory, Code Interpreter, Browser, and Gateway tool integrations. Your agent code is unchanged.</Description>
+    <Description>Amazon Bedrock AgentCore Runtime hosting for Jacquard.NET — MapAgentCoreEndpoints(), managed Memory, Code Interpreter, Browser, and Gateway tool integrations. Your agent code is unchanged.</Description>
     <PackageTags>aws;bedrock;agentcore;agents;ai;dotnet;strands;runtime;hosting</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>

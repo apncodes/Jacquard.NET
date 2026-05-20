@@ -34,7 +34,7 @@ internal sealed class EventLoop
         string? systemPrompt,
         CancellationToken ct)
     {
-        using var agentActivity = StrandsTelemetry.ActivitySource.StartActivity("agent.invoke");
+        using var agentActivity = JacquardTelemetry.ActivitySource.StartActivity("agent.invoke");
 
         var sw = Stopwatch.StartNew();
         var totalUsage = TokenUsage.Zero;
@@ -82,7 +82,7 @@ internal sealed class EventLoop
             }
 
             ModelResponse response;
-            using (var modelActivity = StrandsTelemetry.ActivitySource.StartActivity("agent.model_call"))
+            using (var modelActivity = JacquardTelemetry.ActivitySource.StartActivity("agent.model_call"))
             {
                 response = await _model.InvokeAsync(request, ct).ConfigureAwait(false);
                 modelActivity?.SetTag("model.input_tokens", response.Usage.InputTokens);
@@ -238,7 +238,7 @@ internal sealed class EventLoop
         string? systemPrompt,
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct)
     {
-        using var agentActivity = StrandsTelemetry.ActivitySource.StartActivity("agent.stream");
+        using var agentActivity = JacquardTelemetry.ActivitySource.StartActivity("agent.stream");
 
         var sw = Stopwatch.StartNew();
         var totalUsage = TokenUsage.Zero;
@@ -288,7 +288,7 @@ internal sealed class EventLoop
             ModelResponse? finalResponse = null;
             var pendingToolCalls = new Dictionary<string, (string Name, System.Text.StringBuilder Input)>();
 
-            using (var modelActivity = StrandsTelemetry.ActivitySource.StartActivity("agent.model_call"))
+            using (var modelActivity = JacquardTelemetry.ActivitySource.StartActivity("agent.model_call"))
             {
                 await foreach (var chunk in _model.StreamAsync(request, ct).ConfigureAwait(false))
                 {
@@ -528,9 +528,9 @@ internal sealed class EventLoop
 
     private static void RecordInvokeMetrics(Activity? activity, TokenUsage usage, Stopwatch sw, StopReason stopReason)
     {
-        StrandsTelemetry.TokensInput.Add(usage.InputTokens);
-        StrandsTelemetry.TokensOutput.Add(usage.OutputTokens);
-        StrandsTelemetry.AgentLatency.Record(sw.Elapsed.TotalMilliseconds);
+        JacquardTelemetry.TokensInput.Add(usage.InputTokens);
+        JacquardTelemetry.TokensOutput.Add(usage.OutputTokens);
+        JacquardTelemetry.AgentLatency.Record(sw.Elapsed.TotalMilliseconds);
         activity?.SetTag("agent.stop_reason", stopReason.ToString());
         activity?.SetTag("agent.input_tokens", usage.InputTokens);
         activity?.SetTag("agent.output_tokens", usage.OutputTokens);

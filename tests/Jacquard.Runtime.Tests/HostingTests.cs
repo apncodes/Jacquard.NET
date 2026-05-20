@@ -65,7 +65,7 @@ public sealed class HostingTests
 
         var body = await response.Content.ReadAsStringAsync();
         Assert.Contains("healthy", body, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Strands.NET", body);
+        Assert.Contains("Jacquard.NET", body);
     }
 
     [Fact]

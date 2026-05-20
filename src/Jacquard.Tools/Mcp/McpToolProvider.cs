@@ -6,7 +6,7 @@ namespace Jacquard.Tools.Mcp;
 
 /// <summary>
 /// Connects to an MCP server, discovers its tools, and exposes them as
-/// <see cref="ITool"/> instances for use with the Strands agent.
+/// <see cref="ITool"/> instances for use with the Jacquard agent.
 /// </summary>
 /// <remarks>
 /// Use the static factory methods <see cref="CreateForStdioAsync"/> and

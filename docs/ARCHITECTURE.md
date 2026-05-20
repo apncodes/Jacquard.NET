@@ -1,12 +1,12 @@
-# Strands Agents .NET — Architecture & Implementation Reference
+# Jacquard.NET — Architecture & Implementation Reference
 
-> This document is the authoritative reference for the Strands.NET SDK. It covers what the project is, every component built, how each part is implemented, and what is tested. Intended for contributors, reviewers, and anyone picking up the codebase for the first time.
+> This document is the authoritative reference for the Jacquard.NET SDK. It covers what the project is, every component built, how each part is implemented, and what is tested. Intended for contributors, reviewers, and anyone picking up the codebase for the first time.
 
 ---
 
 ## Table of Contents
 
-1. [What is Strands Agents .NET?](#1-what-is-strands-agents-net)
+1. [What is Jacquard.NET?](#1-what-is-strands-agents-net)
 2. [Package Structure](#2-package-structure)
 3. [Core Concepts](#3-core-concepts)
 4. [Jacquard.Core — The Engine](#4-strandscore--the-engine)
@@ -23,9 +23,9 @@
 
 ---
 
-## 1. What is Strands Agents .NET?
+## 1. What is Jacquard.NET?
 
-Strands Agents .NET is a model-driven agentic AI framework for C# developers. It implements the same architecture as [AWS Strands Agents](https://strandsagents.com) — event loop, tool system, hooks, multi-agent orchestration — using native .NET 10 and C# 13 patterns throughout.
+Jacquard.NET is a model-driven agentic AI framework for C# developers. It implements the same architecture as [AWS Jacquard Agents](https://strandsagents.com) — event loop, tool system, hooks, multi-agent orchestration — using native .NET 10 and C# 13 patterns throughout.
 
 **The core idea is simple:** you give the agent a model (any LLM), some tools (any callable methods), and a prompt. The agent's event loop calls the model, executes whatever tools it requests, feeds results back, and repeats until the model says it's done. The developer never writes the orchestration loop — the framework runs it.
 
@@ -40,14 +40,14 @@ var result = await agent.InvokeAsync("What is 42 multiplied by 1764?");
 
 ### What makes this a .NET implementation, not a port
 
-| Concept | Python Strands | Strands Agents .NET |
+| Concept | Python Strands | Jacquard.NET |
 |---|---|---|
 | Streaming | `async_generator` | `IAsyncEnumerable<StreamEvent>` |
 | Tool schema generation | `inspect.signature()` at runtime | Roslyn source generator at compile time |
 | Hook registration | String event names | `Register<TEvent>()` — compiler-checked |
 | Parallel tool execution | `asyncio.gather` | `Task.WhenAll` |
 | Type safety | Runtime type hints | Compile-time generics and records |
-| DI integration | Manual wiring | `AddBedrockModel()` + `AddStrandsAgent()` |
+| DI integration | Manual wiring | `AddBedrockModel()` + `AddJacquardAgent()` |
 | Multi-agent routing | Python conditionals | `GraphBuilder.AddConditionalEdge()` |
 | AgentCore hosting | `BedrockAgentCoreApp()` + `@app.entrypoint` | `MapAgentCoreEndpoints()` |
 
@@ -377,7 +377,7 @@ Custom implementations just need to implement `IContextWindowStrategy`.
 ### Exceptions
 
 ```
-StrandsException (abstract)
+JacquardException (abstract)
 ├── ModelException        — IModel call failed; carries HttpStatusCode
 ├── StructuredOutputException — GetStructuredOutputAsync<T> failed after 3 retries; carries RawResponse
 └── ToolException         — tool execution threw; carries ToolName + ToolCallId
@@ -387,7 +387,7 @@ All exceptions carry `ConversationSnapshot` — a copy of messages at the time o
 
 ### Telemetry
 
-`StrandsTelemetry` (internal) provides an OpenTelemetry `ActivitySource` named `"Strands.Agent"` and meters:
+`JacquardTelemetry` (internal) provides an OpenTelemetry `ActivitySource` named `"Jacquard.Agent"` and meters:
 - `strands.agent.tokens.input` / `strands.agent.tokens.output` (counters)
 - `strands.agent.latency` (histogram, milliseconds)
 - `strands.agent.tool_calls` (counter with `tool.name` and `tool.success` tags)
@@ -649,7 +649,7 @@ services.AddOpenAICompatibleModel(baseUrl: "...", apiKey: "...", modelId: "gpt-4
 ### Agent registration (transient)
 
 ```csharp
-services.AddStrandsAgent(config: new AgentConfig { MaxIterations = 20 });
+services.AddJacquardAgent(config: new AgentConfig { MaxIterations = 20 });
 ```
 
 Resolves `IModel` (required), `IEnumerable<ITool>` (optional), `IConversationManager` (optional), `ISessionManager` (optional), `HookRegistry` (optional) from DI. Note: `systemPrompt` is not set via DI — construct `Agent` directly when a system prompt is needed per-session.
@@ -663,12 +663,12 @@ services.AddFileReadTool(allowedBasePath: "/data");
 services.AddFileWriteTool(allowedBasePath: "/data");
 ```
 
-Multiple tool registrations stack — all are resolved together via `IEnumerable<ITool>` in `AddStrandsAgent`.
+Multiple tool registrations stack — all are resolved together via `IEnumerable<ITool>` in `AddJacquardAgent`.
 
 ### Session manager (singleton)
 
 ```csharp
-services.AddStrandsInMemorySessionManager();
+services.AddJacquardInMemorySessionManager();
 // or construct directly:
 services.AddSingleton<ISessionManager>(_ => new FileSessionManager("/sessions"));
 ```
@@ -682,7 +682,7 @@ services.AddSingleton<ISessionManager>(_ => new FileSessionManager("/sessions"))
 AgentCore is a **hosting platform and set of managed services** from AWS, not a model or agent type. The correct mental model:
 
 ```
-Your Strands.NET agent ──unchanged──▶
+Your Jacquard.NET agent ──unchanged──▶
                                       MapAgentCoreEndpoints() ──▶ POST /invocations
                                                                ──▶ GET /health
                                                                         │
@@ -708,7 +708,7 @@ app.UseAgentCorePort(8080);   // AgentCore Runtime expects port 8080
   - Flushes after every write (AgentCore Runtime buffers until flush)
 
 **`GET /health`** (AgentCoreHealthHandler):
-- Returns `{ "status": "healthy", "framework": "Strands.NET", "timestamp": "..." }`
+- Returns `{ "status": "healthy", "framework": "Jacquard.NET", "timestamp": "..." }`
 - Must return 200 before AgentCore Runtime routes any traffic
 
 ### Managed service tools
@@ -754,8 +754,8 @@ services.AddAgentCoreCodeInterpreter(region);            // ITool
 ### Three customer journeys
 
 ```csharp
-// Journey 1 — pure Strands.NET, no AgentCore
-services.AddBedrockModel().AddStrandsAgent();
+// Journey 1 — pure Jacquard.NET, no AgentCore
+services.AddBedrockModel().AddJacquardAgent();
 
 // Journey 2 — AgentCore managed services, any hosting
 services
@@ -763,7 +763,7 @@ services
     .AddAgentCoreSessionManager(memoryId)
     .AddAgentCoreBrowser()
     .AddAgentCoreCodeInterpreter()
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 
 // Journey 3 — full AgentCore: managed services + Runtime hosting
 var app = builder.Build();

@@ -78,7 +78,7 @@ var seedPrompt = """
     1. content="User's name is Alex", namespace="user:profile"
     2. content="Alex prefers oat milk flat white, no sugar", namespace="user:preferences:coffee"
     3. content="Alex prefers concise answers with no bullet points", namespace="user:preferences:communication"
-    4. content="Alex is working on a distributed agent system using Strands Agents .NET", namespace="user:projects"
+    4. content="Alex is working on a distributed agent system using Jacquard.NET", namespace="user:projects"
     5. content="Alex is in the Europe/London timezone", namespace="user:profile"
 
     Store each one separately. After storing, confirm with the memoryRecordId for each.

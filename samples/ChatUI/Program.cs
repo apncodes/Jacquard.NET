@@ -4,7 +4,7 @@ using Jacquard.Core;
 using Jacquard.Models.Bedrock;
 using ChatUI;
 
-// ChatUI — a browser-based chat UI backed by a Strands streaming agent.
+// ChatUI — a browser-based chat UI backed by a Jacquard streaming agent.
 //
 // Architecture:
 //   GET  /           → serves wwwroot/index.html (the chat frontend)

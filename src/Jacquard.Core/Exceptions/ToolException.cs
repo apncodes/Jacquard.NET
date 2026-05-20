@@ -5,7 +5,7 @@ namespace Jacquard.Core;
 /// as opposed to being returned to the model as a <see cref="ToolResult"/> with
 /// <c>IsError = true</c>.
 /// </summary>
-public sealed class ToolException : StrandsException
+public sealed class ToolException : JacquardException
 {
     /// <summary>The name of the tool that failed.</summary>
     public string ToolName { get; }

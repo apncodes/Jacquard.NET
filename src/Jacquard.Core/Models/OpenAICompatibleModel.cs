@@ -295,7 +295,7 @@ public sealed class OpenAICompatibleModel : IModel, IDisposable
     }
 
     /// <summary>
-    /// Maps a Strands message to one or more OpenAI message objects.
+    /// Maps a Jacquard message to one or more OpenAI message objects.
     /// ToolResultBlock becomes a separate "tool" role message.
     /// </summary>
     private static IEnumerable<JsonObject> MapMessage(Message msg)

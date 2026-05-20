@@ -1,6 +1,6 @@
 # Jacquard.Runtime
 
-Deploy any [Strands Agents .NET](https://github.com/apncodes/Jacquard.net) agent to [Amazon Bedrock AgentCore Runtime](https://aws.amazon.com/bedrock/agentcore/) with one line. Optionally use AgentCore managed services — Memory, Browser, and Code Interpreter — as tools your agent can invoke.
+Deploy any [Jacquard.NET](https://github.com/apncodes/Jacquard.net) agent to [Amazon Bedrock AgentCore Runtime](https://aws.amazon.com/bedrock/agentcore/) with one line. Optionally use AgentCore managed services — Memory, Browser, and Code Interpreter — as tools your agent can invoke.
 
 ```bash
 dotnet add package Jacquard.Runtime
@@ -21,7 +21,7 @@ builder.Services
     .AddAgentCoreCodeInterpreter()
     .AddAgentCoreSessionManager(
         Environment.GetEnvironmentVariable("AGENTCORE_MEMORY_ID") ?? "")
-    .AddStrandsAgent("You are a helpful assistant.");
+    .AddJacquardAgent("You are a helpful assistant.");
 
 var app = builder.Build();
 app.MapAgentCoreEndpoints();  // POST /invocations + GET /health
@@ -50,5 +50,5 @@ With DI:
 builder.Services
     .AddBedrockModel("us-east-1")
     .AddAgentCoreGatewayTools(gatewayUrl, auth: new AgentCoreGatewayAuth.Iam("us-east-1"))
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 ```

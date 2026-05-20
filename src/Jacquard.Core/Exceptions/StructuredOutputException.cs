@@ -5,7 +5,7 @@ namespace Jacquard.Core;
 /// the model response into the requested type — either because the JSON is malformed
 /// or because required fields are missing.
 /// </summary>
-public sealed class StructuredOutputException : StrandsException
+public sealed class StructuredOutputException : JacquardException
 {
     /// <summary>The raw text returned by the model before deserialization was attempted.</summary>
     public string RawResponse { get; }

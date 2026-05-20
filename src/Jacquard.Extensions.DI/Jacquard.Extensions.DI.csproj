@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Jacquard.Extensions.DI</PackageId>
-    <Description>ASP.NET Core and Worker Service DI extensions for Strands Agents .NET — AddBedrockModel(), AddStrandsAgent(), AddStrandsToolProvider&lt;T&gt;(), session management, and Lambda hosting wiring.</Description>
+    <Description>ASP.NET Core and Worker Service DI extensions for Jacquard.NET — AddBedrockModel(), AddJacquardAgent(), AddJacquardToolProvider&lt;T&gt;(), session management, and Lambda hosting wiring.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 

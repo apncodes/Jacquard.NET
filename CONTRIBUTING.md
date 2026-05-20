@@ -1,4 +1,4 @@
-# Contributing to Strands.NET
+# Contributing to Jacquard.NET
 
 Thank you for helping bring Strands to the .NET community.
 
@@ -30,14 +30,14 @@ Thank you for helping bring Strands to the .NET community.
 ## Pull request process
 
 1. Open an issue first for significant changes — alignment before code
-2. Reference the [Strands Agents documentation](https://strandsagents.com) for shared concepts — keep semantics consistent
+2. Reference the [Jacquard Agents documentation](https://strandsagents.com) for shared concepts — keep semantics consistent
 3. Include tests covering the new behaviour
 4. Update the relevant README if adding features
 5. Keep PRs focused — one feature or fix per PR
 
 ## Relationship to AWS Strands
 
-Strands Agents .NET implements the same model-driven architecture as [AWS Strands Agents](https://strandsagents.com). When working on shared concepts (event loop, tool system, hooks, orchestration patterns), refer to the official Strands documentation to keep semantics consistent. Where C# offers a better native pattern — `IAsyncEnumerable` instead of async generators, `Register<TEvent>` instead of string event names — prefer the idiomatic .NET approach and document why in the PR.
+Jacquard.NET implements the same model-driven architecture as [AWS Jacquard Agents](https://strandsagents.com). When working on shared concepts (event loop, tool system, hooks, orchestration patterns), refer to the official Strands documentation to keep semantics consistent. Where C# offers a better native pattern — `IAsyncEnumerable` instead of async generators, `Register<TEvent>` instead of string event names — prefer the idiomatic .NET approach and document why in the PR.
 
 ## Code of conduct
 

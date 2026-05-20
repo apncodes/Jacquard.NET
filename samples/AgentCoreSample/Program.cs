@@ -16,8 +16,8 @@ var services = builder.Services
         region: "us-east-1",
         modelId: "us.anthropic.claude-haiku-4-5-20251001-v1:0")
 
-    // Built-in tool — unchanged from any other Strands.NET agent
-    .AddStrandsToolProvider<CalculatorTool>();
+    // Built-in tool — unchanged from any other Jacquard.NET agent
+    .AddJacquardToolProvider<CalculatorTool>();
 
 // Optional: AgentCore managed browser — enabled when AGENTCORE_BROWSER_ID is set.
 // On AgentCore Runtime this env var is injected automatically.
@@ -36,11 +36,11 @@ if (Environment.GetEnvironmentVariable("AGENTCORE_CODE_INTERPRETER_ID") is { Len
 if (Environment.GetEnvironmentVariable("AGENTCORE_MEMORY_ID") is { Length: > 0 } memoryId)
     services.AddAgentCoreSessionManager(memoryId, region: "us-east-1");
 
-services.AddStrandsAgent();
+services.AddJacquardAgent();
 
 // ── AGENTCORE HOSTING ─────────────────────────────────────────────────────────────
 // ONE LINE makes this agent deployable to Amazon Bedrock AgentCore Runtime.
-// Remove these two lines and you have a plain Strands.NET agent — the agent is unchanged.
+// Remove these two lines and you have a plain Jacquard.NET agent — the agent is unchanged.
 // ─────────────────────────────────────────────────────────────────────────────────
 
 var app = builder.Build();

@@ -4,7 +4,7 @@ sidebar_position: 8
 
 # Amazon Bedrock AgentCore
 
-Amazon Bedrock AgentCore is a suite of managed AWS services for production agentic AI. Strands Agents .NET has first-class support for all AgentCore capabilities via the `Jacquard.Runtime` package.
+Amazon Bedrock AgentCore is a suite of managed AWS services for production agentic AI. Jacquard.NET has first-class support for all AgentCore capabilities via the `Jacquard.Runtime` package.
 
 ```bash
 dotnet add package Jacquard.Runtime
@@ -14,7 +14,7 @@ dotnet add package Jacquard.Runtime
 
 ## AgentCore Runtime — Deploy any agent in one line
 
-AgentCore Runtime is a managed hosting environment for AI agents. Deploy any Strands Agents .NET agent to it by adding two lines to your ASP.NET Core app:
+AgentCore Runtime is a managed hosting environment for AI agents. Deploy any Jacquard.NET agent to it by adding two lines to your ASP.NET Core app:
 
 ```csharp
 using Jacquard.Runtime.Hosting;
@@ -24,7 +24,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddBedrockModel("us-east-1")
-    .AddStrandsAgent("You are a helpful assistant.");
+    .AddJacquardAgent("You are a helpful assistant.");
 
 var app = builder.Build();
 app.MapAgentCoreEndpoints();  // registers POST /invocations + GET /health
@@ -64,7 +64,7 @@ builder.Services
     .AddBedrockModel("us-east-1")
     .AddAgentCoreSessionManager(
         memoryId: Environment.GetEnvironmentVariable("AGENTCORE_MEMORY_ID") ?? "")
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 ```
 
 The agent automatically loads and saves conversation history from AgentCore Memory. No code changes to the agent.
@@ -77,7 +77,7 @@ Give the agent the ability to explicitly store, retrieve, and delete memory reco
 builder.Services
     .AddBedrockModel("us-east-1")
     .AddAgentCoreMemory(memoryId: "your-memory-id")  // adds AgentCoreMemoryTool
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 ```
 
 The agent can then call the `agentcore_memory` tool with three operations:
@@ -101,7 +101,7 @@ For meaning-based retrieval (find memories similar to a query), use `SemanticMem
 builder.Services
     .AddBedrockModel("us-east-1")
     .AddAgentCoreSemanticMemory(memoryId: "your-memory-id")
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 ```
 
 See the [SemanticMemorySample](https://github.com/apncodes/Jacquard.net/tree/main/samples/SemanticMemorySample) for a complete example.
@@ -116,7 +116,7 @@ AgentCore Code Interpreter provides a managed, stateful sandbox for executing Py
 builder.Services
     .AddBedrockModel("us-east-1")
     .AddAgentCoreCodeInterpreter()  // adds AgentCoreCodeInterpreterTool
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 ```
 
 The agent can execute code via the `agentcore_code_interpreter` tool:
@@ -150,7 +150,7 @@ AgentCore Browser provides a managed headless Chrome instance. The agent control
 builder.Services
     .AddBedrockModel("us-east-1")
     .AddAgentCoreBrowser()  // adds AgentCoreBrowserTool
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 ```
 
 The agent manages browser sessions via the `agentcore_browser` tool:
@@ -213,10 +213,10 @@ builder.Services
     .AddAgentCoreGatewayTools(
         gatewayUrl: new Uri("https://...gateway-url.../mcp"),
         auth: new AgentCoreGatewayAuth.Iam("us-east-1"))
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 ```
 
-`AddStrandsAgent()` picks up the gateway tools automatically — no explicit wiring needed.
+`AddJacquardAgent()` picks up the gateway tools automatically — no explicit wiring needed.
 
 See the [AgentCoreGatewaySample](https://github.com/apncodes/Jacquard.net/tree/main/samples/AgentCoreGatewaySample) for a complete travel booking assistant example.
 
@@ -234,7 +234,7 @@ builder.Services
     .AddAgentCoreCodeInterpreter()             // Python/JS/TS execution sandbox
     .AddAgentCoreBrowser()                     // managed headless Chrome
     .AddAgentCoreGatewayTools(gatewayUrl, auth) // gateway-hosted tools
-    .AddStrandsAgent("You are a helpful assistant.");
+    .AddJacquardAgent("You are a helpful assistant.");
 ```
 
 The agent has access to all registered tools and uses the AgentCore Memory for session persistence.

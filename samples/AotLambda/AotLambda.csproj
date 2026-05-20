@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Strands Agents .NET — project references for local development -->
+    <!-- Jacquard.NET — project references for local development -->
     <ProjectReference Include="..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
     <ProjectReference Include="..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
     <!-- Source generator is compile-time only — no runtime dependency -->

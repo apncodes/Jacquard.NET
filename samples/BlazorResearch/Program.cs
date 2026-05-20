@@ -3,7 +3,7 @@ using BlazorResearch.Components;
 using Jacquard.Core;
 using Jacquard.Models.Bedrock;
 
-// BlazorResearch — a Blazor Server research portal backed by a Strands multi-agent swarm.
+// BlazorResearch — a Blazor Server research portal backed by a Jacquard multi-agent swarm.
 //
 // Architecture:
 //   Browser → Blazor Server (SignalR) → Research.razor component
@@ -30,7 +30,7 @@ using Jacquard.Models.Bedrock;
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://localhost:5050");
 
-// ── Strands services ───────────────────────────────────────────────────────────
+// ── Jacquard services ───────────────────────────────────────────────────────────
 
 builder.Services.AddSingleton<IModel>(_ => new BedrockModel(
     region:  builder.Configuration["Bedrock:Region"]  ?? "us-east-1",

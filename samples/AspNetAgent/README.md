@@ -2,7 +2,7 @@
 
 ## SDK concepts demonstrated
 
-**DI-first wiring** — `AddBedrockModel()`, `AddHttpRequestTool()`, and `AddStrandsInMemorySessionManager()` register the entire Strands stack in three lines. `IModel` and `IEnumerable<ITool>` are injected directly into the minimal API handler.
+**DI-first wiring** — `AddBedrockModel()`, `AddHttpRequestTool()`, and `AddJacquardInMemorySessionManager()` register the entire Strands stack in three lines. `IModel` and `IEnumerable<ITool>` are injected directly into the minimal API handler.
 
 **Per-session conversation continuity** — a `ConcurrentDictionary<string, Agent>` keyed by `sessionId` stores one `Agent` per client. The agent's `InMemoryConversationManager` accumulates history, so each `/chat` call continues the same conversation.
 

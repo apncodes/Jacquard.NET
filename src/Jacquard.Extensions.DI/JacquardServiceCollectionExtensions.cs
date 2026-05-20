@@ -7,10 +7,10 @@ using Jacquard.Tools;
 namespace Jacquard.Extensions.DI;
 
 /// <summary>
-/// Extension methods for registering Strands SDK components with
+/// Extension methods for registering Jacquard SDK components with
 /// <see cref="IServiceCollection"/>.
 /// </summary>
-public static class StrandsServiceCollectionExtensions
+public static class JacquardServiceCollectionExtensions
 {
     // ── Agent ────────────────────────────────────────────────────────────────
 
@@ -25,7 +25,7 @@ public static class StrandsServiceCollectionExtensions
     /// event-loop settings. Uses defaults when <see langword="null"/>.
     /// </param>
     /// <returns>The same <see cref="IServiceCollection"/> for chaining.</returns>
-    public static IServiceCollection AddStrandsAgent(
+    public static IServiceCollection AddJacquardAgent(
         this IServiceCollection services,
         AgentConfig? config = null)
     {
@@ -179,7 +179,7 @@ public static class StrandsServiceCollectionExtensions
     /// <summary>
     /// Registers a tool type as an <see cref="ITool"/> in the DI container.
     /// Multiple calls to this method accumulate tools — all registered tools are
-    /// resolved by <see cref="AddStrandsAgent"/> via <c>IEnumerable&lt;ITool&gt;</c>.
+    /// resolved by <see cref="AddJacquardAgent"/> via <c>IEnumerable&lt;ITool&gt;</c>.
     /// </summary>
     /// <typeparam name="TTool">The tool implementation type.</typeparam>
     /// <param name="services">The service collection.</param>
@@ -194,7 +194,7 @@ public static class StrandsServiceCollectionExtensions
 
     /// <summary>
     /// Registers a tool-provider type as an <see cref="IToolProvider"/> in the DI container.
-    /// Multiple calls accumulate providers — all are resolved by <see cref="AddStrandsAgent"/>
+    /// Multiple calls accumulate providers — all are resolved by <see cref="AddJacquardAgent"/>
     /// via <c>IEnumerable&lt;IToolProvider&gt;</c>.
     /// </summary>
     /// <typeparam name="TProvider">
@@ -203,7 +203,7 @@ public static class StrandsServiceCollectionExtensions
     /// </typeparam>
     /// <param name="services">The service collection.</param>
     /// <returns>The same <see cref="IServiceCollection"/> for chaining.</returns>
-    public static IServiceCollection AddStrandsToolProvider<TProvider>(
+    public static IServiceCollection AddJacquardToolProvider<TProvider>(
         this IServiceCollection services)
         where TProvider : class, IToolProvider
     {
@@ -269,7 +269,7 @@ public static class StrandsServiceCollectionExtensions
     /// <typeparam name="T">The worker type, must implement <see cref="IHostedService"/>.</typeparam>
     /// <param name="services">The service collection.</param>
     /// <returns>The same <see cref="IServiceCollection"/> for chaining.</returns>
-    public static IServiceCollection AddStrandsWorker<T>(this IServiceCollection services)
+    public static IServiceCollection AddJacquardWorker<T>(this IServiceCollection services)
         where T : class, IHostedService
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -284,7 +284,7 @@ public static class StrandsServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The same <see cref="IServiceCollection"/> for chaining.</returns>
-    public static IServiceCollection AddStrandsInMemorySessionManager(
+    public static IServiceCollection AddJacquardInMemorySessionManager(
         this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
