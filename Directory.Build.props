@@ -11,7 +11,7 @@
     <Description>Jacquard.NET — a model-driven agentic AI framework for C# developers.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Version>0.1.11</Version>
+    <Version>0.1.12</Version>
     <PackageTags>ai;agents;llm;bedrock;aws;strands;strandsagents;dotnet;csharp;agentic;gemini;mcp;a2a;source-generator;aot</PackageTags>
     <PackageProjectUrl>https://github.com/apncodes/Jacquard.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/apncodes/Jacquard.net</RepositoryUrl>
