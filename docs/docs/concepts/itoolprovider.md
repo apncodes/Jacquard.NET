@@ -53,19 +53,19 @@ With `Jacquard.Extensions.DI`, register tool providers as services:
 ```csharp
 builder.Services
     .AddBedrockModel("us-east-1")
-    .AddStrandsToolProvider<WeatherTools>()   // registers WeatherTools as IToolProvider
-    .AddStrandsToolProvider<SearchTools>()
-    .AddStrandsAgent();
+    .AddJacquardToolProvider<WeatherTools>()   // registers WeatherTools as IToolProvider
+    .AddJacquardToolProvider<SearchTools>()
+    .AddJacquardAgent();
 ```
 
-`AddStrandsAgent()` resolves all registered `IToolProvider` instances and passes them to the `Agent` constructor automatically.
+`AddJacquardAgent()` resolves all registered `IToolProvider` instances and passes them to the `Agent` constructor automatically.
 
-## STRAND001 diagnostic
+## JACQUARD001 diagnostic
 
-If you add `[Tool]` methods to a class that isn't `partial`, the source generator emits a `STRAND001` warning:
+If you add `[Tool]` methods to a class that isn't `partial`, the source generator emits a `JACQUARD001` warning:
 
 ```
-warning STRAND001: Class 'WeatherTools' has [Tool] methods but is not declared partial.
+warning JACQUARD001: Class 'WeatherTools' has [Tool] methods but is not declared partial.
 Declare it partial to enable the IToolProvider pattern.
 ```
 

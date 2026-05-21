@@ -47,7 +47,7 @@ COPY publish/ .
 ENTRYPOINT ["dotnet", "YourAgent.dll"]
 ```
 
-See the [AgentCoreSample](https://github.com/apncodes/Jacquard.net/tree/main/samples/AgentCoreSample) for a complete deployment example.
+See the [AgentCoreSample](https://github.com/apncodes/Jacquard.NET/tree/main/samples/AgentCoreSample) for a complete deployment example.
 
 ---
 
@@ -104,7 +104,7 @@ builder.Services
     .AddJacquardAgent();
 ```
 
-See the [SemanticMemorySample](https://github.com/apncodes/Jacquard.net/tree/main/samples/SemanticMemorySample) for a complete example.
+See the [SemanticMemorySample](https://github.com/apncodes/Jacquard.NET/tree/main/samples/SemanticMemorySample) for a complete example.
 
 ---
 
@@ -138,7 +138,7 @@ Example agent interaction:
 
 **Stateful sessions:** The tool creates a session on first use and reuses it across calls. Variables defined in one call are available in subsequent calls. The session is cleaned up when the tool is disposed.
 
-See the [CodeInterpreterSample](https://github.com/apncodes/Jacquard.net/tree/main/samples/CodeInterpreterSample) for a complete example.
+See the [CodeInterpreterSample](https://github.com/apncodes/Jacquard.NET/tree/main/samples/CodeInterpreterSample) for a complete example.
 
 ---
 
@@ -174,7 +174,7 @@ stop_session:  Stop a browser session and release its resources.
 3. Perform navigation, clicks, screenshots via Playwright
 4. Agent calls `stop_session` when done
 
-See the [BrowserSample](https://github.com/apncodes/Jacquard.net/tree/main/samples/BrowserSample) for a complete example.
+See the [BrowserSample](https://github.com/apncodes/Jacquard.NET/tree/main/samples/BrowserSample) for a complete example.
 
 ---
 
@@ -218,7 +218,7 @@ builder.Services
 
 `AddJacquardAgent()` picks up the gateway tools automatically — no explicit wiring needed.
 
-See the [AgentCoreGatewaySample](https://github.com/apncodes/Jacquard.net/tree/main/samples/AgentCoreGatewaySample) for a complete travel booking assistant example.
+See the [AgentCoreGatewaySample](https://github.com/apncodes/Jacquard.NET/tree/main/samples/AgentCoreGatewaySample) for a complete travel booking assistant example.
 
 ---
 

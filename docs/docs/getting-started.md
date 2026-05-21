@@ -113,4 +113,4 @@ Use `toolProviders:` when passing your `[Tool]`-decorated classes — the common
 - **[Concepts: Agent & Event Loop](./concepts/agent-event-loop)** — understand how the loop works
 - **[Concepts: Tools](./concepts/tools)** — learn about the `[Tool]` attribute and source generator
 - **[Tutorial: Build your first agent](./tutorials/first-agent)** — a more detailed walkthrough
-- **[QuickstartSample](https://github.com/apncodes/Jacquard.net/tree/main/samples/QuickstartSample)** — the full runnable version of the code on this page
+- **[QuickstartSample](https://github.com/apncodes/Jacquard.NET/tree/main/samples/QuickstartSample)** — the full runnable version of the code on this page

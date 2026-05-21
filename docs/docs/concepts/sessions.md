@@ -51,7 +51,7 @@ var agent = new Agent(
 ```csharp
 builder.Services
     .AddBedrockModel("us-east-1")
-    .AddJacquardInMemorySessionManager()   // or AddStrandsFileSessionManager(path)
+    .AddJacquardInMemorySessionManager()   // or AddJacquardFileSessionManager(path)
     .AddJacquardAgent();
 ```
 

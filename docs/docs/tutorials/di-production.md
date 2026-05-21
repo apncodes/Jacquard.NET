@@ -72,7 +72,7 @@ builder.Services
         region: "us-east-1",
         modelId: "us.anthropic.claude-haiku-4-5-20251001-v1:0")
     .AddJacquardToolProvider<WeatherTools>()
-    .AddStrandsFileSessionManager(
+    .AddJacquardFileSessionManager(
         basePath: Path.Combine(Path.GetTempPath(), "weather-api-sessions"))
     .AddJacquardAgent(systemPrompt: "You are a helpful weather assistant.");
 
@@ -147,5 +147,5 @@ Replace `AddConsoleExporter()` with `AddOtlpExporter()` to send traces to Jaeger
 ## Next steps
 
 - **[Tutorial: Deploy to Lambda with AOT](./aot-lambda)** — take this agent to production on AWS Lambda
-- **[Sample: DiAgent](https://github.com/apncodes/Jacquard.net/tree/main/samples/DiAgent)** — the full DI sample
-- **[Sample: AspNetAgent](https://github.com/apncodes/Jacquard.net/tree/main/samples/AspNetAgent)** — SSE streaming with session continuity
+- **[Sample: DiAgent](https://github.com/apncodes/Jacquard.NET/tree/main/samples/DiAgent)** — the full DI sample
+- **[Sample: AspNetAgent](https://github.com/apncodes/Jacquard.NET/tree/main/samples/AspNetAgent)** — SSE streaming with session continuity

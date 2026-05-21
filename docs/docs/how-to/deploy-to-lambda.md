@@ -43,4 +43,4 @@ x86_64 at 1024 MB averaged 119.8ms and never broke 100ms across 20 runs.
 
 For a complete walkthrough, see the **[Deploy to Lambda with AOT tutorial](../tutorials/aot-lambda)**.
 
-For a multi-step durable pipeline, see the **[DurableWorkflow sample](https://github.com/apncodes/Jacquard.net/tree/main/samples/DurableWorkflow)**.
+For a multi-step durable pipeline, see the **[DurableWorkflow sample](https://github.com/apncodes/Jacquard.NET/tree/main/samples/DurableWorkflow)**.

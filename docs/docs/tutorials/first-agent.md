@@ -127,4 +127,4 @@ The `partial class WeatherTools` becomes an `IToolProvider` at compile time — 
 - **[Tutorial: Production wiring with DI](./di-production)** — add dependency injection, sessions, and OpenTelemetry
 - **[Concepts: Tools](../concepts/tools)** — learn more about the `[Tool]` attribute
 - **[Concepts: Hooks](../concepts/hooks)** — add logging and human-in-the-loop approval
-- **[Sample: CliAgent](https://github.com/apncodes/Jacquard.net/tree/main/samples/CliAgent)** — the full sample this tutorial is based on
+- **[Sample: CliAgent](https://github.com/apncodes/Jacquard.NET/tree/main/samples/CliAgent)** — the full sample this tutorial is based on

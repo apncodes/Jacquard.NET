@@ -54,7 +54,7 @@ You never reference these generated types directly. The `toolProviders:` paramet
 
 The class **must** be declared `partial`. The source generator emits its `IToolProvider` implementation as a second partial declaration in the same namespace. Without `partial`, the two declarations can't merge and the build fails.
 
-If you forget `partial`, the compiler emits a `STRAND001` warning pointing to the class.
+If you forget `partial`, the compiler emits a `JACQUARD001` warning pointing to the class.
 
 ## Async tools
 

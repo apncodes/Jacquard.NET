@@ -10,10 +10,10 @@ sidebar_position: 10
 
 The source generator emits a second partial declaration of your class that implements `IToolProvider`. C# merges the two partial declarations into one type at compile time. Without `partial`, the two declarations are treated as separate types and the build fails.
 
-If you forget `partial`, the compiler emits a `STRAND001` warning:
+If you forget `partial`, the compiler emits a `JACQUARD001` warning:
 
 ```
-warning STRAND001: Class 'WeatherTools' has [Tool] methods but is not declared partial.
+warning JACQUARD001: Class 'WeatherTools' has [Tool] methods but is not declared partial.
 ```
 
 Fix: add `partial` to the class declaration.
@@ -30,7 +30,7 @@ dotnet add package Jacquard.SourceGenerator --version 0.1.9
 
 Common causes:
 
-1. **Class not `partial`** — the `IToolProvider` implementation wasn't generated. Check for `STRAND001` warnings.
+1. **Class not `partial`** — the `IToolProvider` implementation wasn't generated. Check for `JACQUARD001` warnings.
 
 2. **Wrong constructor parameter** — using `tools:` instead of `toolProviders:`:
    ```csharp
@@ -137,7 +137,7 @@ builder.Services
     .AddBedrockModel("us-east-1")
     .AddAgentCoreSessionManager(
         memoryId: Environment.GetEnvironmentVariable("AGENTCORE_MEMORY_ID") ?? "")
-    .AddStrandsAgent();
+    .AddJacquardAgent();
 ```
 
 Or use `FileSessionManager` with an EFS mount for simpler setups.
@@ -157,15 +157,15 @@ Both can be used simultaneously on the same agent.
 
 ### Can I use multiple tool providers on one agent?
 
-Yes — call `AddStrandsToolProvider<T>()` multiple times:
+Yes — call `AddJacquardToolProvider<T>()` multiple times:
 
 ```csharp
 builder.Services
     .AddBedrockModel("us-east-1")
-    .AddStrandsToolProvider<WeatherTools>()
-    .AddStrandsToolProvider<SearchTools>()
-    .AddStrandsToolProvider<CalculatorTools>()
-    .AddStrandsAgent();
+    .AddJacquardToolProvider<WeatherTools>()
+    .AddJacquardToolProvider<SearchTools>()
+    .AddJacquardToolProvider<CalculatorTools>()
+    .AddJacquardAgent();
 ```
 
 All registered providers are merged into the agent's tool registry.

@@ -192,4 +192,4 @@ var result = await remote.InvokeAsync("Research this topic");
 
 For pipelines where individual steps are long-running (minutes) or expensive, use the **Decomposed Sequential Pipeline** pattern with AWS Step Functions. Each agent runs as a separate Lambda function; Step Functions manages checkpointing and retry.
 
-See the [DurableWorkflow sample](https://github.com/apncodes/Jacquard.net/tree/main/samples/DurableWorkflow) for a complete example.
+See the [DurableWorkflow sample](https://github.com/apncodes/Jacquard.NET/tree/main/samples/DurableWorkflow) for a complete example.

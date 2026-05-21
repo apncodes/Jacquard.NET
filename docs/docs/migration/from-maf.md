@@ -28,10 +28,10 @@ Coming from Semantic Kernel, Microsoft Agent Framework (MAF), or AutoGen? The co
 
 **One loop, not a pipeline.** The event loop runs until `EndTurn`. You don't compose a chain of steps — you give the agent tools and let the model decide the sequence. For multi-step workflows with explicit ordering, use the Graph or Pipeline patterns in `Jacquard.MultiAgent`.
 
-**Open protocols.** MCP (Model Context Protocol) and A2A (Agent-to-Agent) are first-class. If you're building agents that need to interop with Python or TypeScript Jacquard agents, A2A is the bridge.
+**Open protocols.** MCP (Model Context Protocol) and A2A (Agent-to-Agent) are first-class. If you're building agents that need to interop with Python or TypeScript Strands agents, A2A is the bridge.
 
 ## Getting started
 
 The [Getting Started](../getting-started) guide and [Concepts: Agent & Event Loop](../concepts/agent-event-loop) are the fastest path to a working agent. Most developers coming from other frameworks are productive within an hour.
 
-Questions? Start a thread in [GitHub Discussions](https://github.com/apncodes/Jacquard.net/discussions).
+Questions? Start a thread in [GitHub Discussions](https://github.com/apncodes/Jacquard.NET/discussions).
