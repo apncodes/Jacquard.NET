@@ -25,11 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Jacquard.NET — project references for local development -->
-    <ProjectReference Include="..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
-    <ProjectReference Include="..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
+    <!-- Jacquard.NET NuGet packages -->
+    <PackageReference Include="Jacquard.Core" Version="0.1.13" />
+    <PackageReference Include="Jacquard.Models.Bedrock" Version="0.1.13" />
     <!-- Source generator is compile-time only — no runtime dependency -->
-    <ProjectReference Include="..\..\src\Jacquard.SourceGenerator\Jacquard.SourceGenerator.csproj"
+    <PackageReference Include="Jacquard.SourceGenerator" Version="0.1.13"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>

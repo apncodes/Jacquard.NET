@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
-    <ProjectReference Include="..\..\src\Jacquard.Extensions.DI\Jacquard.Extensions.DI.csproj" />
-    <ProjectReference Include="..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
-    <ProjectReference Include="..\..\src\Jacquard.SourceGenerator\Jacquard.SourceGenerator.csproj"
+    <PackageReference Include="Jacquard.Core" Version="0.1.13" />
+    <PackageReference Include="Jacquard.Extensions.DI" Version="0.1.13" />
+    <PackageReference Include="Jacquard.Models.Bedrock" Version="0.1.13" />
+    <PackageReference Include="Jacquard.SourceGenerator" Version="0.1.13"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
