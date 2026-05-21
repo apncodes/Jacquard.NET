@@ -29,7 +29,7 @@ Jacquard.NET is that implementation. Built ground-up in C# 13. The same design p
 1. **Easy to learn, idiomatic to write** — if you can write a C# method, you can write a tool. No new programming model, no middleware pipelines to learn before first invocation.
 2. **Industry-standard vocabulary** — agent, tool, system prompt, delta, session, hook. Reads natively to anyone from Strands Python, OpenAI, Anthropic, or LangChain.
 3. **Zero runtime reflection** — compile-time tool dispatch via Roslyn source generators. `JACQUARD001` diagnostic catches misconfiguration at build time.
-4. **NativeAOT-ready** — measured ~118ms cold-start init on AWS Lambda. Reflection-free hot path designed for AOT publish.
+4. **NativeAOT-ready** — measured 89.6ms average cold-start init on AWS Lambda (arm64 Graviton2, 19/20 runs under 100ms). Reflection-free hot path designed for AOT publish.
 5. **Multi-agent in one package** — pipeline, parallel, graph orchestration, agent-as-tool, A2A protocol for cross-language interop.
 
 ---
@@ -223,7 +223,7 @@ These aren't translations — they're the patterns .NET developers already know,
 | MCP | ✓ |
 | A2A protocol | ✓ (interoperable across languages and frameworks) |
 | Graph orchestration | ✓ with parallel-node support |
-| NativeAOT | ✓ (~118ms cold-start init on AWS Lambda) |
+| NativeAOT | ✓ (89.6ms avg cold-start on AWS Lambda arm64) |
 
 ---
 
@@ -376,7 +376,7 @@ builder.Services
 | [ChatUI](samples/ChatUI) | Browser chat UI with SSE streaming and tool badges |
 | [BlazorResearch](samples/BlazorResearch) | Blazor Server portal with live parallel agent cards |
 | [ResponsibleAiSample](samples/ResponsibleAiSample) | Bedrock Guardrails, `[ToolParameterValidation]`, audit logging, least-privilege tool design |
-| [AotLambda](samples/AotLambda) | NativeAOT publish to AWS Lambda — ~118ms cold-start init |
+| [AotLambda](samples/AotLambda) | NativeAOT publish to AWS Lambda — 89.6ms avg cold-start (arm64 Graviton2, 14 MB binary) |
 | [DurableWorkflow](samples/DurableWorkflow) | Decomposed Sequential Pipeline pattern — agent durability inside each invocation, workflow durability between invocations via Step Functions |
 | [CodeInterpreterSample](samples/CodeInterpreterSample) | `AgentCoreCodeInterpreterTool` — stateful Python / JS / TS sandbox via AgentCore |
 | [BrowserSample](samples/BrowserSample) | `AgentCoreBrowserTool` — managed headless Chrome session; CDP endpoint for Playwright / Nova Act |
