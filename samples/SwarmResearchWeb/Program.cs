@@ -62,11 +62,7 @@ app.MapPost("/swarm", async (HttpContext ctx) =>
                 Summarise your findings clearly. Do not write the article.
                 When done, hand off to the analyst.
                 """,
-            tools:
-            [
-                new ResearchTools_SearchFacts_Tool(researchTools),
-                new ResearchTools_GetSources_Tool(researchTools),
-            ]);
+            toolProviders: [researchTools]);
 
         var analyst = new Agent(model,
             systemPrompt: """
@@ -88,7 +84,7 @@ app.MapPost("/swarm", async (HttpContext ctx) =>
                 then apply improvements: fix factual gaps, improve balance, sharpen the prose.
                 Produce the final publication-ready article. Terminate when satisfied.
                 """,
-            tools: [new ResearchTools_ReviewDraft_Tool(researchTools)]);
+            toolProviders: [researchTools]);
 
         var swarm = new SwarmOrchestrator(
         [

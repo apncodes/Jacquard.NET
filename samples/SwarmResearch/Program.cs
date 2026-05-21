@@ -56,11 +56,7 @@ var researcher = new Agent(model,
         Summarise your findings clearly. Do not write the article — that is the writer's job.
         When you have gathered sufficient research, hand off to the analyst.
         """,
-    tools:
-    [
-        new ResearchTools_SearchFacts_Tool(researchTools),
-        new ResearchTools_GetSources_Tool(researchTools),
-    ]);
+    toolProviders: [researchTools]);
 
 var analyst = new Agent(model,
     systemPrompt: """
@@ -87,7 +83,7 @@ var editor = new Agent(model,
         Produce the final, publication-ready version of the article.
         When you are satisfied with the article, terminate — do not hand off further.
         """,
-    tools: [new ResearchTools_ReviewDraft_Tool(researchTools)]);
+    toolProviders: [researchTools]);
 
 // ── swarm ────────────────────────────────────────────────────────────────────────
 

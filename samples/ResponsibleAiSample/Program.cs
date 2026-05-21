@@ -75,11 +75,7 @@ var agent = new Agent(
     model: bedrockModel,
     systemPrompt: "You are a helpful assistant. Use the available tools to answer questions. " +
                   "Always respect security boundaries and report any access errors to the user.",
-    tools:
-    [
-        new FileAccessTool_ReadFile_Tool(fileAccessTool),
-        new ContentFetchTool_FetchContent_Tool(contentFetchTool)
-    ],
+    toolProviders: [fileAccessTool, contentFetchTool],
     hooks: hooks,
     guardrailEvaluator: bedrockModel);
 
@@ -148,11 +144,7 @@ while (true)
             model: bedrockModel,
             systemPrompt: "You are a helpful assistant. Use the available tools to answer questions. " +
                           "Always respect security boundaries and report any access errors to the user.",
-            tools:
-            [
-                new FileAccessTool_ReadFile_Tool(fileAccessTool),
-                new ContentFetchTool_FetchContent_Tool(contentFetchTool)
-            ],
+            toolProviders: [fileAccessTool, contentFetchTool],
             hooks: hooks,
             guardrailEvaluator: bedrockModel);
         violationLog.Clear();
