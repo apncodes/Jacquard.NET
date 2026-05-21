@@ -35,7 +35,7 @@ x86_64 at 1024 MB averaged 119.8ms across 20 cold starts and never broke 100ms. 
 ### arm64 (recommended — Graviton2)
 
 ```bash
-# From the repo root (strands.net/)
+# From the repo root (Jacquard.NET/)
 docker run --rm -v $(pwd):/src -w /src \
   mcr.microsoft.com/dotnet/sdk:10.0 \
   bash -c "apt-get update -qq && apt-get install -y -qq clang zlib1g-dev && \
@@ -72,7 +72,7 @@ zip -j samples/AotLambda/publish/function.zip samples/AotLambda/publish/bootstra
 
 ```bash
 aws lambda create-function \
-  --function-name strands-aot-demo-arm64 \
+  --function-name jacquard-aot-demo-arm64 \
   --runtime provided.al2023 \
   --handler bootstrap \
   --architectures arm64 \
@@ -84,7 +84,7 @@ aws lambda create-function \
 
 # Update an existing function
 aws lambda update-function-code \
-  --function-name strands-aot-demo-arm64 \
+  --function-name jacquard-aot-demo-arm64 \
   --zip-file fileb://samples/AotLambda/publish-arm64/function-arm64.zip \
   --region us-east-1
 ```
@@ -93,7 +93,7 @@ aws lambda update-function-code \
 
 ```bash
 aws lambda create-function \
-  --function-name strands-aot-demo \
+  --function-name jacquard-aot-demo \
   --runtime provided.al2023 \
   --handler bootstrap \
   --role arn:aws:iam::YOUR_ACCOUNT:role/YOUR_LAMBDA_ROLE \
@@ -110,7 +110,7 @@ aws lambda create-function \
 
 ```bash
 aws lambda invoke \
-  --function-name strands-aot-demo-arm64 \
+  --function-name jacquard-aot-demo-arm64 \
   --payload '"What is the weather in London?"' \
   --cli-binary-format raw-in-base64-out \
   response.json
@@ -124,14 +124,14 @@ Force a cold start by updating the function configuration (this resets the execu
 
 ```bash
 aws lambda update-function-configuration \
-  --function-name strands-aot-demo-arm64 \
+  --function-name jacquard-aot-demo-arm64 \
   --description "cold-start-test-$(date +%s)" \
   --region us-east-1
 
-aws lambda wait function-updated --function-name strands-aot-demo-arm64 --region us-east-1
+aws lambda wait function-updated --function-name jacquard-aot-demo-arm64 --region us-east-1
 
 aws lambda invoke \
-  --function-name strands-aot-demo-arm64 \
+  --function-name jacquard-aot-demo-arm64 \
   --payload '"What is the weather in London?"' \
   --cli-binary-format raw-in-base64-out \
   --log-type Tail \

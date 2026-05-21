@@ -4,6 +4,7 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Jacquard.Core?label=NuGet&color=blue)](https://www.nuget.org/packages/Jacquard.Core)
 [![CI](https://github.com/apncodes/Jacquard.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/apncodes/Jacquard.NET/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-orange)](https://apncodes.github.io/Jacquard.NET/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://github.com/apncodes/Jacquard.NET/blob/main/LICENSE)
 
 ---
