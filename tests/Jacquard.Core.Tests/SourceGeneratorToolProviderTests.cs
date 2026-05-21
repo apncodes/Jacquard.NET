@@ -8,7 +8,7 @@ namespace Jacquard.Core.Tests;
 
 /// <summary>
 /// Tests that the source generator correctly emits the IToolProvider partial class
-/// and the STRAND001 diagnostic for non-partial classes.
+/// and the JACQUARD001 diagnostic for non-partial classes.
 /// </summary>
 public class SourceGeneratorToolProviderTests
 {
@@ -81,10 +81,10 @@ public class SourceGeneratorToolProviderTests
         Assert.Contains("yield return new WeatherTools_GetWeather_Tool(this)", providerSource);
     }
 
-    // ── 5.2 STRAND001 diagnostic on non-partial class ────────────────────────
+    // ── 5.2 JACQUARD001 diagnostic on non-partial class ────────────────────────
 
     [Fact]
-    public void Generator_NonPartialClass_EmitsDiagnosticSTRAND001()
+    public void Generator_NonPartialClass_EmitsDiagnosticJACQUARD001()
     {
         var source = """
             using Jacquard.Core;
@@ -98,13 +98,13 @@ public class SourceGeneratorToolProviderTests
 
         var (_, diagnostics, _) = RunGenerator(source);
 
-        var strand001 = diagnostics.FirstOrDefault(d => d.Id == "STRAND001");
-        Assert.NotNull(strand001);
-        Assert.Equal(DiagnosticSeverity.Warning, strand001!.Severity);
-        Assert.Contains("WeatherTools", strand001.GetMessage());
+        var jacquard001 = diagnostics.FirstOrDefault(d => d.Id == "JACQUARD001");
+        Assert.NotNull(jacquard001);
+        Assert.Equal(DiagnosticSeverity.Warning, jacquard001!.Severity);
+        Assert.Contains("WeatherTools", jacquard001.GetMessage());
     }
 
-    // ── 5.3 Per-method wrapper still emitted when STRAND001 fires ────────────
+    // ── 5.3 Per-method wrapper still emitted when JACQUARD001 fires ────────────
 
     [Fact]
     public void Generator_NonPartialClass_StillEmitsWrapperClass()
@@ -121,8 +121,8 @@ public class SourceGeneratorToolProviderTests
 
         var (_, diagnostics, files) = RunGenerator(source);
 
-        // STRAND001 fires
-        Assert.Contains(diagnostics, d => d.Id == "STRAND001");
+        // JACQUARD001 fires
+        Assert.Contains(diagnostics, d => d.Id == "JACQUARD001");
 
         // But the per-method wrapper is still emitted
         Assert.True(files.ContainsKey("WeatherTools_GetWeather_Tool.g.cs"),
