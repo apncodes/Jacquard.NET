@@ -11,6 +11,24 @@ sidebar_position: 2
   - Run `aws configure` or set `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` environment variables
   - Enable model access in the [Bedrock console](https://console.aws.amazon.com/bedrock/home#/modelaccess)
 
+:::tip Don't have AWS/Bedrock?
+You can use any supported model provider. Replace `BedrockModel` with `AnthropicModel`, `OpenAICompatibleModel`, or `GeminiModel`:
+
+```csharp
+// Anthropic direct API
+var model = new AnthropicModel(apiKey: "sk-ant-...", modelId: "claude-sonnet-4-5");
+
+// OpenAI / Azure OpenAI / Ollama
+var model = new OpenAICompatibleModel(
+    baseUrl: "https://api.openai.com/v1",
+    apiKey: "sk-...",
+    modelId: "gpt-4o");
+
+// Google Gemini
+var model = new GeminiModel(apiKey: "...", modelId: "gemini-2.5-flash");
+```
+:::
+
 ## Install packages
 
 ```bash

@@ -25,6 +25,7 @@ const sidebars: SidebarsConfig = {
         'concepts/multi-agent',
         'concepts/model-providers',
         'concepts/agentcore',
+        'concepts/durability',
       ],
     },
     {
@@ -56,6 +57,16 @@ const sidebars: SidebarsConfig = {
       type: 'doc',
       id: 'faq',
       label: 'FAQ & Troubleshooting',
+    },
+    {
+      type: 'doc',
+      id: 'samples',
+      label: 'Samples',
+    },
+    {
+      type: 'doc',
+      id: 'contributing',
+      label: 'Contributing',
     },
   ],
 };
