@@ -18,10 +18,10 @@ internal record ToolParameterConstraintsInfo(
 [Generator]
 public sealed class ToolGenerator : IIncrementalGenerator
 {
-    // STRAND001 — emitted as a Warning when a class with [Tool] methods is not declared partial.
+    // JACQUARD001 — emitted as a Warning when a class with [Tool] methods is not declared partial.
     // Severity is Warning (not Error) so existing non-partial code keeps compiling.
     private static readonly DiagnosticDescriptor NonPartialClassDiagnostic = new(
-        id: "STRAND001",
+        id: "JACQUARD001",
         title: "Tool class should be partial",
         messageFormat: "Class '{0}' has [Tool] methods but is not declared partial. " +
                        "Declare it partial to enable the IToolProvider pattern.",
@@ -57,7 +57,7 @@ public sealed class ToolGenerator : IIncrementalGenerator
 
                 if (!isPartial)
                 {
-                    // Emit STRAND001 on the first method's location as a proxy for the class.
+                    // Emit JACQUARD001 on the first method's location as a proxy for the class.
                     // We don't have the class syntax node here, so we use a null location —
                     // the diagnostic still appears in the build output with the class name.
                     spc.ReportDiagnostic(Diagnostic.Create(

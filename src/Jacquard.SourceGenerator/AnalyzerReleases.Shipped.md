@@ -7,4 +7,4 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
-STRAND001 | Jacquard.SourceGenerator | Warning | Tool class should be partial to enable IToolProvider pattern.
+JACQUARD001 | Jacquard.SourceGenerator | Warning | Tool class should be partial to enable IToolProvider pattern.
