@@ -50,6 +50,7 @@ Decorate a method with `[Tool]` on a `partial class` — the Roslyn source gener
 ```csharp
 using Jacquard.Core;
 using Jacquard.Models.Bedrock;
+using MyApp;
 
 var agent = new Agent(
     model: new BedrockModel("us-east-1"),
