@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
-    <ProjectReference Include="..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
-    <ProjectReference Include="..\..\src\Jacquard.MultiAgent\Jacquard.MultiAgent.csproj" />
+    <PackageReference Include="Jacquard.Core" Version="0.1.13" />
+    <PackageReference Include="Jacquard.Models.Bedrock" Version="0.1.13" />
+    <PackageReference Include="Jacquard.MultiAgent" Version="0.1.13" />
   </ItemGroup>
 
 </Project>

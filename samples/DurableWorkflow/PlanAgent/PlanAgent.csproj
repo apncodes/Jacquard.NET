@@ -14,12 +14,9 @@
     <PackageReference Include="Amazon.Lambda.Core" Version="2.5.0" />
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.12.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4" />
-    <ProjectReference Include="..\..\src\Jacquard.Core\Jacquard.Core.csproj" />
-    <ProjectReference Include="..\..\src\Jacquard.Models.Bedrock\Jacquard.Models.Bedrock.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Jacquard.SourceGenerator\Jacquard.SourceGenerator.csproj"
+    <PackageReference Include="Jacquard.Core" Version="0.1.13" />
+    <PackageReference Include="Jacquard.Models.Bedrock" Version="0.1.13" />
+    <PackageReference Include="Jacquard.SourceGenerator" Version="0.1.13"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
