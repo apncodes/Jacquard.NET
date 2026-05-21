@@ -10,6 +10,8 @@ Jacquard.NET brings the [Strands Agents](https://strandsagents.com) architecture
 
 Give an agent a model, tools, and a prompt. The event loop calls the model, executes whatever tools it requests, feeds results back, and repeats until the model signals it's done. You never write the orchestration loop.
 
+The name comes from the Jacquard loom — invented in 1804, it was the first machine to use punch cards to control patterns. It inspired Charles Babbage and is the origin of the idea that a machine could be programmed to weave any pattern from simple instructions. That is what agents do: weave tools, models, loops, and prompts into intelligent behavior.
+
 ## Why Jacquard.NET
 
 **The goal is that any .NET developer — from line-of-business engineer to senior architect — can read the quickstart and start building agents the same afternoon.** No prior agent experience required, no agent-framework vocabulary to learn, no orchestration loop to write.
@@ -71,4 +73,4 @@ The `[Tool]` attribute and `partial class` tell the Roslyn source generator — 
 
 Jacquard.NET is a ground-up C# implementation inspired by the [Strands Agents](https://strandsagents.com) design. The core concepts — model-driven event loop, tool system, hooks, multi-agent orchestration — are built natively in C# 13 for the .NET community. The A2A protocol implementation is interoperable across the Strands Python and TypeScript SDKs.
 
-This project is independently maintained by the community and is not affiliated with AWS or the Strands Agents project. Licensed under Apache 2.0.
+This project is independently maintained, community contributions welcome. Not affiliated with AWS or the Strands Agents project. Licensed under Apache 2.0.
