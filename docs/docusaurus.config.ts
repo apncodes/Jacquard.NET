@@ -3,15 +3,15 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Strands Agents .NET',
-  tagline: 'Model-driven agentic AI for C# developers',
+  title: 'Jacquard.NET',
+  tagline: 'Native C# SDK for building agentic AI',
   favicon: 'img/favicon.ico',
 
   url: 'https://apncodes.github.io',
-  baseUrl: '/Jacquard.net/',
+  baseUrl: '/Jacquard.NET/',
 
   organizationName: 'apncodes',
-  projectName: 'Jacquard.net',
+  projectName: 'Jacquard.NET',
   trailingSlash: false,
 
   onBrokenLinks: 'throw',
@@ -28,7 +28,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/apncodes/Jacquard.net/tree/main/docs/',
+          editUrl: 'https://github.com/apncodes/Jacquard.NET/tree/main/docs/',
         },
         blog: false,
         theme: {
@@ -41,9 +41,9 @@ const config: Config = {
   themeConfig: {
     image: 'img/social-card.png',
     navbar: {
-      title: 'Strands Agents .NET',
+      title: 'Jacquard.NET',
       logo: {
-        alt: 'Strands Agents .NET',
+        alt: 'Jacquard.NET',
         src: 'img/logo.svg',
       },
       items: [
@@ -54,7 +54,7 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          href: 'https://github.com/apncodes/Jacquard.net',
+          href: 'https://github.com/apncodes/Jacquard.NET',
           label: 'GitHub',
           position: 'right',
         },
@@ -81,11 +81,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub Discussions',
-              href: 'https://github.com/apncodes/Jacquard.net/discussions',
+              href: 'https://github.com/apncodes/Jacquard.NET/discussions',
             },
             {
               label: 'Issues',
-              href: 'https://github.com/apncodes/Jacquard.net/issues',
+              href: 'https://github.com/apncodes/Jacquard.NET/issues',
             },
           ],
         },
@@ -94,7 +94,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/apncodes/Jacquard.net',
+              href: 'https://github.com/apncodes/Jacquard.NET',
             },
             {
               label: 'NuGet',
@@ -107,7 +107,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Strands Agents .NET Contributors. Apache 2.0 License.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Jacquard.NET Contributors. Apache 2.0 License.`,
     },
     prism: {
       theme: prismThemes.github,
