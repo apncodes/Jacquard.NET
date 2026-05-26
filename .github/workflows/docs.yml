@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
+      - '!docs/CRs/**'
   workflow_dispatch:
 
 permissions:
